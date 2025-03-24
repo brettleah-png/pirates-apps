@@ -44,7 +44,7 @@ curl_close($curl);
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
@@ -73,7 +73,7 @@ curl_close($curl);
         <div class="row gx-0">
             <div class="col-lg-3 bg-dark d-none d-lg-block">
                 <a href="index.html" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
-                    <img src="img/Logo.png" height=200px> 
+                    <img src="img/Logo.png" height=200px>
 					<!--<h1 class="m-0 display-4 text-primary text-uppercase"><img src="img/Logo.png" height=100px> Helderberg<br>Pirates</h1>-->
                 </a>
             </div>
@@ -150,7 +150,7 @@ curl_close($curl);
                         </div>
                     </div>
                 </div>
-                
+
             </div>
             <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel"
                 data-bs-slide="prev">
@@ -250,19 +250,19 @@ curl_close($curl);
         </div>
         <div class="tab-class text-center">
             <ul class="nav nav-pills d-inline-flex justify-content-center bg-dark text-uppercase rounded-pill mb-5">
-                
+
                 <li class="nav-item">
                     <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-2">Tuesday</a>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-4">Thursday</a>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-6">Saturday</a>
                 </li>
-                
+
             </ul>
             <div class="tab-content">
                 <div id="tab-1" class="tab-pane fade show p-0 active">
@@ -271,7 +271,7 @@ curl_close($curl);
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
                                 <h5 class="text-uppercase text-primary">Junior & Senior Training</h5>
-                               
+
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
@@ -755,7 +755,7 @@ curl_close($curl);
         </div>
     </div>
     <!-- Team End -->
-    
+
 
     <!-- Testimonial Start-->
     <div class="container-fluid p-0 my-5">
@@ -853,7 +853,7 @@ curl_close($curl);
         </div>
     </div>
     <!-- Blog End -->
-    
+
 
     <!-- Footer Start -->
     <div class="container-fluid bg-dark text-secondary px-5 mt-5">
@@ -875,9 +875,9 @@ curl_close($curl);
                             <p class="mb-0">+012 345 67890</p>
                         </div>
                         <div class="d-flex mt-4">
-                           
+
                             <a class="btn btn-primary btn-square rounded-circle me-2" href="#"><i class="fab fa-facebook-f"></i></a>
-                          
+
                             <a class="btn btn-primary btn-square rounded-circle" href="#"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
