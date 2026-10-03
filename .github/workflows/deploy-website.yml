@@ -1,0 +1,42 @@
+name: Deploy website
+
+on:
+  release:
+    types: [released] # pre-releases don't deploy
+  workflow_dispatch: # manual runs are dry runs only
+
+# Never run two deploys against the server at the same time
+concurrency:
+  group: deploy-website
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    # Only website-v* releases deploy the website
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'website-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Upload website over FTPS
+        uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
+        with:
+          server: ${{ secrets.CPANEL_FTP_SERVER }}
+          username: ${{ secrets.CPANEL_FTP_USERNAME }}
+          password: ${{ secrets.CPANEL_FTP_PASSWORD }}
+          protocol: ftps
+          security: strict
+          local-dir: ./apps/website/
+          server-dir: ./ # the FTP account's home directory is public_html
+          dry-run: ${{ github.event_name == 'workflow_dispatch' }}
+          # Files the server writes at runtime; deploying would overwrite live data
+          exclude: |
+            **/.git*
+            **/.git*/**
+            uploads/**
+            new/uploads/**
+            data.json
+            new/data.json
+            feeds.json
