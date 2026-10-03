@@ -5,10 +5,9 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
 
 <head>
     <meta charset="utf-8">
-    <title>HELDERBERG PIRATES BASEBALL</title>
+    <title>Helderberg Pirates Baseball</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
+    <meta name="description" content="Photos from Helderberg Pirates games, training sessions and open days at Radloff Park, Somerset West.">
 
     <!-- Favicon -->
     <link href="img/favicon.jpg" rel="icon">
@@ -55,8 +54,6 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
 
 </head>
 
-<title>
-</title>
 
 
 

@@ -2,10 +2,9 @@
 
 <head>
     <meta charset="utf-8">
-    <title>HELDERBERG PIRATES BASEBALL</title>
+    <title>Helderberg Pirates Baseball</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="Free HTML Templates" name="keywords">
-    <meta content="Free HTML Templates" name="description">
+    <meta name="description" content="Training times and fixtures for the Helderberg Pirates U10, U12, U15, senior and masters teams at Radloff Park, Somerset West.">
 
     <!-- Favicon -->
     <link href="img/favicon.jpg" rel="icon">
@@ -85,8 +84,6 @@
 
 </head>
 
-<title>
-</title>
 
 
 
