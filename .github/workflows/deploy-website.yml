@@ -22,6 +22,10 @@ jobs:
 
       - name: Upload website over FTPS
         uses: SamKirkland/FTP-Deploy-Action@110f9186c050f71550953127052e77650219c287 # v4.4.0
+        env:
+          # The server is in South Africa; from some runner regions the connection takes longer
+          # than Node's default 250 ms per-address limit, which fails with ETIMEDOUT
+          NODE_OPTIONS: --network-family-autoselection-attempt-timeout=2000
         with:
           server: ${{ secrets.CPANEL_FTP_SERVER }}
           username: ${{ secrets.CPANEL_FTP_USERNAME }}
