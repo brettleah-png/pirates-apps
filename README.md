@@ -4,11 +4,11 @@ Code for the Helderberg Pirates Baseball Club.
 
 ## Layout
 
-| Path | Contents |
-|---|---|
-| `apps/website/` | The club website. Plain HTML and PHP with no build step, hosted on cPanel at Domains.co.za. |
-| `docs/` | Club history documents and planning notes. Not deployed. |
-| `.github/workflows/` | GitHub Actions workflows. |
+| Path                 | Contents                                                                                    |
+| -------------------- | ------------------------------------------------------------------------------------------- |
+| `apps/website/`      | The club website. Plain HTML and PHP with no build step, hosted on cPanel at Domains.co.za. |
+| `docs/`              | Club history documents and planning notes. Not deployed.                                    |
+| `.github/workflows/` | GitHub Actions workflows.                                                                   |
 
 ## Development
 
@@ -45,11 +45,11 @@ pnpm install
 2. In cPanel → FTP Accounts → Configure FTP Client, note the FTP server hostname.
 3. In GitHub → Settings → Secrets and variables → Actions, add:
 
-   | Secret | Value |
-   |---|---|
-   | `CPANEL_FTP_SERVER` | FTP server hostname |
+   | Secret                | Value                                                    |
+   | --------------------- | -------------------------------------------------------- |
+   | `CPANEL_FTP_SERVER`   | FTP server hostname                                      |
    | `CPANEL_FTP_USERNAME` | Full FTP username, e.g. `deploy@helderbergpirates.co.za` |
-   | `CPANEL_FTP_PASSWORD` | FTP password |
+   | `CPANEL_FTP_PASSWORD` | FTP password                                             |
 
 4. Run a dry run and check the log. The workflow verifies the server's TLS certificate. If the dry run fails with a certificate error, set `CPANEL_FTP_SERVER` to the server's own hostname instead of `ftp.<domain>`.
 

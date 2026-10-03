@@ -4,5 +4,12 @@
   "packageManager": "pnpm@10.21.0",
   "engines": {
     "node": ">=22"
+  },
+  "scripts": {
+    "format": "prettier . --write",
+    "format:check": "prettier . --check"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.9"
   }
 }

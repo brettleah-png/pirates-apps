@@ -14,22 +14,22 @@ _Written 2026-10-03, based on the repo at commit `1fbf4e0`. File paths below are
 
 ## How the gallery works today
 
-| File | Role |
-|---|---|
-| `upload.php` | Admin "Upload Manager": create, rename and delete albums; upload images; edit captions. Not linked from the public nav, but publicly reachable. |
-| `gallery.php` | Public gallery: lists album folders, shows each album's images in a lightbox. |
-| `uploads/<album>/` | One folder per album, holding image files named `<unix-timestamp>_<original-filename>`. |
-| `uploads/<album>/data.json` | Captions: `[{ "filename": "...", "description": "..." }]`. |
+| File                        | Role                                                                                                                                            |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| `upload.php`                | Admin "Upload Manager": create, rename and delete albums; upload images; edit captions. Not linked from the public nav, but publicly reachable. |
+| `gallery.php`               | Public gallery: lists album folders, shows each album's images in a lightbox.                                                                   |
+| `uploads/<album>/`          | One folder per album, holding image files named `<unix-timestamp>_<original-filename>`.                                                         |
+| `uploads/<album>/data.json` | Captions: `[{ "filename": "...", "description": "..." }]`.                                                                                      |
 
 What the PHP handlers in `upload.php` do:
 
-| Trigger | Effect | Lines |
-|---|---|---|
-| POST `rename_album` + `new_album_name` | Renames the album folder | `upload.php:8-20` |
-| GET `?delete_album=X` | Recursively deletes `uploads/X` | `upload.php:23-40` |
-| GET `?album=X&delete=F` | Deletes one image and its `data.json` entry | `upload.php:43-56` |
-| POST `update_desc` | Saves the edited captions to `data.json` | `upload.php:59-71` |
-| POST `images[]` | Saves the uploaded files and adds them to `data.json` | `upload.php:74-94` |
+| Trigger                                | Effect                                                | Lines              |
+| -------------------------------------- | ----------------------------------------------------- | ------------------ |
+| POST `rename_album` + `new_album_name` | Renames the album folder                              | `upload.php:8-20`  |
+| GET `?delete_album=X`                  | Recursively deletes `uploads/X`                       | `upload.php:23-40` |
+| GET `?album=X&delete=F`                | Deletes one image and its `data.json` entry           | `upload.php:43-56` |
+| POST `update_desc`                     | Saves the edited captions to `data.json`              | `upload.php:59-71` |
+| POST `images[]`                        | Saves the uploaded files and adds them to `data.json` | `upload.php:74-94` |
 
 **Legacy copies that are still publicly reachable** (nothing links to them, but they still run if someone requests them):
 
@@ -41,16 +41,16 @@ What the PHP handlers in `upload.php` do:
 
 ## Vulnerabilities
 
-| Severity | Issue | Where | What an attacker can do |
-|---|---|---|---|
-| **Critical** | Recursive delete escapes the uploads folder | `upload.php:24-35` | `upload.php?delete_album=..` resolves to `uploads/..`, which is the web root. PHP's `basename('..')` returns `'..'`, so nothing blocks it. The code then deletes every file and folder the PHP process has write access to. **One unauthenticated GET request can wipe the site.** |
-| **Critical** | Any file type is accepted | `upload.php:83-88`, `upload_handler.php`, `new/upload.php` | Upload `shell.php`, then request `uploads/<album>/<timestamp>_shell.php` to run arbitrary code on the server. `accept="image/*"` only filters the browser's file picker. The server never checks the type. |
-| **High** | No authentication on any gallery endpoint | `upload.php`, `new/upload.php`, `upload_handler.php`, `delete_image.php`, `update_description.php` | Delete or rename any album or image, rewrite captions, or host arbitrary content (images, HTML phishing pages) on the club's domain. |
-| **Medium** | Stored XSS through filenames | `gallery.php:153`, `gallery.php:167` | Image paths are echoed without `htmlspecialchars`. A file uploaded as `x" onerror="alert(1).jpg` runs script for every visitor to the public gallery. |
-| **Medium** | Destructive actions use GET links | `upload.php:23`, `upload.php:43` | A link, an `<img src>` on another site, a crawler, or browser prefetching can trigger deletes. There is no CSRF protection. |
-| Low | No upload size or count limit | `upload.php:74-94` | Fill the server's disk. |
-| Low | `?album=` isn't sanitized when reading captions | `upload.php:98-101` | Read any `data.json` elsewhere on disk through path traversal. Minor, since the data isn't sensitive. |
-| Low | Folders created with `0777` permissions | `upload.php:5`, `upload.php:77` | Any user on a shared host can write to them. |
+| Severity     | Issue                                           | Where                                                                                              | What an attacker can do                                                                                                                                                                                                                                                            |
+| ------------ | ----------------------------------------------- | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Critical** | Recursive delete escapes the uploads folder     | `upload.php:24-35`                                                                                 | `upload.php?delete_album=..` resolves to `uploads/..`, which is the web root. PHP's `basename('..')` returns `'..'`, so nothing blocks it. The code then deletes every file and folder the PHP process has write access to. **One unauthenticated GET request can wipe the site.** |
+| **Critical** | Any file type is accepted                       | `upload.php:83-88`, `upload_handler.php`, `new/upload.php`                                         | Upload `shell.php`, then request `uploads/<album>/<timestamp>_shell.php` to run arbitrary code on the server. `accept="image/*"` only filters the browser's file picker. The server never checks the type.                                                                         |
+| **High**     | No authentication on any gallery endpoint       | `upload.php`, `new/upload.php`, `upload_handler.php`, `delete_image.php`, `update_description.php` | Delete or rename any album or image, rewrite captions, or host arbitrary content (images, HTML phishing pages) on the club's domain.                                                                                                                                               |
+| **Medium**   | Stored XSS through filenames                    | `gallery.php:153`, `gallery.php:167`                                                               | Image paths are echoed without `htmlspecialchars`. A file uploaded as `x" onerror="alert(1).jpg` runs script for every visitor to the public gallery.                                                                                                                              |
+| **Medium**   | Destructive actions use GET links               | `upload.php:23`, `upload.php:43`                                                                   | A link, an `<img src>` on another site, a crawler, or browser prefetching can trigger deletes. There is no CSRF protection.                                                                                                                                                        |
+| Low          | No upload size or count limit                   | `upload.php:74-94`                                                                                 | Fill the server's disk.                                                                                                                                                                                                                                                            |
+| Low          | `?album=` isn't sanitized when reading captions | `upload.php:98-101`                                                                                | Read any `data.json` elsewhere on disk through path traversal. Minor, since the data isn't sensitive.                                                                                                                                                                              |
+| Low          | Folders created with `0777` permissions         | `upload.php:5`, `upload.php:77`                                                                    | Any user on a shared host can write to them.                                                                                                                                                                                                                                       |
 
 ### Functional bugs in the current gallery
 
@@ -62,12 +62,12 @@ What the PHP handlers in `upload.php` do:
 
 These are out of scope for this plan, but are recorded here so they aren't lost:
 
-| File | Issue |
-|---|---|
-| `save-feeds.php` | Anyone can overwrite `feeds.json`, which controls the calendar feeds on the homepage and schedule page. |
-| `ics-to-json.php` | Open proxy (SSRF): it fetches any URL server-side. It also has `display_errors` turned on. |
-| `contact.php` | Email header injection: `$name` goes into the `From:` header without CR/LF stripping, so the form can be abused to send spam. |
-| `signup.php` | Syntax error on line 3; the file can't run. Unused. |
+| File              | Issue                                                                                                                         |
+| ----------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `save-feeds.php`  | Anyone can overwrite `feeds.json`, which controls the calendar feeds on the homepage and schedule page.                       |
+| `ics-to-json.php` | Open proxy (SSRF): it fetches any URL server-side. It also has `display_errors` turned on.                                    |
+| `contact.php`     | Email header injection: `$name` goes into the `From:` header without CR/LF stripping, so the form can be abused to send spam. |
+| `signup.php`      | Syntax error on line 3; the file can't run. Unused.                                                                           |
 
 ---
 
@@ -84,6 +84,7 @@ The repo is **not** necessarily what's deployed, since files arrive as drops fro
    If the gallery admin must stay available while a decision is made, protect it with HTTP Basic Auth instead of removing it (cPanel calls this "Directory Privacy"; otherwise use `.htaccess` + `.htpasswd`).
 
    The release deploy workflow (see the root `README.md`) **won't remove these files**. It only deletes files that an earlier deploy uploaded.
+
 3. **Check `uploads/` and `new/uploads/` on the server for anything that isn't an image**: `.php`, `.phtml`, `.phar`, `.html`, `.htaccess`, or files with odd names. If you find any, treat the site as compromised: tell the hosting provider, change the hosting, FTP and database passwords, and restore from a known-good copy.
 4. **Agree a workflow with Richard** so future file drops don't re-add these files. This repo should be the source of truth, with deploys going out through releases.
 
@@ -96,6 +97,7 @@ The repo is **not** necessarily what's deployed, since files arrive as drops fro
 The club already has [Facebook](https://www.facebook.com/profile.php?id=61581433657465) and [Instagram](https://www.instagram.com/helderbergpirates/).
 
 **Steps**
+
 1. Delete `upload.php`, `gallery.php`, `gal.php`, the `new/` folder, the root `data.json`, `upload_handler.php`, `delete_image.php`, `update_description.php` and `uploads/`.
 2. Point the "Gallery" nav item in every page header at the Instagram profile (`target="_blank"`).
 
@@ -107,6 +109,7 @@ The club already has [Facebook](https://www.facebook.com/profile.php?id=61581433
 Only worth doing if someone at the club will actually upload to the website rather than social media.
 
 **Checklist**
+
 - [ ] **Authentication:** move the admin into its own folder (e.g. `admin/`) and protect it with HTTP Basic Auth, or add a PHP session login using `password_hash()` / `password_verify()`.
 - [ ] **Validate uploads on the server:** allow only `jpg`, `jpeg`, `png` and `webp`; confirm each file really is an image with `getimagesize()` or `finfo_file()`; **ignore the client's filename** and generate one (e.g. `bin2hex(random_bytes(8)) . '.jpg'`); enforce a maximum size.
 - [ ] **Block script execution in `uploads/`:** add an `uploads/.htaccess` (Apache/LiteSpeed only), for example:
@@ -139,6 +142,7 @@ Instagram shut down its simple Basic Display API in December 2024. A third-party
 **Providers to compare:** Behold (behold.so), LightWidget (lightwidget.com), SnapWidget (snapwidget.com), Elfsight (elfsight.com).
 
 **Steps**
+
 1. Switch the club's Instagram to a **Professional account** (Creator or Business). It's free and done in Instagram's settings. Most widgets require it now.
 2. Sign up with a widget provider and connect the Instagram account.
 3. Configure a grid layout and copy the embed snippet (a `<script>` plus a container element).
@@ -146,6 +150,7 @@ Instagram shut down its simple Basic Display API in December 2024. A third-party
 
 **Uploading:** post to Instagram as usual. No new workflow.
 **Caveats**
+
 - Free plans differ in post count, view limits, branding and refresh frequency. Compare them when deciding.
 - No albums: it shows the feed. Check whether the chosen provider supports filtering by hashtag.
 - You depend on the provider. If it shuts down or changes its free plan, the gallery breaks. Fallback: link to the Instagram profile (Option 1).
@@ -155,14 +160,20 @@ Instagram shut down its simple Basic Display API in December 2024. A third-party
 An official Facebook embed of a Page's timeline.
 
 **Steps**
+
 1. Confirm the club's Facebook presence is a **Page**, not a personal profile. The `profile.php?id=61581433657465` URL format is used by both, so the URL alone doesn't tell you. The plugin only works for Pages.
 2. Generate the snippet with the official configurator: https://developers.facebook.com/docs/plugins/page-plugin
 3. Paste the result. It's an iframe, roughly like this:
    ```html
    <iframe
      src="https://www.facebook.com/plugins/page.php?href=https%3A%2F%2Fwww.facebook.com%2Fprofile.php%3Fid%3D61581433657465&tabs=timeline&width=500&height=700&adapt_container_width=true"
-     width="500" height="700" style="border:none;overflow:hidden"
-     scrolling="no" frameborder="0" allowfullscreen="true">
+     width="500"
+     height="700"
+     style="border:none;overflow:hidden"
+     scrolling="no"
+     frameborder="0"
+     allowfullscreen="true"
+   >
    </iframe>
    ```
 
@@ -172,6 +183,7 @@ An official Facebook embed of a Page's timeline.
 #### 3c. Flickr album embed
 
 **Steps**
+
 1. Create a Flickr account for the club and invite whoever uploads (or share the login).
 2. Create one Flickr album per gallery album.
 3. On each album page, use **Share → Embed** and paste the snippet into the gallery page. It's an `<a data-flickr-embed="true">` element plus a script from `embedr.flickr.com`.
@@ -182,12 +194,14 @@ An official Facebook embed of a Page's timeline.
 #### 3d. Public Google Drive folder
 
 **Steps**
+
 1. Create a Drive folder (with one subfolder per album) and share it as "Anyone with the link: Viewer".
 2. Embed it:
    ```html
    <iframe
      src="https://drive.google.com/embeddedfolderview?id=FOLDER_ID#grid"
-     style="width:100%; height:600px; border:0;">
+     style="width:100%; height:600px; border:0;"
+   >
    </iframe>
    ```
 
@@ -199,6 +213,7 @@ An official Facebook embed of a Page's timeline.
 Cloudinary hosts the images, and the site draws its own grid from a public JSON list. Cloudinary also resizes and compresses automatically, which fixes the multi-MB image problem.
 
 **Steps**
+
 1. Create a free Cloudinary account and invite whoever uploads.
 2. Under **Settings → Security → Restricted media types**, untick **Resource list**. This allows the public `…/image/list/<tag>.json` endpoint.
 3. Use one **tag** per album (e.g. `album-open-day-2026`). Add captions as contextual metadata with the key `caption`.
@@ -241,6 +256,7 @@ Cloudinary hosts the images, and the site draws its own grid from a public JSON 
 
 **Uploading:** Cloudinary's web Media Library, tagging each photo with its album.
 **Caveats**
+
 - The site can't list tags without an API secret, so the list of albums has to be written into the page. Adding a new album means a small code change.
 - The list endpoint is CDN-cached, so new uploads can take a short while to appear.
 - The free plan is credit-based. Check that the expected traffic fits.
