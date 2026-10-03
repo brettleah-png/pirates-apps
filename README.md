@@ -20,14 +20,17 @@ Requirements: Node 22 (`nvm use` reads `.nvmrc`) and pnpm 10 (`corepack enable` 
 ```sh
 pnpm install
 
-pnpm --filter website-v2 dev     # Astro dev server at http://localhost:4321
-pnpm --filter website-v2 build   # static build into apps/website-v2/dist/
+pnpm dev            # website-v2 dev server at http://localhost:4321
+pnpm build          # website-v2 static build into apps/website-v2/dist/
+pnpm preview        # serve that build locally
 
 pnpm format         # format the repo with Prettier
 pnpm format:check   # check formatting without changing files
 ```
 
-The old site (`apps/website`) has no build step: run it with `php -S localhost:8000 -t apps/website`.
+`dev`, `build` and `preview` at the root forward to `apps/website-v2`. To run any other workspace script from the root, use `pnpm --filter <package> <script>`; inside an app's folder, `pnpm <script>` runs that app's own scripts.
+
+The old site (`apps/website`) has no build step. `pnpm dev:website` serves it at http://localhost:8000 with PHP's built-in server, so PHP must be installed (`brew install php` on macOS). The contact form can't send email locally.
 
 ## Deploying the website
 
