@@ -12,7 +12,7 @@
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet"> 
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet">
 
     <!-- Icon Font Stylesheet -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
@@ -27,7 +27,7 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-	
+
 	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
  <style>
@@ -39,7 +39,7 @@
     #legend {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;          
+      gap: 16px;
       border-top: 1px solid #ddd;
       padding-top: 12px;
       justify-content: flex-start; /* row layout on desktop */
@@ -101,7 +101,7 @@
         <div class="row gx-0">
             <div class="col-lg-3 bg-dark d-none d-lg-block" z-index=-1>
                 <a href="index.php" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
-                    <img src="img/Logo.png" height=150px> 
+                    <img src="img/Logo.png" height=150px>
 					<!--<h1 class="m-0 display-4 text-primary text-uppercase"><img src="img/Logo.png" height=100px> Helderberg<br>Pirates</h1>-->
                 </a>
             </div>
@@ -118,7 +118,7 @@
                         </div>
                     </div>
                     <div class="col-lg-5 px-5 text-end">
-					<a href="https://forms.gle/RRqZorZAKZQTANLh9" target="_blank">Book the Clubhouse</a>
+					<a href="https://forms.gle/RRqZorZAKZQTANLh9" target="_blank">Book the Clubhouse!</a>
                         <div class="d-inline-flex align-items-center py-2">
                             <a class="btn btn-light btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank">
                                 <i class="fab fa-facebook-f"></i>
@@ -179,7 +179,7 @@
                         </div>
                     </div>
                 </div>
-                
+
             </div>
           <!--  <button class="carousel-control-prev" type="button" data-bs-target="#header-carousel"
                 data-bs-slide="prev">
@@ -279,19 +279,19 @@
         </div>
         <div class="tab-class text-center">
             <ul class="nav nav-pills d-inline-flex justify-content-center bg-dark text-uppercase rounded-pill mb-5">
-                
+
                 <li class="nav-item">
                     <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-1">Tuesday</a>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-2">Thursday</a>
                 </li>
-                
+
                 <li class="nav-item">
                     <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-3">Saturday</a>
                 </li>
-                
+
             </ul>
             <div class="tab-content">
                 <div id="tab-1" class="tab-pane fade show p-0 active">
@@ -376,7 +376,7 @@
                     <div class="row g-5">
                        <div id="calendar"></div>
 					   <div id="legend"></div>
-					  
+
                     </div>
                 </div>
             </div>
@@ -475,7 +475,7 @@
         </div>
     </div>
     <!-- Team End -->
-    
+
 
     <!-- Testimonial Start-->
     <div class="container-fluid p-0 my-5">
@@ -493,9 +493,9 @@
                 <div class="owl-carousel testimonial-carousel">
                     <div class="testimonial-item">
                         <p class="fs-4 fw-normal text-light mb-4"><i class="fa fa-quote-left text-primary me-3"></i>All home games are open to the public, free of charge, with a tuckshop and braai facilities.</p>
-                      
+
                     </div>
-                   
+
                     </div>
                 </div>
             </div>
@@ -524,9 +524,9 @@
                             <p class="mb-0">076 909 3707</p>
                         </div>
                         <div class="d-flex mt-4">
-                           
+
                             <a class="btn btn-primary btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                          
+
                             <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
@@ -690,7 +690,7 @@ setTimeout(() => {
       }
     });
   </script>
-	
+
 </body>
 
 </html>

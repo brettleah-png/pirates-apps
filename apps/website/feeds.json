@@ -1,17 +1,17 @@
 [
   {
-    "name": "U/10",
-    "url": "https://scheduler.leaguelobster.com/rsvp/calendar/team/24168317/rss/",
+    "name": "U10",
+    "url": "https://scheduler.leaguelobster.com/rsvp/calendar/team/25211942/rss/",
     "color": "#3788d8"
   },
   {
-    "name": "U/12",
-    "url": "https://scheduler.leaguelobster.com/rsvp/calendar/team/24168400/rss/",
-    "color": "#ffae00"
+    "name": "U12",
+    "url": "https://scheduler.leaguelobster.com/rsvp/calendar/team/25212299/rss/",
+    "color": "#89f207"
   },
   {
-    "name": "U/15",
-    "url": "https://scheduler.leaguelobster.com/rsvp/calendar/team/24168507/rss/",
-    "color": "#e100ff"
+    "name": "U15",
+    "url": "https://scheduler.leaguelobster.com/rsvp/calendar/team/25212552/rss/",
+    "color": "#e60000"
   }
 ]

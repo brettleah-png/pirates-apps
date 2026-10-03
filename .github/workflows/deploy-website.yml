@@ -31,12 +31,9 @@ jobs:
           local-dir: ./apps/website/
           server-dir: ./ # the FTP account's home directory is public_html
           dry-run: ${{ github.event_name == 'workflow_dispatch' }}
-          # Files the server writes at runtime; deploying would overwrite live data
+          # Gallery photos and captions live only on the server; never overwrite or delete them
           exclude: |
             **/.git*
             **/.git*/**
             uploads/**
-            new/uploads/**
             data.json
-            new/data.json
-            feeds.json

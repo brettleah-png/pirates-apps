@@ -24,7 +24,8 @@ Code for the Helderberg Pirates Baseball Club.
 
 - Uploads only the files that changed since the last deploy. The action tracks this in `.ftp-deploy-sync-state.json` on the server.
 - Deletes a file from the server when it's removed from the repo, **but only if an earlier deploy uploaded it**. Files that were put on the server some other way are never deleted.
-- Never touches `uploads/`, `new/uploads/`, `data.json`, `new/data.json` or `feeds.json`. The site writes these at runtime.
+- Never touches `uploads/` or `data.json`. The gallery photos and captions exist only on the server.
+- Calendar feeds are set in `apps/website/feeds.json`. Change them in the repo and release; there is no editor on the site.
 
 **Don't edit files on the server directly.** The next release overwrites them. Make changes in this repo.
 
