@@ -7,6 +7,7 @@ Code for the Helderberg Pirates Baseball Club.
 | Path                 | Contents                                                                                    |
 | -------------------- | ------------------------------------------------------------------------------------------- |
 | `apps/website/`      | The club website. Plain HTML and PHP with no build step, hosted on cPanel at Domains.co.za. |
+| `apps/website-v2/`   | The website's Astro rebuild, in progress (see `docs/website-v2-plan.md`). Not deployed yet. |
 | `docs/`              | Club history documents and planning notes. Not deployed.                                    |
 | `.github/workflows/` | GitHub Actions workflows.                                                                   |
 
@@ -18,7 +19,15 @@ Requirements: Node 22 (`nvm use` reads `.nvmrc`) and pnpm 10 (`corepack enable` 
 
 ```sh
 pnpm install
+
+pnpm --filter website-v2 dev     # Astro dev server at http://localhost:4321
+pnpm --filter website-v2 build   # static build into apps/website-v2/dist/
+
+pnpm format         # format the repo with Prettier
+pnpm format:check   # check formatting without changing files
 ```
+
+The old site (`apps/website`) has no build step: run it with `php -S localhost:8000 -t apps/website`.
 
 ## Deploying the website
 
