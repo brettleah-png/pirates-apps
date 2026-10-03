@@ -65,9 +65,6 @@
 
     /* ✅ Mobile responsiveness */
     @media (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
       #legend {
         flex-direction: column;
         gap: 6px;
@@ -104,34 +101,10 @@
 					<!--<h1 class="m-0 display-4 text-primary text-uppercase"><img src="img/Logo.png" height=100px> Helderberg<br>Pirates</h1>-->
                 </a>
             </div>
-            <div class="col-lg-9">
-                <div class="row gx-0 bg-secondary d-none d-lg-flex">
-                    <div class="col-lg-7 px-5 text-start">
-                        <div class="h-100 d-inline-flex align-items-center py-2 me-4">
-                            <i class="fa fa-envelope text-primary me-2"></i>
-                            <h6 class="mb-0">info@helderbergpirates.co.za</h6>
-                        </div>
-                        <div class="h-100 d-inline-flex align-items-center py-2">
-                            <i class="fa fa-phone-alt text-primary me-2"></i>
-                            <h6 class="mb-0">076 909 3707</h6>
-                        </div>
-                    </div>
-                    <div class="col-lg-5 px-5 text-end">
-					<a href="https://forms.gle/N7LtqnF7r7RMRC8r5" target="_blank">Book the Clubhouse</a>
-                        <div class="d-inline-flex align-items-center py-2">
-                            <a class="btn btn-light btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465"  target="_blank">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a class="btn btn-light btn-square rounded-circle me-2" href="https://www.instagram.com/helderbergpirates/"  target="_blank">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-
-                        </div>
-                    </div>
-                </div>
-                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0 px-lg-5">
+            <div class="col-lg-9 d-flex align-items-center">
+                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0 px-lg-5 w-100">
                     <a href="index.php" class="navbar-brand d-block d-lg-none">
-                        <h1 class="m-0 display-4 text-primary text-uppercase">Helderberg Pirates</h1>
+                        <img src="img/Logo.png" height="56" alt="Helderberg Pirates">
                     </a>
                     <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
@@ -141,18 +114,14 @@
                             <a href="index.php" class="nav-item nav-link">Home</a>
                             <a href="about.html" class="nav-item nav-link">About</a>
 							<!--<a href="shop.html" class="nav-item nav-link">Shop</a>-->
-                            <div class="nav-item dropdown">
-                                <a href="schedule.php" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown ">Schedule</a>
-                                <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="schedule.php" class="dropdown-item">U10</a>
-                                    <a href="schedule.php" class="dropdown-item">U12</a>
-                                    <a href="schedule.php" class="dropdown-item">U15</a>
-									<a href="schedule.php" class="dropdown-item">Seniors</a>
-									<a href="schedule.php" class="dropdown-item">Masters</a>
-                                </div>
-                            </div>
+                            <a href="schedule.php" class="nav-item nav-link active">Schedule</a>
 							<a href="gallery.php" class="nav-item nav-link">Gallery</a>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <a href="https://forms.gle/N7LtqnF7r7RMRC8r5" class="nav-item nav-link" target="_blank">Book the Clubhouse<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
+                        </div>
+                        <div class="d-flex gap-2 py-3 py-lg-0">
+                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
                         </div>
                       <!--<a href="" class="btn btn-primary py-md-2 px-md-2 d-none d-lg-block">Become a Pirate</a>-->
                     </div>
@@ -191,35 +160,35 @@
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:00PM</h6>
-                                <h5 class="text-uppercase text-primary">U/10 Training</h5>
+                                <h5 class="text-uppercase text-primary2">U/10 Training</h5>
 								<p class="text-uppercase text-secondary mb-0">Coach Jacques</p>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary">U/12 Training</h5>
+                                <h5 class="text-uppercase text-primary2">U/12 Training</h5>
                                 <p class="text-uppercase text-secondary mb-0">Coach Josh</p>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary">U/15 Training</h5>
+                                <h5 class="text-uppercase text-primary2">U/15 Training</h5>
                                 <p class="text-uppercase text-secondary mb-0">Coach Ian</p>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary">Senior Side Training</h5>
+                                <h5 class="text-uppercase text-primary2">Senior Side Training</h5>
                                 <p class="text-uppercase text-secondary mb-0">Coach Devan</p>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary">Masters Training</h5>
+                                <h5 class="text-uppercase text-primary2">Masters Training</h5>
                                 <p class="text-uppercase text-secondary mb-0">Coach Peter</p>
                             </div>
                         </div>
@@ -230,35 +199,35 @@
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:00PM</h6>
-                                <h5 class="text-uppercase text-primary">U/10 Training</h5>
+                                <h5 class="text-uppercase text-primary2">U/10 Training</h5>
 								<p class="text-uppercase text-secondary mb-0">Coach Jacques</p>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary">U/12 Training</h5>
+                                <h5 class="text-uppercase text-primary2">U/12 Training</h5>
                                 <p class="text-uppercase text-secondary mb-0">Coach Josh</p>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary">U/15 Training</h5>
+                                <h5 class="text-uppercase text-primary2">U/15 Training</h5>
                                 <p class="text-uppercase text-secondary mb-0">Coach Ian</p>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary">Senior Side Training</h5>
+                                <h5 class="text-uppercase text-primary2">Senior Side Training</h5>
                                 <p class="text-uppercase text-secondary mb-0">Coach Devan</p>
                             </div>
                         </div>
                         <div class="col-lg-3 col-md-4 col-sm-6">
                             <div class="bg-dark rounded text-center py-5 px-3">
                                 <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary">Masters Training</h5>
+                                <h5 class="text-uppercase text-primary2">Masters Training</h5>
                                 <p class="text-uppercase text-secondary mb-0">Coach Peter</p>
                             </div>
                         </div>
@@ -292,17 +261,17 @@
                         </div>
                         <div class="d-flex mb-2">
                             <i class="bi bi-envelope-open text-primary me-2"></i>
-                            <p class="mb-0">info@helderbergpirates.co.za</p>
+                            <p class="mb-0"><a href="mailto:info@helderbergpirates.co.za" class="text-reset">info@helderbergpirates.co.za</a></p>
                         </div>
                         <div class="d-flex mb-2">
                             <i class="bi bi-telephone text-primary me-2"></i>
-                            <p class="mb-0">076 909 3707</p>
+                            <p class="mb-0"><a href="tel:+27769093707" class="text-reset">076 909 3707</a></p>
                         </div>
                       <div class="d-flex mt-4">
                            
-                            <a class="btn btn-primary btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465"  target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465"  target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
                           
-                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/"  target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/"  target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-12 pt-0 pt-lg-5 mb-5">
@@ -336,16 +305,16 @@
         <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <a href = "https://www.jdwglass.co.za/"> <img class="w-100" src="img/jdw.jpg" alt="Image"></a>
+                    <a href="https://www.jdwglass.co.za/" target="_blank" aria-label="JDW Glass (opens in a new tab)"> <img class="w-100" src="img/jdw.jpg" alt="Image"></a>
                 </div>
                 <div class="carousel-item">
-                   <a href = "https://purecoatings.co.za/"> <img class="w-100" src="img/pure_coating.png" alt="Image"></a>
+                   <a href="https://purecoatings.co.za/" target="_blank" aria-label="Pure Coatings (opens in a new tab)"> <img class="w-100" src="img/pure_coating.png" alt="Image"></a>
                 </div>
 				<div class="carousel-item">
-                    <a href = "https://www.sundancepools.co.za/"><img class="w-80" src="img/sundance.jpg" alt="Image"></a>
+                    <a href="https://www.sundancepools.co.za/" target="_blank" aria-label="Sundance Pools (opens in a new tab)"><img class="w-80" src="img/sundance.jpg" alt="Image"></a>
                 </div>
 				<div class="carousel-item">
-                    <a href = "https://www.archo.co.za/"><img class="w-50" src="img/archo_black_logo.png" alt="Image"></a>
+                    <a href="https://www.archo.co.za/" target="_blank" aria-label="Archo (opens in a new tab)"><img class="w-50" src="img/archo_black_logo.png" alt="Image"></a>
                 </div>
             </div>
         </div>
@@ -396,7 +365,7 @@
         const feeds = await res.json();
 
        const calendar = new FullCalendar.Calendar(calendarEl, {
-  initialView: 'dayGridMonth',
+  initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth', // list view fits phones better
      displayEventEnd: false,
    timeZone: 'UTC', // ✅ Force GMT/UTC timezone
   headerToolbar: {

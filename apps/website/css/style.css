@@ -43,6 +43,15 @@ h6,
     color: #FFFFFF;
 }
 
+/* Arrow after links that open another site: lifted to the top of the capitals, thickened to match Oswald */
+.external-icon {
+    margin-left: .3em;
+    font-size: .78em;
+    position: relative;
+    top: -.2em;
+    -webkit-text-stroke: .6px currentColor;
+}
+
 .btn-square {
     width: 38px;
     height: 38px;
@@ -61,9 +70,11 @@ h6,
 .btn-square,
 .btn-sm-square,
 .btn-lg-square {
-    padding-left: 0;
-    padding-right: 0;
-    text-align: center;
+    /* Centre the icon both ways; text-align only centred it horizontally */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
 }
 
 .back-to-top {
@@ -83,6 +94,14 @@ h6,
     font-size: 17px;
     text-transform: uppercase;
     outline: none;
+    white-space: nowrap;
+}
+
+/* Narrow desktops: tighter spacing keeps the whole menu on one line */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .navbar-dark .navbar-nav .nav-link {
+        margin-right: 18px;
+    }
 }
 
 .navbar-dark .navbar-nav .nav-link:hover,
@@ -149,7 +168,8 @@ h6,
     transition: .5s;
 }
 
-.team-item:hover img {
+.team-item:hover img,
+.team-item:focus img {
     transform: scale(1.2);
 }
 
@@ -167,12 +187,36 @@ h6,
     opacity: 0;
 }
 
-.team-item:hover .team-overlay {
+.team-item:hover .team-overlay,
+.team-item:focus .team-overlay {
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     opacity: 1;
+}
+
+.team-item {
+    cursor: pointer;
+}
+
+/* Touch screens can't hover, so say that the coach cards open on tap */
+@media (hover: none) {
+    .team-item::after {
+        content: "Tap for bio";
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        background: rgba(34, 36, 41, .8);
+        color: #FFFFFF;
+        font-size: 13px;
+    }
+
+    .team-item:focus::after {
+        display: none;
+    }
 }
 
 .testimonial-carousel .owl-nav {
@@ -221,3 +265,9 @@ h6,
     }
 }
 
+/* Phones: the template's 3rem padding (p-5) leaves too little room for text */
+@media (max-width: 575.98px) {
+    .p-5 {
+        padding: 1.5rem !important;
+    }
+}

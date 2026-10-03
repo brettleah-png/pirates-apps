@@ -65,9 +65,6 @@
 
     /* ✅ Mobile responsiveness */
     @media (max-width: 600px) {
-      body {
-        padding: 10px;
-      }
       #legend {
         flex-direction: column;
         gap: 6px;
@@ -105,34 +102,10 @@
 					<!--<h1 class="m-0 display-4 text-primary text-uppercase"><img src="img/Logo.png" height=100px> Helderberg<br>Pirates</h1>-->
                 </a>
             </div>
-            <div class="col-lg-9">
-                <div class="row gx-0 bg-secondary d-none d-lg-flex">
-                    <div class="col-lg-7 px-5 text-start">
-                        <div class="h-100 d-inline-flex align-items-center py-2 me-4">
-                            <i class="fa fa-envelope text-primary me-2"></i>
-                            <h6 class="mb-0">info@helderbergpirates.co.za</h6>
-                        </div>
-                        <div class="h-100 d-inline-flex align-items-center py-2">
-                            <i class="fa fa-phone-alt text-primary me-2"></i>
-                            <h6 class="mb-0">076 909 3707</h6>
-                        </div>
-                    </div>
-                    <div class="col-lg-5 px-5 text-end">
-					<a href="https://forms.gle/N7LtqnF7r7RMRC8r5" target="_blank">Book the Clubhouse</a>
-                        <div class="d-inline-flex align-items-center py-2">
-                            <a class="btn btn-light btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
-                            <a class="btn btn-light btn-square rounded-circle me-2" href="https://www.instagram.com/helderbergpirates/" target="_blank">
-                                <i class="fab fa-instagram"></i>
-                            </a>
-
-                        </div>
-                    </div>
-                </div>
-                <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0 px-lg-5">
+            <div class="col-lg-9 d-flex align-items-center">
+                <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0 px-lg-5 w-100">
                     <a href="index.php" class="navbar-brand d-block d-lg-none">
-                        <h1 class="m-0 display-4 text-primary text-uppercase">Helderberg Pirates</h1>
+                        <img src="img/Logo.png" height="56" alt="Helderberg Pirates">
                     </a>
                     <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
@@ -142,18 +115,14 @@
                             <a href="index.php" class="nav-item nav-link active">Home</a>
                             <a href="about.html" class="nav-item nav-link">About</a>
 							<!--<a href="shop.html" class="nav-item nav-link">Shop</a>-->
-                            <div class="nav-item dropdown">
-                                <a href="schedule.php" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Schedule</a>
-                                <div class="dropdown-menu rounded-0 m-0">
-                                    <a href="schedule.php" class="dropdown-item">U10</a>
-                                    <a href="schedule.php" class="dropdown-item">U12</a>
-                                    <a href="schedule.php" class="dropdown-item">U15</a>
-									<a href="schedule.php" class="dropdown-item">Seniors</a>
-									<a href="schedule.php" class="dropdown-item">Masters</a>
-                                </div>
-                            </div>
+                            <a href="schedule.php" class="nav-item nav-link">Schedule</a>
 							<a href="gallery.php" class="nav-item nav-link">Gallery</a>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
+                            <a href="https://forms.gle/N7LtqnF7r7RMRC8r5" class="nav-item nav-link" target="_blank">Book the Clubhouse<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
+                        </div>
+                        <div class="d-flex gap-2 py-3 py-lg-0">
+                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
                         </div>
                       <!--<a href="" class="btn btn-primary py-md-2 px-md-2 d-none d-lg-block">Become a Pirate</a>-->
                     </div>
@@ -173,8 +142,8 @@
                     <div class="carousel-caption d-flex flex-column align-items-center justify-content-center">
                         <div class="p-3" style="max-width: 900px;">
                             <h5 class="text-white text-uppercase">Helderberg Pirates Baseball Club</h5>
-                            <h1 class="display-2 text-white text-uppercase mb-md-4">Pirates R.O.C.K.S! </h1><h5 class="text-white text-uppercase"><br>Respect, 0penness, Community,Kindness and Support.<br> These are the words that every Pirate lives by.</h5>
-                            <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary py-md-3 px-md-5 me-3"  target="_blank">Become A Pirate</a>
+                            <h1 class="display-2 text-white text-uppercase mb-md-4">Pirates R.O.C.K.S! </h1><h5 class="text-white text-uppercase"><br>Respect, Openness, Community, Kindness and Support.<br> These are the words that every Pirate lives by.</h5>
+                            <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary py-md-3 px-md-5 me-3" target="_blank">Become A Pirate<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
                             <a href="contact.html" class="btn btn-light py-md-3 px-md-5">Contact Us</a>
                         </div>
                     </div>
@@ -264,7 +233,7 @@
             </div>
             <div class="col-lg-12 col-md-6 text-center">
                 <h1 class="text-uppercase text-light mb-4">Register today!</h1>
-                <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary py-3 px-5" target = "_blank">Become A Pirate</a>
+                <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary py-3 px-5" target="_blank">Become A Pirate<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
             </div>
         </div>
     </div>
@@ -382,7 +351,7 @@
             </div>
         </div>
     </div>
-	<a href="schedule.php" class="btn btn-primary py-md-3 px-md-5 d-none d-lg-block">See Full Schedule</a>
+	<a href="schedule.php" class="btn btn-primary py-3 px-md-5 d-block">See Full Schedule</a>
     <!-- Class Timetable Start -->
 
     <!-- Team Start -->
@@ -393,11 +362,11 @@
         </div>
         <div class="row g-5">
             <div class="col-lg-3 col-md-6">
-                <div class="team-item position-relative">
+                <div class="team-item position-relative" tabindex="0">
                     <div class="position-relative overflow-hidden rounded">
                         <img class="img-fluid w-100" src="img/brett.png" alt="">
                         <div class="team-overlay">
-                            <<div class="d-flex align-items-center justify-content-start">
+                            <div class="d-flex align-items-center justify-content-start">
                                 <h6 class="text-uppercase text-light mb-3">Coach Brett believes in our motto of PIRATES ROCKS and uses this philosophy everyday in training.</h6>
                             </div>
                         </div>
@@ -409,7 +378,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="team-item position-relative">
+                <div class="team-item position-relative" tabindex="0">
                     <div class="position-relative overflow-hidden rounded">
                         <img class="img-fluid w-100" src="img/josh.png" alt="">
                         <div class="team-overlay">
@@ -425,7 +394,7 @@
                 </div>
             </div>
             <div class="col-lg-3 col-md-6">
-                <div class="team-item position-relative">
+                <div class="team-item position-relative" tabindex="0">
                     <div class="position-relative overflow-hidden rounded">
                         <img class="img-fluid w-100" src="img/jacques.png" alt="">
                         <div class="team-overlay">
@@ -441,7 +410,7 @@
                 </div>
             </div>
 			 <div class="col-lg-3 col-md-6">
-                <div class="team-item position-relative">
+                <div class="team-item position-relative" tabindex="0">
                     <div class="position-relative overflow-hidden rounded">
                         <img class="img-fluid w-100" src="img/justin.png" alt="">
                         <div class="team-overlay">
@@ -457,7 +426,7 @@
                 </div>
             </div>
 			<div class="col-lg-3 col-md-6">
-                <div class="team-item position-relative">
+                <div class="team-item position-relative" tabindex="0">
                     <div class="position-relative overflow-hidden rounded">
                         <img class="img-fluid w-100" src="img/devan.png" alt="">
                         <div class="team-overlay">
@@ -487,7 +456,7 @@
             </div>
             <div class="col-lg-6 bg-dark p-5">
                 <div class="mb-5">
-                    <h5 class="text-primary text-uppercase">Want to watch our games?</h5>
+                    <h5 class="text-primary2 text-uppercase">Want to watch our games?</h5>
                     <h1 class="display-3 text-uppercase text-light mb-0">Join us at Radloff Park!</h1>
                 </div>
                 <div class="owl-carousel testimonial-carousel">
@@ -517,17 +486,17 @@
                         </div>
                         <div class="d-flex mb-2">
                             <i class="bi bi-envelope-open text-primary me-2"></i>
-                            <p class="mb-0">info@helderbergpirates.co.za</p>
+                            <p class="mb-0"><a href="mailto:info@helderbergpirates.co.za" class="text-reset">info@helderbergpirates.co.za</a></p>
                         </div>
                         <div class="d-flex mb-2">
                             <i class="bi bi-telephone text-primary me-2"></i>
-                            <p class="mb-0">076 909 3707</p>
+                            <p class="mb-0"><a href="tel:+27769093707" class="text-reset">076 909 3707</a></p>
                         </div>
                         <div class="d-flex mt-4">
                            
-                            <a class="btn btn-primary btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
                           
-                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank"><i class="fab fa-instagram"></i></a>
+                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
                      <div class="col-lg-4 col-md-12 pt-0 pt-lg-5 mb-5">
@@ -561,16 +530,16 @@
         <div id="header-carousel" class="carousel slide" data-bs-ride="carousel">
             <div class="carousel-inner">
                 <div class="carousel-item active">
-                    <a href = "https://www.jdwglass.co.za/"> <img class="w-100" src="img/jdw.jpg" alt="Image"></a>
+                    <a href="https://www.jdwglass.co.za/" target="_blank" aria-label="JDW Glass (opens in a new tab)"> <img class="w-100" src="img/jdw.jpg" alt="Image"></a>
                 </div>
                 <div class="carousel-item">
-                   <a href = "https://purecoatings.co.za/"> <img class="w-100" src="img/pure_coating.png" alt="Image"></a>
+                   <a href="https://purecoatings.co.za/" target="_blank" aria-label="Pure Coatings (opens in a new tab)"> <img class="w-100" src="img/pure_coating.png" alt="Image"></a>
                 </div>
 				<div class="carousel-item">
-                    <a href = "https://www.sundancepools.co.za/"><img class="w-80" src="img/sundance.jpg" alt="Image"></a>
+                    <a href="https://www.sundancepools.co.za/" target="_blank" aria-label="Sundance Pools (opens in a new tab)"><img class="w-80" src="img/sundance.jpg" alt="Image"></a>
                 </div>
 				<div class="carousel-item">
-                    <a href = "https://www.archo.co.za/"><img class="w-50" src="img/archo_black_logo.png" alt="Image"></a>
+                    <a href="https://www.archo.co.za/" target="_blank" aria-label="Archo (opens in a new tab)"><img class="w-50" src="img/archo_black_logo.png" alt="Image"></a>
                 </div>
             </div>
         </div>
