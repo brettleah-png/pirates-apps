@@ -165,8 +165,8 @@
     <!-- About Start -->
     <div class="container-fluid p-5">
         <div class="row gx-5">
-            <div class="col-lg-5 mb-5 mb-lg-0" style="min-height: 500px;">
-                <div class="position-relative h-100">
+            <div class="col-lg-5 mb-5 mb-lg-0 d-flex flex-column" style="min-height: 500px;">
+                <div class="position-relative flex-grow-1">
                     <img class="position-absolute w-100 h-100 rounded" src="img/about.jpg" style="object-fit: cover;">
                 </div>
             </div>
@@ -446,8 +446,8 @@
     <!-- Testimonial Start-->
     <div class="container-fluid p-0 my-5">
         <div class="row g-0">
-            <div class="col-lg-6" style="min-height: 500px;">
-                <div class="position-relative h-100">
+            <div class="col-lg-6 d-flex flex-column" style="min-height: 500px;">
+                <div class="position-relative flex-grow-1">
                     <img class="position-absolute w-100 h-100" src="img/testimonial.jpg" style="object-fit: cover;">
                 </div>
             </div>
