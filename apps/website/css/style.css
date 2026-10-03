@@ -185,6 +185,8 @@ h6,
     background: rgba(34, 36, 41, .9);
     transition: .5s;
     opacity: 0;
+    padding: 24px;
+    overflow-y: auto; /* a long bio scrolls instead of being cut off */
 }
 
 .team-item:hover .team-overlay,
@@ -194,6 +196,37 @@ h6,
     bottom: 0;
     left: 0;
     opacity: 1;
+}
+
+/* The open bio needs the whole card, so the name bar fades out */
+.team-item .team-name {
+    transition: .5s;
+}
+
+.team-item:hover .team-name,
+.team-item:focus .team-name {
+    opacity: 0;
+}
+
+/* Desktops show five small cards in a row, so the bio gets less padding and smaller text */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .team-item .team-overlay {
+        padding: 12px;
+    }
+
+    .team-item .team-overlay h6 {
+        font-size: 13px;
+    }
+}
+
+@media (min-width: 1200px) and (max-width: 1399.98px) {
+    .team-item .team-overlay {
+        padding: 16px;
+    }
+
+    .team-item .team-overlay h6 {
+        font-size: 15px;
+    }
 }
 
 .team-item {

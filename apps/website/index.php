@@ -208,7 +208,7 @@
                 <div class="bg-light rounded text-center p-5">
                     <i class="display-1 text-primary"><img src="img/icons/diamond.png" width="100px"></i>
                     <h3 class="text-uppercase my-4">Teamwork</h3>
-                    <p>Baseball is the ultimate team sport—every pitch, every catch, every swing matters. Success comes not from one player, but from nine working together with trust, support, and shared determination. Teamwork turns individual effort into collective victory</p>
+                    <p>Baseball is the ultimate team sport—every pitch, every catch, every swing matters. Success comes not from one player, but from nine working together with trust, support, and shared determination. Teamwork turns individual effort into collective victory.</p>
                     <!--<a class="text-uppercase" href="">Read More <i class="bi bi-arrow-right"></i></a>-->
                 </div>
             </div>
@@ -364,11 +364,11 @@
                         <img class="img-fluid w-100" src="img/brett.png" alt="">
                         <div class="team-overlay">
                             <div class="d-flex align-items-center justify-content-start">
-                                <h6 class="text-uppercase text-light mb-3">Coach Brett believes in our motto of PIRATES ROCKS and uses this philosophy everyday in training.</h6>
+                                <h6 class="text-light mb-0">Coach Brett believes in our motto of PIRATES ROCKS and uses this philosophy everyday in training</h6>
                             </div>
                         </div>
                     </div>
-                    <div class="position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
+                    <div class="team-name position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
                         <h5 class="text-uppercase text-light">Coach Brett</h5>
                         <p class="text-uppercase text-secondary m-0">U/15 Head Coach</p>
                     </div>
@@ -380,11 +380,11 @@
                         <img class="img-fluid w-100" src="img/josh.png" alt="">
                         <div class="team-overlay">
                             <div class="d-flex align-items-center justify-content-start">
-                               <h6 class="text-uppercase text-light mb-3">Coach Josh hails from Detroit, USA where he played baseball throughout his youth, all the way up to the college level and brings with him a wealth of baseball knowledge.</h6>
+                               <h6 class="text-light mb-0">Coach Josh hails from Detroit, USA where he played baseball throughout his youth, all the way up to the college level and brings with him a wealth of baseball knowledge</h6>
                             </div>
                         </div>
                     </div>
-                    <div class="position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
+                    <div class="team-name position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
                         <h5 class="text-uppercase text-light">Coach Josh</h5>
                         <p class="text-uppercase text-secondary m-0">U/12 Head coach</p>
                     </div>
@@ -396,11 +396,11 @@
                         <img class="img-fluid w-100" src="img/jacques.png" alt="">
                         <div class="team-overlay">
                             <div class="d-flex align-items-center justify-content-start">
-                              <h6 class="text-uppercase text-light mb-3">Coach Jacques has the hardest job of them all, coaching the youngest of our players, ranging from 8 to 10 it can be like hearding cats, but he wouldnt change it for anything as developing our young players into future stars is his passion.</h6>
+                              <h6 class="text-light mb-0">Coach Jacques has the hardest job of them all, coaching the youngest of our players, ranging from 8 to 10 it can be like herding cats, but he wouldn't change it for anything as developing our young players into future stars is his passion</h6>
                             </div>
                         </div>
                     </div>
-                    <div class="position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
+                    <div class="team-name position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
                         <h5 class="text-uppercase text-light">Coach Jacques</h5>
                         <p class="text-uppercase text-secondary m-0">U/10 Head Coach</p>
                     </div>
@@ -412,11 +412,11 @@
                         <img class="img-fluid w-100" src="img/justin.png" alt="">
                         <div class="team-overlay">
                             <div class="d-flex align-items-center justify-content-start">
-                              <h6 class="text-uppercase text-light mb-3">Coach Justin is one of the longest active Pirates, he started back when he himself was a junior, and now over 30 years later plays and coaches for our senior side	.</h6>
+                              <h6 class="text-light mb-0">Coach Justin is one of the longest active Pirates, he started back when he himself was a junior, and now over 30 years later plays and coaches for our senior side</h6>
                             </div>
                         </div>
                     </div>
-                    <div class="position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
+                    <div class="team-name position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
                         <h5 class="text-uppercase text-light">Coach Justin</h5>
                         <p class="text-uppercase text-secondary m-0">Seniors Head Coach</p>
                     </div>
@@ -428,11 +428,11 @@
                         <img class="img-fluid w-100" src="img/devan.png" alt="">
                         <div class="team-overlay">
                             <div class="d-flex align-items-center justify-content-start">
-                              <h6 class="text-uppercase text-light mb-3">Coach Devan is also there to assist with the seniors</h6>
+                              <h6 class="text-light mb-0">Coach Devan is also there to assist with the seniors</h6>
                             </div>
                         </div>
                     </div>
-                    <div class="position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
+                    <div class="team-name position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
                         <h5 class="text-uppercase text-light">Coach Devan</h5>
                         <p class="text-uppercase text-secondary m-0">Seniors Coach</p>
                     </div>
