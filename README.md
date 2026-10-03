@@ -10,6 +10,16 @@ Code for the Helderberg Pirates Baseball Club.
 | `docs/` | Club history documents and planning notes. Not deployed. |
 | `.github/workflows/` | GitHub Actions workflows. |
 
+## Development
+
+The repo is a [pnpm](https://pnpm.io) workspace: each folder in `apps/` that has a `package.json` is a package.
+
+Requirements: Node 22 (`nvm use` reads `.nvmrc`) and pnpm 10 (`corepack enable` installs the version in `package.json`).
+
+```sh
+pnpm install
+```
+
 ## Deploying the website
 
 `.github/workflows/deploy-website.yml` uploads `apps/website/` to `public_html/` over FTPS.
