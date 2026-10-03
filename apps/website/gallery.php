@@ -84,7 +84,7 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
                         </div>
                     </div>
                     <div class="col-lg-5 px-5 text-end">
-					<a href="https://forms.gle/RRqZorZAKZQTANLh9" target="_blank">Book the Clubhouse</a>
+					<a href="https://forms.gle/N7LtqnF7r7RMRC8r5" target="_blank">Book the Clubhouse</a>
                         <div class="d-inline-flex align-items-center py-2">
                             <a class="btn btn-light btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank">
                                 <i class="fab fa-facebook-f"></i>

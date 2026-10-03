@@ -118,7 +118,7 @@
                         </div>
                     </div>
                     <div class="col-lg-5 px-5 text-end">
-					<a href="https://forms.gle/RRqZorZAKZQTANLh9" target="_blank">Book the Clubhouse</a>
+					<a href="https://forms.gle/N7LtqnF7r7RMRC8r5" target="_blank">Book the Clubhouse</a>
                         <div class="d-inline-flex align-items-center py-2">
                             <a class="btn btn-light btn-square rounded-circle me-2" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank">
                                 <i class="fab fa-facebook-f"></i>
@@ -174,7 +174,7 @@
                         <div class="p-3" style="max-width: 900px;">
                             <h5 class="text-white text-uppercase">Helderberg Pirates Baseball Club</h5>
                             <h1 class="display-2 text-white text-uppercase mb-md-4">Pirates R.O.C.K.S! </h1><h5 class="text-white text-uppercase"><br>Respect, 0penness, Community,Kindness and Support.<br> These are the words that every Pirate lives by.</h5>
-                            <a href="https://forms.gle/RhgDEo3Kqg71NJ1R8" class="btn btn-primary py-md-3 px-md-5 me-3"  target="_blank">Become A Pirate</a>
+                            <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary py-md-3 px-md-5 me-3"  target="_blank">Become A Pirate</a>
                             <a href="contact.html" class="btn btn-light py-md-3 px-md-5">Contact Us</a>
                         </div>
                     </div>
@@ -264,7 +264,7 @@
             </div>
             <div class="col-lg-12 col-md-6 text-center">
                 <h1 class="text-uppercase text-light mb-4">Register today!</h1>
-                <a href="https://forms.gle/RhgDEo3Kqg71NJ1R8" class="btn btn-primary py-3 px-5" target = "_blank">Become A Pirate</a>
+                <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary py-3 px-5" target = "_blank">Become A Pirate</a>
             </div>
         </div>
     </div>
