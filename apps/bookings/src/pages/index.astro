@@ -1,8 +1,57 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import { PERMISSION_LABELS, type Permission } from "../lib/users";
+
+const { user } = Astro.locals;
+const permissions = Object.entries(PERMISSION_LABELS) as [Permission, string][];
 ---
 
 <Layout title="Bookings">
-  <h1>Clubhouse bookings</h1>
-  <p>Sign-in and the bookings list are coming next.</p>
+  <header class="top">
+    <h1>Clubhouse bookings</h1>
+    <form method="post" action="/logout">
+      <button type="submit">Sign out</button>
+    </form>
+  </header>
+
+  <main class="home">
+    <p>
+      Signed in as <strong>{user.name}</strong> ({user.email}).
+    </p>
+
+    <h2>What you can do</h2>
+    <ul class="permissions">
+      {permissions.map(([permission, label]) => (
+        <li>
+          {user.permissions[permission] ? "Yes" : "No"}: {label}
+        </li>
+      ))}
+    </ul>
+
+    <p>The bookings list comes next.</p>
+  </main>
 </Layout>
+
+<style>
+  .top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space);
+  }
+  .top h1 {
+    margin: 0;
+    font-size: 1.375rem;
+  }
+  .home {
+    display: grid;
+    gap: var(--space);
+  }
+  .home > * {
+    margin: 0;
+  }
+  .permissions {
+    padding-left: 1.25rem;
+  }
+</style>

@@ -27,12 +27,16 @@ pnpm preview        # serve that build locally
 
 pnpm dev:bookings   # bookings app dev server at http://localhost:4322
 pnpm build:bookings # bookings app build for Netlify (apps/bookings/dist/ and .netlify/)
+pnpm test:bookings  # bookings app unit tests
+pnpm check:bookings # bookings app TypeScript check
 
 pnpm format         # format the repo with Prettier
 pnpm format:check   # check formatting without changing files
 ```
 
 `dev`, `build` and `preview` at the root forward to `apps/website-v2`. To run any other workspace script from the root, use `pnpm --filter <package> <script>`; inside an app's folder, `pnpm <script>` runs that app's own scripts.
+
+The bookings app needs Google settings to run: copy `apps/bookings/.env.example` to `apps/bookings/.env` and fill it in (the file explains where each value comes from). Use the test copy of the spreadsheet, which holds made-up data, never the real one. To sign in locally, your Google account has to be a test user in the Google Cloud project and have a row in the spreadsheet's `Users` tab.
 
 The old site (`apps/website`) has no build step. `pnpm dev:website` serves it at http://localhost:8000 with PHP's built-in server, so PHP must be installed (`brew install php` on macOS). The contact form can't send email locally.
 

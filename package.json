@@ -12,6 +12,8 @@
     "build": "pnpm --filter website-v2 build",
     "preview": "pnpm --filter website-v2 preview",
     "build:bookings": "pnpm --filter bookings build",
+    "test:bookings": "pnpm --filter bookings test",
+    "check:bookings": "pnpm --filter bookings check",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },

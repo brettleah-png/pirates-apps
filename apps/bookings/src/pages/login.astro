@@ -1,0 +1,73 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { safeNextPath } from "../lib/paths";
+
+const next = safeNextPath(Astro.url.searchParams.get("next"));
+
+// Already signed in? Go straight in
+if (await Astro.session?.get("user")) {
+  return Astro.redirect(next);
+}
+
+const ERRORS: Record<string, string> = {
+  "sign-in-failed": "Signing in didn't work. Try again.",
+  "users-tab":
+    "Google signed you in, but the app couldn't read its list of users. Ask an admin to check the spreadsheet's Users tab.",
+};
+const error = ERRORS[Astro.url.searchParams.get("error") ?? ""];
+const signInUrl = `/auth/google?next=${encodeURIComponent(next)}`;
+---
+
+<Layout title="Sign in">
+  <main class="sign-in">
+    <img src="/icons/icon-192.png" alt="" width="96" height="96" />
+    <h1>Clubhouse bookings</h1>
+    <p>For the Helderberg Pirates committee.</p>
+    {error && (
+      <p class="error" role="alert">
+        {error}
+      </p>
+    )}
+    <a class="button" href={signInUrl}>
+      Sign in with Google
+    </a>
+  </main>
+</Layout>
+
+<style>
+  .sign-in {
+    display: grid;
+    justify-items: center;
+    gap: var(--space);
+    padding-block: calc(var(--space) * 3);
+    text-align: center;
+  }
+  h1,
+  p {
+    margin: 0;
+  }
+  .error {
+    padding: 0.75rem var(--space);
+    border-radius: 6px;
+    background: #fdecea;
+    color: #8a1c13;
+  }
+  .button {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    min-height: var(--tap-size);
+    border-radius: 6px;
+    background: var(--color-primary);
+    color: #ffffff;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  @media (min-width: 48rem) {
+    .button {
+      width: auto;
+      padding-inline: calc(var(--space) * 2);
+    }
+  }
+</style>

@@ -2,7 +2,7 @@
 
 _Written 4 Oct 2026. A plan for `apps/bookings`: a private app where the committee manages clubhouse bookings that arrive through the club's Google Form._
 
-**Status:** `apps/bookings` is scaffolded: Astro in server mode with the Netlify adapter, one placeholder page, the files that make it installable on phones, and the base mobile-first styles. Nothing is deployed and no Google access is set up yet. The setup questions are answered (see [Decided](#decided)).
+**Status:** the app runs on Netlify at `bookings.helderbergpirates.co.za`, and the Google Cloud project, service account and test copy of the spreadsheet are set up. Phase 1 is done except the phone tests. Sign-in (phase 2) is built and waiting to be tested with a real Google account.
 
 ## What it does
 
@@ -50,7 +50,7 @@ The form's tab stays as Google Forms writes it. The app adds its own tabs:
 
 | Tab                | Written by                                                | Contents                                                                                                                                                                                 |
 | ------------------ | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Form Responses 1` | Google Forms, and the app when booking details are edited | One row per booking request                                                                                                                                                              |
+| `Form responses 1` | Google Forms, and the app when booking details are edited | One row per booking request                                                                                                                                                              |
 | `Tracking`         | The app                                                   | One row per booking: booking key, booking status, payment status, invoice number, damage deposit (required, status, amount kept back, what the damage was), who last changed it and when |
 | `Notes`            | The app, which only adds rows                             | Booking key, date, author's email, text                                                                                                                                                  |
 | `Users`            | The sheet's owners, by hand                               | Email, plus one checkbox per permission                                                                                                                                                  |
@@ -85,7 +85,9 @@ The form's tab stays as Google Forms writes it. The app adds its own tabs:
 | Notes and status     | Adding notes and changing the booking status                                  |
 | Payments             | Changing the payment status, the invoice number and the damage deposit        |
 
+- **The `Users` tab** has a header row, then one row per person: `Email | VIEW_BOOKINGS | EDIT_BOOKING_DETAILS | NOTES_AND_STATUS | PAYMENTS`, with a ticked checkbox or "Yes" in each permission column the person has. Anything else, including "No" or a blank cell, means no. The permission headers are in capitals to show they're fixed names the app looks for, not labels to reword. The app needs those exact headers (upper or lower case), in any order. The app's pages show friendlier names, such as "View bookings".
 - Every permission includes viewing.
+- **Permissions are re-read every 5 minutes**, so changes in the `Users` tab take effect without signing out. People without access are re-checked on every visit, so they get in as soon as an admin adds them.
 - **ID numbers are only shown to people who can edit booking details.** An SA ID number gives away a person's date of birth and gender, so it's the most sensitive field in the sheet under POPIA.
 - After signing in, people who aren't in `Users`, or have no boxes ticked, see a page that tells them to ask an admin.
 - **Checkboxes instead of roles:** with a handful of users, ticking boxes per person is easier to follow than a table of roles. If the list grows, roles can come later.
@@ -93,7 +95,8 @@ The form's tab stays as Google Forms writes it. The app adds its own tabs:
 
 ## Google accounts
 
-- **Users sign in with personal Gmail accounts**, so the OAuth consent screen is "External" and the `Users` tab decides who gets in. Because the app only asks for name and email, the consent screen can be published without a Google review. In "Testing" mode only listed test users could sign in.
+- **Users sign in with personal Gmail accounts**, so the OAuth consent screen is "External" and the `Users` tab decides what each person can do.
+- **The consent screen stays in "Testing" for now**, because publishing it needs a privacy policy page. In Testing, only accounts listed under Google Auth Platform → Audience → Test users can sign in (up to 100), and anyone else sees "Access blocked". So each person has to be added in two places: the test users and the `Users` tab. A privacy policy page would let the consent screen be published, after which only the `Users` tab matters. The app only asks for name and email, so publishing needs no Google review.
 - **The Google Cloud project is owned by `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as a second owner.** Both have to be Google accounts. If `treasury@` is only a mailbox at Domains.co.za, create a Google account for that address first (no Gmail needed).
 - **The sheet is owned by `lian.pirates@gmail.com` today and may move.** Transferring ownership between Gmail accounts keeps the sharing, so the app keeps working. If the sheet is copied instead, the app needs the copy's ID and the copy has to be shared with the service account.
 
@@ -102,7 +105,7 @@ The form's tab stays as Google Forms writes it. The app adds its own tabs:
 - **Installing:** on Android, Chrome offers "Install app", from its menu or a prompt. iPhones have no prompt: open the app in Safari and tap Share → Add to Home Screen. The app shows iPhone users these steps until they've installed it.
 - **What installing adds:** an icon on the home screen, and the app opens full screen without the browser's address bar.
 - **No bookings offline, on purpose.** The service worker stores only a "You're offline" page. Bookings hold personal details and change often. Storing them on phones would mean out-of-date statuses, and personal data left on lost or shared phones. Every page comes from the server.
-- **Signing in on iPhone:** an installed iPhone app keeps its cookies separate from Safari, so people sign in once more inside the app. Sessions should last long enough (e.g. 30 days) that this is rare.
+- **Signing in on iPhone:** an installed iPhone app keeps its cookies separate from Safari, so people sign in once more inside the app. Sessions last 30 days, and the session cookie has the same lifetime, so closing the app doesn't sign people out.
 - **Push notifications** (e.g. "new booking request") are possible later. iPhones support them only in installed apps (iOS 16.4 and later). Not planned yet.
 - **Files:** `public/manifest.webmanifest`, `public/icons/`, `public/sw.js` and `src/pages/offline.astro`. The icons are generated from `apps/website/img/Logo.png`.
 
@@ -124,29 +127,26 @@ Each phase is one or more pull requests.
 - `pnpm dev:bookings` (port 4322, so it can run next to website-v2) and `pnpm build:bookings` at the root.
 - The manifest, icons, service worker and offline page, and the base mobile-first styles.
 
-### 1. Prove the hosting
+### 1. Prove the hosting (done, except the phone tests)
 
-Deploy the placeholder page to Netlify before building features:
-
-- Create a Netlify account under `helderbergpirates@gmail.com`, not a personal account.
-- Import this GitHub repo and allow Netlify's GitHub app to read it. Leave the base directory as the repo root and set the package directory to `apps/bookings`.
-- Add `bookings.helderbergpirates.co.za` as the site's domain: a CNAME record for `bookings` pointing at the site's `….netlify.app` address, in Domains.co.za's DNS (cPanel → Zone Editor). Netlify then issues the HTTPS certificate.
-- Check that the app installs on an Android phone and an iPhone, and that the offline page shows in airplane mode.
+- A Netlify account under `helderbergpirates@gmail.com`, deploying this repo with the package directory `apps/bookings`.
+- `bookings.helderbergpirates.co.za` points at Netlify with a CNAME record in the **Domains.co.za client area's DNS settings**. That's the domain's live DNS. cPanel's Zone Editor only holds an unused copy with the email record, so records added there do nothing.
+- Still to do: check that the app installs on an Android phone and an iPhone, and that the offline page shows in airplane mode.
 
 Netlify deploys `master` to the live site and builds a preview for each pull request. Previews can't sign in, because Google only accepts sign-in from listed addresses, but they're fine for checking pages.
 
 ### 2. Google setup and sign-in
 
-- A Google Cloud project owned by `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as a second owner.
-- An "External" OAuth consent screen, published, and an OAuth web client with redirect URLs for localhost and the live subdomain.
-- A service account with a JSON key, shared as Editor on the development copy of the spreadsheet.
-- Sign-in with Arctic, sessions, middleware that sends signed-out visitors to sign in, and the `Users` lookup.
-- Secrets declared in Astro's `astro:env` schema. Locally they go in `apps/bookings/.env`, which git ignores. On Netlify they go in the site's environment variables. They're never committed or pasted into chat.
+- Set up: a Google Cloud project owned by `helderbergpirates@gmail.com` with `treasury@helderbergpirates.co.za` as a second owner, an "External" consent screen in Testing with test users, an OAuth web client returning to `/auth/callback` on localhost and the live subdomain, and a service account shared as Editor on the test copy of the spreadsheet.
+- Built: sign-in with Arctic (`/auth/google`, `/auth/callback`), 30-day sessions, sign-out as a form post (`/logout`), middleware that sends signed-out visitors to `/login` and remembers where they were going, the `Users` lookup, and a "No access yet" page.
+- The five settings are declared in Astro's `astro:env` schema and listed in `apps/bookings/.env.example`. Locally they go in `apps/bookings/.env`, which git ignores. On Netlify they go in the project's environment variables. They're never committed or pasted into chat.
+- `pnpm test:bookings` covers reading the `Users` tab and the sign-in redirects. `pnpm check:bookings` type-checks the TypeScript. (`astro check` is broken with this setup's dependencies and is being deprecated, so the check runs `tsc` directly.)
 - **Done when** sign-in works inside the installed app on an iPhone and on an Android phone, not just in a browser.
 
 ### 3. Read bookings
 
 - Map each row to a typed `Booking`, finding columns by header. Build the list page (cards, upcoming bookings first, with filters) and the detail page.
+- The responses tab is called `Form responses 1` (lowercase r), in both the real sheet and the test copy.
 - Show which dates are taken.
 - Show ID numbers only to people who can edit booking details.
 - Show iPhone users how to install the app.
@@ -167,19 +167,25 @@ Netlify deploys `master` to the live site and builds a preview for each pull req
 
 ## Decided
 
-| Decision                          | Answer                                                                                 |
-| --------------------------------- | -------------------------------------------------------------------------------------- |
-| Hosting                           | Netlify. The cPanel plan has no Node.js support.                                       |
-| Who can sign in                   | Personal Gmail accounts listed in `Users` ("External" consent screen)                  |
-| Google Cloud project owner        | `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as second owner |
-| Booking key                       | Timestamp plus email                                                                   |
-| "Allow response editing"          | Off                                                                                    |
-| Statuses                          | See [Statuses](#statuses)                                                              |
-| When a booking holds its date     | Deposit Paid or Full Payment Received, unless Cancelled                                |
-| ID numbers                        | The form keeps asking. Only people who can edit booking details see them.              |
-| Invoice number and damage deposit | Part of the payments permission                                                        |
-| Refunds after a cancellation      | Usually not, but the payment status has a Refunded option for when it happens          |
-| App name and colour on phones     | "Bookings" under the icon, and the website's orange in Android's title bar             |
+| Decision                          | Answer                                                                                                                    |
+| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
+| Hosting                           | Netlify. The cPanel plan has no Node.js support.                                                                          |
+| Who can sign in                   | Personal Gmail accounts that are test users in Google Cloud and listed in `Users` ("External" consent screen, in Testing) |
+| Google Cloud project owner        | `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as second owner                                    |
+| Booking key                       | Timestamp plus email                                                                                                      |
+| "Allow response editing"          | Off                                                                                                                       |
+| Statuses                          | See [Statuses](#statuses)                                                                                                 |
+| When a booking holds its date     | Deposit Paid or Full Payment Received, unless Cancelled                                                                   |
+| ID numbers                        | The form keeps asking. Only people who can edit booking details see them.                                                 |
+| Invoice number and damage deposit | Part of the payments permission                                                                                           |
+| Refunds after a cancellation      | Usually not, but the payment status has a Refunded option for when it happens                                             |
+| App name and colour on phones     | "Bookings" under the icon, and the website's orange in Android's title bar                                                |
+
+## Still open
+
+| Question            | Options                                                                                                                                                                                                    | Needed by                  |
+| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
+| Privacy policy page | A public `/privacy` page in the app, or a page on the club website. It lets the consent screen be published, and a privacy notice for the booking form's personal data is worth having under POPIA anyway. | Before inviting many users |
 
 ## Risks
 

@@ -1,0 +1,40 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { canView } from "../lib/users";
+
+const { user } = Astro.locals;
+
+// Got access since? Go straight in
+if (canView(user.permissions)) {
+  return Astro.redirect("/");
+}
+---
+
+<Layout title="No access yet">
+  <main class="no-access">
+    <h1>No access yet</h1>
+    <p>
+      You're signed in as <strong>{user.email}</strong>, but that account isn't
+      set up for the bookings app.
+    </p>
+    <p>
+      Ask a committee admin to add it to the app's list of users, then reload
+      this page.
+    </p>
+    <form method="post" action="/logout">
+      <button type="submit">Sign in with a different account</button>
+    </form>
+  </main>
+</Layout>
+
+<style>
+  .no-access {
+    display: grid;
+    gap: var(--space);
+  }
+  h1,
+  p,
+  form {
+    margin: 0;
+  }
+</style>
