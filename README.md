@@ -40,6 +40,19 @@ The bookings app needs Google settings to run: copy `apps/bookings/.env.example`
 
 The old site (`apps/website`) has no build step. `pnpm dev:website` serves it at http://localhost:8000 with PHP's built-in server, so PHP must be installed (`brew install php` on macOS). The contact form can't send email locally.
 
+## Checks on pull requests
+
+`.github/workflows/checks.yml` runs on every pull request, and on `master` after a merge:
+
+| Step                                                                        | Command                                     |
+| --------------------------------------------------------------------------- | ------------------------------------------- |
+| Install, failing if `pnpm-lock.yaml` doesn't match the `package.json` files | `pnpm install --frozen-lockfile`            |
+| Formatting                                                                  | `pnpm format:check`                         |
+| Bookings app tests and type check                                           | `pnpm test:bookings`, `pnpm check:bookings` |
+| Builds                                                                      | `pnpm build:bookings`, `pnpm build`         |
+
+Run the same commands locally before pushing. The bookings build needs its Google settings to exist. Locally they come from `apps/bookings/.env`. In the workflow they're placeholders, because the build never talks to Google.
+
 ## Deploying the website
 
 `.github/workflows/deploy-website.yml` uploads `apps/website/` to `public_html/` over FTPS.

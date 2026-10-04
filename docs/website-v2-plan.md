@@ -2,7 +2,7 @@
 
 _Written 3 Oct 2026. A high-level plan for rebuilding the club website (`apps/website`) as an Astro app (`apps/website-v2`) inside a pnpm monorepo._
 
-**Status:** the pnpm workspace and Prettier are set up, and `apps/website-v2` is scaffolded with Astro's starter page. The CI workflow (phase 0) and the rest of phase 1 are still to do.
+**Status:** the pnpm workspace and Prettier are set up, and `apps/website-v2` is scaffolded with Astro's starter page. The CI workflow (phase 0, `.github/workflows/checks.yml`) runs the format check and website-v2's build on every pull request. A type check for website-v2 and the rest of phase 1 are still to do.
 
 ## Why rebuild
 
