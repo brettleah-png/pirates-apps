@@ -70,7 +70,7 @@ The form's tab stays as Google Forms writes it. The app adds its own tabs:
 | Field          | Values                                                                                                                                                                                                                                                           |
 | -------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Booking status | **New** (received, no action yet), **Client Message** (the client sent a message we have to answer), **Staff Replied** (we've replied or messaged them and are waiting), **Cancelled** (the client or the club cancelled), **Closed** (the function is finished) |
-| Payment status | **None** (no payment action yet), **Invoice Sent**, **Deposit Paid** (usually 50% of the fee), **Full Payment Received**                                                                                                                                         |
+| Payment status | **None** (no payment action yet), **Invoice Sent**, **Deposit Paid** (usually 50% of the fee), **Full Payment Received**, **Refunded** (rare: money paid back after a cancellation)                                                                              |
 | Damage deposit | Only on bookings that need one: **Outstanding**, **Paid**, **Refunded**. A refund records the amount kept back and what the damage was.                                                                                                                          |
 
 - **A booking holds its date** once its payment status is Deposit Paid or Full Payment Received, unless it's Cancelled. The app uses this to show which dates are taken.
@@ -178,13 +178,8 @@ Netlify deploys `master` to the live site and builds a preview for each pull req
 | When a booking holds its date     | Deposit Paid or Full Payment Received, unless Cancelled                                |
 | ID numbers                        | The form keeps asking. Only people who can edit booking details see them.              |
 | Invoice number and damage deposit | Part of the payments permission                                                        |
-
-## Still open
-
-| Question                            | Options                                                                                                | Needed by |
-| ----------------------------------- | ------------------------------------------------------------------------------------------------------ | --------- |
-| App name and colour on phones       | Today: "Bookings" under the icon, and the website's orange in Android's title bar                      | Phase 1   |
-| Refunds when a booking is cancelled | The payment statuses have no "Refunded". If a client cancels after paying the deposit, is it refunded? | Phase 4   |
+| Refunds after a cancellation      | Usually not, but the payment status has a Refunded option for when it happens          |
+| App name and colour on phones     | "Bookings" under the icon, and the website's orange in Android's title bar             |
 
 ## Risks
 
