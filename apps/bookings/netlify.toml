@@ -1,0 +1,9 @@
+# Netlify settings for the bookings app.
+#
+# In the Netlify UI, leave the base directory as the repo root and set the
+# package directory to apps/bookings, so pnpm installs the whole workspace.
+# Paths here are relative to the repo root. Node's version comes from .nvmrc.
+
+[build]
+  command = "pnpm --filter bookings build"
+  publish = "apps/bookings/dist"

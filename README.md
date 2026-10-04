@@ -26,7 +26,7 @@ pnpm build          # website-v2 static build into apps/website-v2/dist/
 pnpm preview        # serve that build locally
 
 pnpm dev:bookings   # bookings app dev server at http://localhost:4322
-pnpm build:bookings # bookings app server build into apps/bookings/dist/
+pnpm build:bookings # bookings app build for Netlify (apps/bookings/dist/ and .netlify/)
 
 pnpm format         # format the repo with Prettier
 pnpm format:check   # check formatting without changing files
