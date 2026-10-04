@@ -1,0 +1,24 @@
+---
+// A booking's status as a small coloured label. Confirmed is green, New
+// stands out (nobody has contacted the client yet), and the rest are grey.
+interface Props {
+  status: string;
+}
+
+const { status } = Astro.props;
+const tone =
+  status === "Confirmed" ? "confirmed" : status === "New" ? "new" : "plain";
+---
+
+<span class:list={["tag", `tag-${tone}`]}>{status}</span>
+
+<style>
+  .tag-confirmed {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+  }
+  .tag-new {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+</style>

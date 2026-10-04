@@ -1,5 +1,6 @@
 // Searching, filtering, sorting and grouping the bookings list
 import { formatPhone, type Booking } from "./bookings";
+import type { Tracking } from "./tracking";
 import { longDate, monthAndYear } from "./dates";
 
 /** Which bookings to show, by date. Upcoming includes today. */
@@ -27,8 +28,11 @@ function isWhen(booking: Booking, when: When, today: string): boolean {
   return when === "upcoming" ? booking.date >= today : booking.date < today;
 }
 
+// The list works with or without what's tracked for each booking
+type ListedBooking = Booking & { tracking?: Tracking };
+
 // Everything a search can match, in lower case
-function searchableText(booking: Booking): string {
+function searchableText(booking: ListedBooking): string {
   return [
     booking.name,
     booking.email,
@@ -36,8 +40,9 @@ function searchableText(booking: Booking): string {
     formatPhone(booking.phone),
     booking.functionType,
     booking.specialConsiderations,
-    booking.state,
-    booking.invoiceNumber,
+    booking.tracking?.status ?? "",
+    booking.tracking?.paymentStatus ?? "",
+    booking.tracking?.invoiceNumber ?? "",
     booking.date ? longDate(booking.date) : "",
   ]
     .join(" ")
@@ -45,7 +50,7 @@ function searchableText(booking: Booking): string {
 }
 
 /** Every word in the search has to appear somewhere in the booking */
-export function matchesSearch(booking: Booking, search: string): boolean {
+export function matchesSearch(booking: ListedBooking, search: string): boolean {
   const words = search.toLowerCase().split(/\s+/).filter(Boolean);
   const haystack = searchableText(booking);
   return words.every((word) => haystack.includes(word));
@@ -62,10 +67,10 @@ function compareStart(a: Booking, b: Booking): number {
  * The bookings to show. Upcoming bookings are soonest first; past and all are
  * most recent first.
  */
-export function bookingsToShow(
-  bookings: Booking[],
+export function bookingsToShow<T extends ListedBooking>(
+  bookings: T[],
   { when, search, today }: { when: When; search: string; today: string }
-): Booking[] {
+): T[] {
   const shown = bookings.filter(
     (booking) => isWhen(booking, when, today) && matchesSearch(booking, search)
   );
@@ -78,7 +83,7 @@ export function bookingsToShow(
 
 /** How many bookings each "when" would show for this search */
 export function countsByWhen(
-  bookings: Booking[],
+  bookings: ListedBooking[],
   search: string,
   today: string
 ): Record<When, number> {
@@ -91,15 +96,17 @@ export function countsByWhen(
   };
 }
 
-export interface MonthGroup {
+export interface MonthGroup<T extends Booking = Booking> {
   /** "October 2026", or "No date" */
   label: string;
-  bookings: Booking[];
+  bookings: T[];
 }
 
 /** Bookings grouped under month headings, keeping their order */
-export function groupByMonth(bookings: Booking[]): MonthGroup[] {
-  const groups: MonthGroup[] = [];
+export function groupByMonth<T extends Booking>(
+  bookings: T[]
+): MonthGroup<T>[] {
+  const groups: MonthGroup<T>[] = [];
   for (const booking of bookings) {
     const label = booking.date ? monthAndYear(booking.date) : "No date";
     const lastGroup = groups.at(-1);

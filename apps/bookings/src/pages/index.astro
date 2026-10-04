@@ -7,8 +7,7 @@ import {
   groupByMonth,
   parseWhen,
 } from "../lib/booking-list";
-import type { Booking } from "../lib/bookings";
-import { loadBookings } from "../lib/data";
+import { loadBookingData, type BookingData } from "../lib/data";
 import { todayInSouthAfrica } from "../lib/dates";
 
 const { user } = Astro.locals;
@@ -16,14 +15,13 @@ const today = todayInSouthAfrica();
 const when = parseWhen(Astro.url.searchParams.get("when"));
 const search = (Astro.url.searchParams.get("q") ?? "").trim();
 
-let bookings: Booking[] = [];
-let failed = false;
+let data: BookingData | undefined;
 try {
-  bookings = await loadBookings();
+  data = await loadBookingData();
 } catch (error) {
   console.error("Couldn't load the bookings", error);
-  failed = true;
 }
+const bookings = data?.bookings ?? [];
 
 const groups = groupByMonth(bookingsToShow(bookings, { when, search, today }));
 const counts = countsByWhen(bookings, search, today);
@@ -36,6 +34,7 @@ const counts = countsByWhen(bookings, search, today);
     when={when}
     search={search}
     today={today}
-    failed={failed}
+    failed={!data}
+    outOfLineRows={data?.tracking.outOfLineRows}
   />
 </AppLayout>

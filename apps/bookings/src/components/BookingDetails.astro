@@ -1,25 +1,43 @@
 ---
-// Everything about one booking: when, how to reach the person, their answers
-// on the form, and the committee's tracking
+// Everything about one booking: when, how to reach the person, where it
+// stands, their answers on the form, and its history
+import { actions } from "astro:actions";
 import {
   durationInMinutes,
   durationLabel,
   formatPhone,
   timeRange,
-  type Booking,
 } from "../lib/bookings";
-import { longDate, relativeDay, shortDate } from "../lib/dates";
+import { longDate, relativeDay, shortDate, shortDateTime } from "../lib/dates";
+import type { HistoryEntry } from "../lib/history";
+import {
+  canDeleteIdNumber,
+  editableFields,
+  isConfirmed,
+  type TrackedBooking,
+} from "../lib/tracking";
+import type { SignedInUser } from "../lib/users";
+import Alert from "./Alert.astro";
+import BookingHistory from "./BookingHistory.astro";
 import CopyButton from "./CopyButton.astro";
 import Icon from "./Icon.astro";
+import StatusTag from "./StatusTag.astro";
 
 interface Props {
-  booking: Booking;
+  booking: TrackedBooking;
   today: string;
-  /** ID numbers are only shown to people who can edit booking details */
-  canSeeIdNumber: boolean;
+  user: SignedInUser;
+  /** Other confirmed bookings on the same date */
+  clashes: TrackedBooking[];
+  history: HistoryEntry[];
+  /** Now, as a Sheets date-and-time number */
+  now: number;
+  /** A note that couldn't be saved */
+  noteError?: string;
 }
 
-const { booking, today, canSeeIdNumber } = Astro.props;
+const { booking, today, user, clashes, history, now, noteError } = Astro.props;
+const { tracking } = booking;
 const time = timeRange(booking);
 const duration = durationInMinutes(booking);
 const phone = formatPhone(booking.phone);
@@ -27,25 +45,62 @@ const allContactDetails = [booking.name, phone, booking.email]
   .filter(Boolean)
   .join("\n");
 const isPast = booking.date !== null && booking.date < today;
+const canEdit = editableFields(user.permissions).length > 0;
+// ID numbers are only shown to people who can edit booking details
+const canSeeIdNumber = user.permissions.editDetails;
+const showDeleteIdNumber = canSeeIdNumber && canDeleteIdNumber(booking, today);
 const submitted = booking.submittedDate
   ? `${shortDate(booking.submittedDate)}${booking.submittedTime ? `, ${booking.submittedTime}` : ""}`
   : "Unknown";
+const lastSavedBy =
+  tracking.updatedBy.toLowerCase() === user.email.toLowerCase()
+    ? "you"
+    : tracking.updatedBy;
 ---
 
 <article class="booking">
   <header class="heading">
-    <h1>{booking.name || "No name given"}</h1>
-    <p class="function">{booking.functionType || "No function type given"}</p>
-    <div class="tags">
-      {booking.state && <span class="tag tag-accent">{booking.state}</span>}
-      {booking.isMember && <span class="tag">Club member</span>}
-      {isPast && <span class="tag">Past</span>}
+    <div class="heading-text">
+      <h1>{booking.name || "No name given"}</h1>
+      <p class="function">{booking.functionType || "No function type given"}</p>
+      <div class="tags">
+        {isConfirmed(tracking) && <StatusTag status="Confirmed" />}
+        <StatusTag status={tracking.status} />
+        {booking.isMember && <span class="tag">Club member</span>}
+        {isPast && <span class="tag">Past</span>}
+      </div>
     </div>
+    {canEdit && (
+      <a class="button" href={`/bookings/${booking.id}/edit`}>
+        <Icon name="edit" size={18} />
+        Edit
+      </a>
+    )}
   </header>
+
+  {clashes.length > 0 && booking.date && (
+    <Alert tone="warning" title="This date is already taken">
+      <p>
+        {clashes.length === 1
+          ? "Another booking is"
+          : `${clashes.length} other bookings are`}{" "}
+        confirmed on {longDate(booking.date)}:{" "}
+        {clashes.map((other, index) => (
+          <>
+            {index > 0 && ", "}
+            <a href={`/bookings/${other.id}`}>
+              {other.name || "No name given"}
+              {timeRange(other) && ` (${timeRange(other)})`}
+            </a>
+          </>
+        ))}
+      </p>
+    </Alert>
+  )}
 
   <div class="columns">
     <div class="column">
-      <section class="panel when" aria-label="When">
+      <section class="panel" aria-label="When">
         <div class="when-row">
           <span class="when-icon">
             <Icon name="calendar" />
@@ -123,6 +178,64 @@ const submitted = booking.submittedDate
           text="Copy all contact details"
         />
       </section>
+
+      <section class="panel">
+        <h2>Tracking</h2>
+        <dl class="rows">
+          <div class="row">
+            <dt>Status</dt>
+            <dd>
+              <span class="value">{tracking.status}</span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Payment status</dt>
+            <dd>
+              <span class="value">{tracking.paymentStatus}</span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Invoice number</dt>
+            <dd>
+              <span class="value">{tracking.invoiceNumber || "—"}</span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Damage deposit</dt>
+            <dd>
+              <span class="value">{tracking.damageDeposit}</span>
+            </dd>
+          </div>
+          {tracking.damageDeposit === "Refunded" && (
+            <>
+              <div class="row">
+                <dt>Amount kept back</dt>
+                <dd>
+                  <span class="value">
+                    {tracking.damageKeptBack
+                      ? `R ${tracking.damageKeptBack}`
+                      : "Nothing"}
+                  </span>
+                </dd>
+              </div>
+              {tracking.damageNote && (
+                <div class="row">
+                  <dt>Damage</dt>
+                  <dd>
+                    <span class="value multiline">{tracking.damageNote}</span>
+                  </dd>
+                </div>
+              )}
+            </>
+          )}
+        </dl>
+        {tracking.updatedAt !== null && (
+          <p class="note">
+            Last saved by {lastSavedBy || "someone"},{" "}
+            {shortDateTime(tracking.updatedAt)}.
+          </p>
+        )}
+      </section>
     </div>
 
     <div class="column">
@@ -154,8 +267,33 @@ const submitted = booking.submittedDate
           {canSeeIdNumber && (
             <div class="row">
               <dt>ID number</dt>
-              <dd>
+              <dd class="id-number-cell">
                 <span class="value id-number">{booking.idNumber || "—"}</span>
+                {showDeleteIdNumber && (
+                  <details class="delete-id">
+                    <summary>
+                      <Icon name="trash" size={16} />
+                      Delete ID number
+                    </summary>
+                    <div class="delete-id-confirm">
+                      <p>
+                        The club no longer needs it. This clears it from "Form
+                        responses 1" and can't be undone. Google Forms keeps its
+                        own copy of the response.
+                      </p>
+                      <form method="POST" action={actions.deleteIdNumber}>
+                        <input
+                          type="hidden"
+                          name="bookingId"
+                          value={booking.id}
+                        />
+                        <button class="button button-danger" type="submit">
+                          Delete it permanently
+                        </button>
+                      </form>
+                    </div>
+                  </details>
+                )}
               </dd>
             </div>
           )}
@@ -168,30 +306,13 @@ const submitted = booking.submittedDate
         </dl>
       </section>
 
-      <section class="panel">
-        <h2>Tracking</h2>
-        <dl class="rows">
-          <div class="row">
-            <dt>Status</dt>
-            <dd>
-              <span class="value">{booking.state || "—"}</span>
-            </dd>
-          </div>
-          <div class="row">
-            <dt>Invoice number</dt>
-            <dd>
-              <span class="value">{booking.invoiceNumber || "—"}</span>
-            </dd>
-          </div>
-          <div class="row">
-            <dt>Damage deposit</dt>
-            <dd>
-              <span class="value">{booking.damageDeposit || "—"}</span>
-            </dd>
-          </div>
-        </dl>
-        <p class="note">As typed in the spreadsheet.</p>
-      </section>
+      <BookingHistory
+        bookingId={booking.id}
+        entries={history}
+        user={user}
+        now={now}
+        error={noteError}
+      />
     </div>
   </div>
 
@@ -204,6 +325,12 @@ const submitted = booking.submittedDate
     gap: 1rem;
   }
 
+  .heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
   .heading h1 {
     margin: 0;
     font-size: 1.625rem;
@@ -219,8 +346,8 @@ const submitted = booking.submittedDate
     gap: 0.375rem;
     margin-top: 0.75rem;
   }
-  .tags:empty {
-    display: none;
+  .heading .button {
+    flex: none;
   }
 
   .columns,
@@ -230,7 +357,7 @@ const submitted = booking.submittedDate
     align-content: start;
   }
 
-  .panel {
+  .booking :global(.panel) {
     display: grid;
     gap: 0.75rem;
     padding: 1rem;
@@ -239,7 +366,7 @@ const submitted = booking.submittedDate
     background: var(--color-surface);
     box-shadow: var(--shadow-card);
   }
-  .panel h2 {
+  .booking :global(.panel h2) {
     margin: 0;
     color: var(--color-muted);
     font-size: 0.8125rem;
@@ -321,6 +448,45 @@ const submitted = booking.submittedDate
     margin: 0;
     color: var(--color-muted);
     font-size: 0.8125rem;
+  }
+
+  .id-number-cell {
+    flex-wrap: wrap;
+  }
+  .delete-id {
+    flex: 1 1 100%;
+  }
+  .delete-id summary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2.25rem;
+    color: var(--color-danger);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .delete-id summary::-webkit-details-marker {
+    display: none;
+  }
+  .delete-id-confirm {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--radius-small);
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+    font-size: 0.9375rem;
+  }
+  .delete-id-confirm p {
+    margin: 0;
+  }
+  .button-danger {
+    border-color: var(--color-danger);
+    background: var(--color-danger);
+    /* White on light mode's dark red, near-black on dark mode's light red */
+    color: var(--color-surface);
   }
 
   /* Wider screens: two columns, and labels beside their values */

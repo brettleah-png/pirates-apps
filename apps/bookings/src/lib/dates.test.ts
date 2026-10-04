@@ -3,6 +3,8 @@ import {
   dateFromSerial,
   daysFromToday,
   relativeDay,
+  sheetsNowInSouthAfrica,
+  shortDateTime,
   longDate,
   parseDate,
   parseTime,
@@ -101,5 +103,21 @@ describe("relativeDay", () => {
 
   it("counts across months and years", () => {
     expect(daysFromToday("2027-01-01", "2026-12-31")).toBe(1);
+  });
+});
+
+describe("sheetsNowInSouthAfrica", () => {
+  it("gives South African time as a Sheets number", () => {
+    // 10:00 UTC is 12:00 in South Africa
+    const serial = sheetsNowInSouthAfrica(new Date("2026-10-04T10:00:00Z"));
+
+    expect(dateFromSerial(serial)).toBe("2026-10-04");
+    expect(timeFromSerial(serial)).toBe("12:00");
+  });
+});
+
+describe("shortDateTime", () => {
+  it("writes the date and time", () => {
+    expect(shortDateTime(46299.75)).toBe("4 Oct 2026, 18:00");
   });
 });

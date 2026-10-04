@@ -1,15 +1,52 @@
 ---
+import { actions, isInputError } from "astro:actions";
+import Alert from "../../components/Alert.astro";
 import BookingDetails from "../../components/BookingDetails.astro";
 import Icon from "../../components/Icon.astro";
 import AppLayout from "../../layouts/AppLayout.astro";
-import { loadBookings } from "../../lib/data";
-import { todayInSouthAfrica } from "../../lib/dates";
+import { loadBookingData } from "../../lib/data";
+import { sheetsNowInSouthAfrica, todayInSouthAfrica } from "../../lib/dates";
+import { historyFor } from "../../lib/history";
+import { clashesWith } from "../../lib/tracking";
 
 const { user } = Astro.locals;
-const today = todayInSouthAfrica();
+const id = Astro.params.id ?? "";
 
-const bookings = await loadBookings();
-const booking = bookings.find((b) => b.id === Astro.params.id);
+// After a successful change, reload the page with a message, so reloading
+// can't send the form twice
+const ACTIONS_ON_THIS_PAGE = [
+  [actions.addNote, "note-added"],
+  [actions.editNote, "note-edited"],
+  [actions.deleteNote, "note-deleted"],
+  [actions.deleteIdNumber, "id-deleted"],
+] as const;
+let actionError: string | undefined;
+for (const [action, done] of ACTIONS_ON_THIS_PAGE) {
+  const result = Astro.getActionResult(action);
+  if (result && !result.error) {
+    return Astro.redirect(`/bookings/${id}?done=${done}#history`);
+  }
+  if (result?.error) {
+    actionError = isInputError(result.error)
+      ? (result.error.issues[0]?.message ??
+        "Check what you typed and try again.")
+      : result.error.message;
+  }
+}
+
+const DONE_MESSAGES: Record<string, string> = {
+  saved: "Changes saved.",
+  unchanged: "Nothing was changed.",
+  "note-added": "Note added.",
+  "note-edited": "Note updated.",
+  "note-deleted": "Note deleted.",
+  "id-deleted": "ID number deleted.",
+};
+const doneMessage = DONE_MESSAGES[Astro.url.searchParams.get("done") ?? ""];
+
+const today = todayInSouthAfrica();
+const data = await loadBookingData();
+const booking = data.bookings.find((b) => b.id === id);
 if (!booking) {
   Astro.response.status = 404;
 }
@@ -21,11 +58,17 @@ if (!booking) {
     Bookings
   </a>
 
+  {doneMessage && <Alert tone="success">{doneMessage}</Alert>}
+
   {booking ? (
     <BookingDetails
       booking={booking}
       today={today}
-      canSeeIdNumber={user.permissions.editDetails}
+      user={user}
+      clashes={clashesWith(booking, data.bookings)}
+      history={historyFor(data.history.entries, booking.timestampKey)}
+      now={sheetsNowInSouthAfrica()}
+      noteError={actionError}
     />
   ) : (
     <div class="not-found">
@@ -59,6 +102,9 @@ if (!booking) {
     color: var(--color-primary);
     font-weight: 600;
     text-decoration: none;
+  }
+  :global(.alert[role="status"]) {
+    margin-bottom: 1rem;
   }
   .not-found h1 {
     margin: 0.5rem 0;

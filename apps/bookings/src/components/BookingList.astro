@@ -2,20 +2,32 @@
 // The bookings list: search, the Upcoming / Past / All tabs, and the bookings
 // grouped by month
 import { WHEN_LABELS, type MonthGroup, type When } from "../lib/booking-list";
+import type { TrackedBooking } from "../lib/tracking";
+import Alert from "./Alert.astro";
 import BookingCard from "./BookingCard.astro";
 import Icon from "./Icon.astro";
 
 interface Props {
-  groups: MonthGroup[];
+  groups: MonthGroup<TrackedBooking>[];
   counts: Record<When, number>;
   when: When;
   search: string;
   today: string;
   /** True when the spreadsheet couldn't be read */
   failed?: boolean;
+  /** "Tracking Data" rows that no longer line up with the form responses */
+  outOfLineRows?: number[];
 }
 
-const { groups, counts, when, search, today, failed = false } = Astro.props;
+const {
+  groups,
+  counts,
+  when,
+  search,
+  today,
+  failed = false,
+  outOfLineRows = [],
+} = Astro.props;
 const shownCount = groups.reduce(
   (total, group) => total + group.bookings.length,
   0
@@ -43,6 +55,18 @@ const summary = search
 ---
 
 <h1 class="visually-hidden">Bookings</h1>
+
+{outOfLineRows.length > 0 && (
+  <div class="banner">
+    <Alert tone="warning" title="Saving is paused">
+      <p>
+        "Tracking Data" no longer lines up with "Form responses 1" (row{" "}
+        {outOfLineRows.join(", ")}). Bookings still show correctly. Ask an admin
+        to line the rows up again.
+      </p>
+    </Alert>
+  </div>
+)}
 
 <div class="controls">
   <form class="search" method="get" role="search" data-search-form>
@@ -142,6 +166,9 @@ const summary = search
 </script>
 
 <style>
+  .banner {
+    margin-bottom: 1rem;
+  }
   .controls {
     display: grid;
     gap: 0.75rem;

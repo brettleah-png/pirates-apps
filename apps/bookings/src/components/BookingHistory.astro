@@ -1,0 +1,213 @@
+---
+// A booking's notes and saved changes, newest first, with a box to add a
+// note. Authors can edit or delete their own note for 10 minutes.
+import { actions } from "astro:actions";
+import { shortDateTime } from "../lib/dates";
+import { canChangeNote, type HistoryEntry } from "../lib/history";
+import type { SignedInUser } from "../lib/users";
+import Alert from "./Alert.astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  bookingId: string;
+  entries: HistoryEntry[];
+  user: SignedInUser;
+  /** Now, as a Sheets date-and-time number, for the 10-minute rule */
+  now: number;
+  /** A note that couldn't be saved, to show beside the form */
+  error?: string;
+}
+
+const { bookingId, entries, user, now, error } = Astro.props;
+const canAddNotes = user.permissions.notesAndStatus;
+const isMine = (entry: HistoryEntry) =>
+  entry.by.toLowerCase() === user.email.toLowerCase();
+---
+
+<section class="panel" id="history" aria-labelledby="history-title">
+  <h2 id="history-title">History</h2>
+
+  {canAddNotes && (
+    <form class="add-note" method="POST" action={actions.addNote}>
+      <input type="hidden" name="bookingId" value={bookingId} />
+      <label class="visually-hidden" for="new-note">
+        Add a note
+      </label>
+      <textarea
+        id="new-note"
+        name="text"
+        rows="3"
+        maxlength="2000"
+        required
+        placeholder="Add a note…"
+      />
+      <button class="button button-primary" type="submit">
+        Add note
+      </button>
+    </form>
+  )}
+  {error && <Alert tone="danger">{error}</Alert>}
+
+  {entries.length === 0 ? (
+    <p class="empty">No notes or changes yet.</p>
+  ) : (
+    <ol class="timeline">
+      {entries.map((entry) => (
+        <li class:list={["entry", `entry-${entry.type}`]}>
+          <div class="entry-head">
+            <strong>{isMine(entry) ? "You" : entry.by}</strong>
+            <span>
+              {shortDateTime(entry.at)}
+              {entry.editedAt && " · edited"}
+            </span>
+          </div>
+          <p class="entry-text">{entry.text}</p>
+
+          {canChangeNote(entry, user.email, now) && (
+            <div class="entry-actions">
+              <details class="edit-note">
+                <summary>
+                  <Icon name="edit" size={16} />
+                  Edit
+                </summary>
+                <form method="POST" action={actions.editNote}>
+                  <input type="hidden" name="noteId" value={entry.id} />
+                  <label class="visually-hidden" for={`note-${entry.id}`}>
+                    Edit your note
+                  </label>
+                  {/* set:text, so formatting can't add spaces to the note */}
+                  <textarea
+                    id={`note-${entry.id}`}
+                    name="text"
+                    rows="3"
+                    maxlength="2000"
+                    required
+                    set:text={entry.text}
+                  />
+                  <button class="button" type="submit">
+                    Save note
+                  </button>
+                </form>
+              </details>
+              <form method="POST" action={actions.deleteNote}>
+                <input type="hidden" name="noteId" value={entry.id} />
+                <button class="delete-note" type="submit">
+                  <Icon name="trash" size={16} />
+                  Delete
+                </button>
+              </form>
+            </div>
+          )}
+        </li>
+      ))}
+    </ol>
+  )}
+</section>
+
+<style>
+  .add-note {
+    display: grid;
+    gap: 0.5rem;
+  }
+  textarea {
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    background: var(--color-surface);
+    resize: vertical;
+  }
+  textarea:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 0;
+    border-color: var(--color-primary);
+  }
+  .add-note .button {
+    justify-self: end;
+  }
+
+  .empty {
+    margin: 0;
+    color: var(--color-muted);
+  }
+  .timeline {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .entry {
+    display: grid;
+    gap: 0.25rem;
+    padding: 0.75rem 0 0.75rem 0.875rem;
+    border-left: 2px solid var(--color-border);
+  }
+  .entry-note {
+    border-left-color: var(--color-primary);
+  }
+  .entry-head {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.5rem;
+    font-size: 0.8125rem;
+  }
+  .entry-head span {
+    color: var(--color-muted);
+  }
+  .entry-text {
+    margin: 0;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  .entry-change .entry-text {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+
+  .entry-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 0.5rem 1rem;
+  }
+  /* Edit and Delete share a line; an open edit box takes the full width */
+  .edit-note[open] {
+    flex: 1 1 100%;
+  }
+  .edit-note summary,
+  .delete-note {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: 2.25rem;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .edit-note summary {
+    list-style: none;
+  }
+  .edit-note summary::-webkit-details-marker {
+    display: none;
+  }
+  .edit-note[open] summary {
+    color: var(--color-text);
+  }
+  .edit-note form {
+    display: grid;
+    gap: 0.5rem;
+    margin-top: 0.25rem;
+  }
+  .edit-note .button {
+    justify-self: end;
+  }
+  .delete-note {
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+  .delete-note:hover {
+    color: var(--color-danger);
+  }
+</style>

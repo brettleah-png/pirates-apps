@@ -17,6 +17,11 @@ export interface Booking {
    * the email.
    */
   id: string;
+  /**
+   * The form's Timestamp cell exactly as stored. It identifies the booking
+   * in the "Tracking Data" and "History" tabs.
+   */
+  timestampKey: string;
   /** When the form was sent, as "2026-09-11" and "18:02" */
   submittedDate: string | null;
   submittedTime: string | null;
@@ -35,19 +40,11 @@ export interface Booking {
   isMember: boolean;
   acceptedTerms: boolean;
   specialConsiderations: string;
-  // Tracking the committee types into the responses tab by hand, until it
-  // moves to its own tab
-  state: string;
-  damageDeposit: string;
-  invoiceNumber: string;
 }
 
 // Each column is found by the start of its header's first line. The form's
 // headers carry the question's help text on later lines.
 const HEADERS = {
-  state: "state",
-  damageDeposit: "damage deposit",
-  invoiceNumber: "invoice number",
   timestamp: "timestamp",
   email: "email address",
   name: "name and surname",
@@ -121,6 +118,14 @@ function idNumber(value: unknown): string {
   return text(value);
 }
 
+/**
+ * A Timestamp cell as text, for matching it across tabs. The app copies the
+ * raw number into App_Timestamp, so the two always compare equal.
+ */
+export function timestampKey(value: unknown): string {
+  return typeof value === "number" ? String(value) : text(value);
+}
+
 function bookingId(timestamp: unknown, email: string): string {
   return createHash("sha256")
     .update(`${String(timestamp)}|${email.toLowerCase()}`)
@@ -184,6 +189,7 @@ export function parseBookings(rows: unknown[][]): Booking[] {
       const email = text(cell(row, "email"));
       return {
         id: bookingId(timestamp, email),
+        timestampKey: timestampKey(timestamp),
         submittedDate: parseDate(timestamp),
         submittedTime: timeInDate(timestamp),
         name: text(cell(row, "name")).replace(/\s+/g, " "),
@@ -199,9 +205,6 @@ export function parseBookings(rows: unknown[][]): Booking[] {
         isMember: text(cell(row, "isMember")).toLowerCase() === "yes",
         acceptedTerms: !isBlank(cell(row, "acceptedTerms")),
         specialConsiderations: text(cell(row, "specialConsiderations")),
-        state: text(cell(row, "state")),
-        damageDeposit: text(cell(row, "damageDeposit")),
-        invoiceNumber: text(cell(row, "invoiceNumber")),
       };
     });
 }
@@ -243,4 +246,23 @@ export function durationLabel(minutes: number): string {
     return hours === 1 ? "1 hour" : `${hours} hours`;
   }
   return hours === 0 ? `${mins} min` : `${hours} h ${mins} min`;
+}
+
+/**
+ * Where a booking's ID number is in the responses tab's rows, as a sheet row
+ * (1 is the header row) and column (0 is A). Null if the booking isn't there.
+ */
+export function idNumberCell(
+  rows: unknown[][],
+  bookingKey: string
+): { row: number; column: number } | null {
+  const [headerRow = [], ...dataRows] = rows;
+  const columns = findColumns(headerRow);
+  if (columns.idNumber === -1) {
+    return null;
+  }
+  const index = dataRows.findIndex(
+    (row) => timestampKey(row[columns.timestamp]) === bookingKey
+  );
+  return index === -1 ? null : { row: index + 2, column: columns.idNumber };
 }

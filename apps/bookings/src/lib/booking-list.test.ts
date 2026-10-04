@@ -66,20 +66,7 @@ describe("bookingsToShow", () => {
   it("shows a booking without a readable date only under all", () => {
     const [undated] = parseBookings([
       RESPONSE_HEADERS,
-      [
-        "",
-        "",
-        "",
-        46300.5,
-        "a@example.com",
-        "No Date",
-        "Party",
-        "",
-        "",
-        "",
-        "",
-        "",
-      ],
+      [46300.5, "a@example.com", "No Date", "Party", "", "", "", "", ""],
     ]);
     const list = [...bookings, undated];
 
@@ -141,10 +128,10 @@ describe("countsByWhen", () => {
       past: 3,
       all: 9,
     });
-    expect(countsByWhen(bookings, "closed", TODAY)).toEqual({
+    expect(countsByWhen(bookings, "braai", TODAY)).toEqual({
       upcoming: 0,
-      past: 2,
-      all: 2,
+      past: 1,
+      all: 1,
     });
   });
 });

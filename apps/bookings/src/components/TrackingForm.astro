@@ -1,0 +1,233 @@
+---
+// The edit form: only the fields this person may change. The form also sends
+// the values it showed, so the save only writes what was actually changed.
+import { actions } from "astro:actions";
+import {
+  BOOKING_STATUSES,
+  DAMAGE_DEPOSIT_STATUSES,
+  editableFields,
+  PAYMENT_STATUSES,
+  type TrackedBooking,
+} from "../lib/tracking";
+import type { SignedInUser } from "../lib/users";
+
+interface Props {
+  booking: TrackedBooking;
+  user: SignedInUser;
+  /** False when "Tracking Data" is out of line and saving is paused */
+  canSave: boolean;
+}
+
+const { booking, user, canSave } = Astro.props;
+const { tracking } = booking;
+const fields = editableFields(user.permissions);
+const canChangeStatus = fields.includes("status");
+const canChangePayments = fields.includes("paymentStatus");
+
+// A value typed into the sheet by hand that isn't in the list stays
+// selectable, so saving other fields doesn't change it
+function optionsFor(list: readonly string[], current: string): string[] {
+  return list.includes(current) ? [...list] : [...list, current];
+}
+---
+
+<form class="edit-form" method="POST" action={actions.saveTracking}>
+  <input type="hidden" name="bookingId" value={booking.id} />
+  <input type="hidden" name="shown" value={JSON.stringify(tracking)} />
+
+  {canChangeStatus && (
+    <section class="panel">
+      <h2>Status</h2>
+      <div class="field">
+        <label for="status">Status</label>
+        <select id="status" name="status">
+          {optionsFor(BOOKING_STATUSES, tracking.status).map((option) => (
+            <option value={option} selected={option === tracking.status}>
+              {option}
+            </option>
+          ))}
+        </select>
+      </div>
+    </section>
+  )}
+
+  {canChangePayments && (
+    <section class="panel">
+      <h2>Payment</h2>
+      <div class="field">
+        <label for="paymentStatus">Payment status</label>
+        <select id="paymentStatus" name="paymentStatus">
+          {optionsFor(PAYMENT_STATUSES, tracking.paymentStatus).map(
+            (option) => (
+              <option
+                value={option}
+                selected={option === tracking.paymentStatus}
+              >
+                {option}
+              </option>
+            )
+          )}
+        </select>
+        <p class="hint">
+          Deposit Paid or Full Payment Received marks the date as taken.
+        </p>
+      </div>
+      <div class="field">
+        <label for="invoiceNumber">Invoice number</label>
+        <input
+          id="invoiceNumber"
+          name="invoiceNumber"
+          type="text"
+          value={tracking.invoiceNumber}
+          autocomplete="off"
+          maxlength="100"
+        />
+      </div>
+    </section>
+  )}
+
+  {canChangePayments && (
+    <section class="panel">
+      <h2>Damage deposit</h2>
+      <div class="field">
+        <label for="damageDeposit">Damage deposit</label>
+        <select id="damageDeposit" name="damageDeposit">
+          {optionsFor(DAMAGE_DEPOSIT_STATUSES, tracking.damageDeposit).map(
+            (option) => (
+              <option
+                value={option}
+                selected={option === tracking.damageDeposit}
+              >
+                {option}
+              </option>
+            )
+          )}
+        </select>
+      </div>
+      <div class="refund-fields">
+        <div class="field">
+          <label for="damageKeptBack">Amount kept back (R)</label>
+          <input
+            id="damageKeptBack"
+            name="damageKeptBack"
+            type="text"
+            inputmode="decimal"
+            value={tracking.damageKeptBack}
+            autocomplete="off"
+            maxlength="100"
+          />
+          <p class="hint">Leave it empty if the whole deposit was refunded.</p>
+        </div>
+        <div class="field">
+          <label for="damageNote">What was damaged</label>
+          <textarea
+            id="damageNote"
+            name="damageNote"
+            rows="3"
+            maxlength="2000"
+            set:text={tracking.damageNote}
+          />
+        </div>
+      </div>
+    </section>
+  )}
+
+  <div class="actions">
+    <a class="button" href={`/bookings/${booking.id}`}>
+      Cancel
+    </a>
+    <button class="button button-primary" type="submit" disabled={!canSave}>
+      Save
+    </button>
+  </div>
+</form>
+
+<style>
+  .edit-form {
+    display: grid;
+    gap: 1rem;
+    max-width: 40rem;
+  }
+  .panel {
+    display: grid;
+    gap: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+  .panel h2 {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .field {
+    display: grid;
+    gap: 0.375rem;
+  }
+  label {
+    font-weight: 600;
+  }
+  select,
+  input,
+  textarea {
+    width: 100%;
+    padding: 0 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    background: var(--color-surface);
+  }
+  textarea {
+    padding: 0.625rem 0.75rem;
+    resize: vertical;
+  }
+  select:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 0;
+    border-color: var(--color-primary);
+  }
+  .hint {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.875rem;
+  }
+
+  /* The amount kept back and the damage only matter once it's refunded */
+  .refund-fields {
+    display: none;
+    gap: 1rem;
+  }
+  .edit-form:has(#damageDeposit option[value="Refunded"]:checked)
+    .refund-fields {
+    display: grid;
+  }
+
+  /* The buttons stay at the bottom of the screen on phones */
+  .actions {
+    position: sticky;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    background: var(--color-background);
+  }
+  .actions .button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  @media (min-width: 48rem) {
+    .actions {
+      position: static;
+      display: flex;
+      justify-content: flex-end;
+    }
+  }
+</style>

@@ -1,0 +1,94 @@
+---
+import { actions, isInputError } from "astro:actions";
+import Alert from "../../../components/Alert.astro";
+import Icon from "../../../components/Icon.astro";
+import TrackingForm from "../../../components/TrackingForm.astro";
+import AppLayout from "../../../layouts/AppLayout.astro";
+import { loadBookingData } from "../../../lib/data";
+import { editableFields } from "../../../lib/tracking";
+
+const { user } = Astro.locals;
+const id = Astro.params.id ?? "";
+
+// After saving, go back to the booking, so reloading can't save twice
+const result = Astro.getActionResult(actions.saveTracking);
+if (result && !result.error) {
+  return Astro.redirect(
+    `/bookings/${id}?done=${result.data.changed ? "saved" : "unchanged"}`
+  );
+}
+const saveError = result?.error
+  ? isInputError(result.error)
+    ? (result.error.issues[0]?.message ?? "Check the form and try again.")
+    : result.error.message
+  : undefined;
+
+// People who can't change anything have nothing to edit
+if (editableFields(user.permissions).length === 0) {
+  return Astro.redirect(`/bookings/${id}`);
+}
+
+const data = await loadBookingData();
+const booking = data.bookings.find((b) => b.id === id);
+if (!booking) {
+  return Astro.redirect(`/bookings/${id}`);
+}
+const { outOfLineRows } = data.tracking;
+---
+
+<AppLayout title={`Edit ${booking.name || "booking"}`} user={user}>
+  <a class="back" href={`/bookings/${booking.id}`}>
+    <Icon name="chevron-left" size={20} />
+    {booking.name || "Booking"}
+  </a>
+
+  <h1>Edit booking</h1>
+  <p class="lede">
+    {booking.name} · {booking.functionType}
+  </p>
+
+  {outOfLineRows.length > 0 && (
+    <Alert tone="warning" title="Saving is paused">
+      <p>
+        "Tracking Data" no longer lines up with "Form responses 1" (row{" "}
+        {outOfLineRows.join(", ")}). Ask an admin to line the rows up again.
+      </p>
+    </Alert>
+  )}
+  {saveError && (
+    <Alert tone="danger" title="Not saved">
+      {saveError}
+    </Alert>
+  )}
+
+  <TrackingForm
+    booking={booking}
+    user={user}
+    canSave={outOfLineRows.length === 0}
+  />
+</AppLayout>
+
+<style>
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: var(--tap-size);
+    margin: -0.5rem 0 0.25rem -0.375rem;
+    padding-right: 0.5rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  h1 {
+    margin: 0;
+    font-size: 1.625rem;
+  }
+  .lede {
+    margin: 0.25rem 0 1rem;
+    color: var(--color-muted);
+  }
+  :global(.alert) {
+    margin-bottom: 1rem;
+  }
+</style>

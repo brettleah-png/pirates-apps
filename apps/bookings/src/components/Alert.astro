@@ -1,0 +1,59 @@
+---
+// A message box: a warning, an error, or a confirmation that something saved
+import Icon from "./Icon.astro";
+
+interface Props {
+  tone: "warning" | "danger" | "success";
+  title?: string;
+}
+
+const { tone, title } = Astro.props;
+---
+
+<div
+  class:list={["alert", `alert-${tone}`]}
+  role={tone === "success" ? "status" : "alert"}
+>
+  <Icon name={tone === "success" ? "check" : "alert"} />
+  <div class="text">
+    {title && <strong>{title}</strong>}
+    <slot />
+  </div>
+</div>
+
+<style>
+  .alert {
+    display: flex;
+    gap: 0.625rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: var(--radius-small);
+    font-size: 0.9375rem;
+  }
+  .alert :global(.icon) {
+    margin-top: 0.125rem;
+  }
+  .text {
+    display: grid;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+  .text :global(p) {
+    margin: 0;
+  }
+  .text :global(a) {
+    color: inherit;
+    font-weight: 600;
+  }
+  .alert-warning {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+  .alert-danger {
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+  }
+  .alert-success {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+  }
+</style>

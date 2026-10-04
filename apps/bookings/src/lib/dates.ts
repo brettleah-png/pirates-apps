@@ -158,3 +158,20 @@ export function relativeDay(date: string, today: string): string {
   if (days === -1) return "Yesterday";
   return days > 0 ? `In ${days} days` : `${-days} days ago`;
 }
+
+/**
+ * Now, as a Sheets date-and-time number in South African time, for saving in
+ * the sheet. South Africa is 2 hours ahead of UTC all year, with no daylight
+ * saving.
+ */
+export function sheetsNowInSouthAfrica(now: Date = new Date()): number {
+  const SOUTH_AFRICA_OFFSET_MS = 2 * 60 * 60 * 1000;
+  return (
+    (now.getTime() + SOUTH_AFRICA_OFFSET_MS - SHEETS_FIRST_DAY_MS) / MS_PER_DAY
+  );
+}
+
+/** "4 Oct 2026, 16:30" from a Sheets date-and-time number */
+export function shortDateTime(serial: number): string {
+  return `${shortDate(dateFromSerial(serial))}, ${timeFromSerial(serial)}`;
+}

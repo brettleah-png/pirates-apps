@@ -1,22 +1,29 @@
 ---
-// One booking in the list: its date, who it's for, the function and the time
-import { timeRange, type Booking } from "../lib/bookings";
+// One booking in the list: its date, who it's for, the function, the time,
+// and where it stands
+import { timeRange } from "../lib/bookings";
 import { dayOfMonth, monthShort, weekdayShort } from "../lib/dates";
+import { isConfirmed, type TrackedBooking } from "../lib/tracking";
 import Icon from "./Icon.astro";
+import StatusTag from "./StatusTag.astro";
 
 interface Props {
-  booking: Booking;
+  booking: TrackedBooking;
   today: string;
 }
 
 const { booking, today } = Astro.props;
 const isToday = booking.date === today;
 const isPast = booking.date !== null && booking.date < today;
+const isCancelled = booking.tracking.status === "Cancelled";
 const time = timeRange(booking);
 ---
 
 <a
-  class:list={["card", { "is-today": isToday, "is-past": isPast }]}
+  class:list={[
+    "card",
+    { "is-today": isToday, "is-past": isPast, "is-cancelled": isCancelled },
+  ]}
   href={`/bookings/${booking.id}`}
 >
   <div class="date">
@@ -46,7 +53,8 @@ const time = timeRange(booking);
         {booking.endsNextDay && <span class="next-day">next day</span>}
       </span>
       <span class="tags">
-        {booking.state && <span class="tag">{booking.state}</span>}
+        {isConfirmed(booking.tracking) && <StatusTag status="Confirmed" />}
+        <StatusTag status={booking.tracking.status} />
         {booking.isMember && <span class="tag">Member</span>}
       </span>
     </div>
@@ -105,7 +113,14 @@ const time = timeRange(booking);
     background: var(--color-primary);
     color: var(--color-on-primary);
   }
-  .is-past .date {
+  .is-cancelled {
+    opacity: 0.65;
+  }
+  .is-cancelled .name {
+    text-decoration: line-through;
+  }
+  .is-past .date,
+  .is-cancelled .date {
     background: var(--color-surface-sunken);
     color: var(--color-muted);
   }
