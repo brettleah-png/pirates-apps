@@ -1,8 +1,8 @@
 ---
 import { actions, isInputError } from "astro:actions";
 import Alert from "../../components/Alert.astro";
+import BackBar from "../../components/BackBar.astro";
 import BookingDetails from "../../components/BookingDetails.astro";
-import Icon from "../../components/Icon.astro";
 import AppLayout from "../../layouts/AppLayout.astro";
 import { loadBookingData } from "../../lib/data";
 import { sheetsNowInSouthAfrica, todayInSouthAfrica } from "../../lib/dates";
@@ -53,10 +53,7 @@ if (!booking) {
 ---
 
 <AppLayout title={booking?.name || "Booking not found"} user={user}>
-  <a class="back" href="/" data-back>
-    <Icon name="chevron-left" size={20} />
-    Bookings
-  </a>
+  <BackBar href="/" label="Bookings" title={booking?.name} />
 
   {doneMessage && <Alert tone="success">{doneMessage}</Alert>}
 
@@ -78,31 +75,7 @@ if (!booking) {
   )}
 </AppLayout>
 
-<script>
-  // Back to the list as you left it (same tab, search and scroll position),
-  // when you came from it
-  const back = document.querySelector<HTMLAnchorElement>("[data-back]");
-  back?.addEventListener("click", (event) => {
-    const from = document.referrer ? new URL(document.referrer) : null;
-    if (from?.origin === location.origin && from.pathname === "/") {
-      event.preventDefault();
-      history.back();
-    }
-  });
-</script>
-
 <style>
-  .back {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-    min-height: var(--tap-size);
-    margin: -0.5rem 0 0.25rem -0.375rem;
-    padding-right: 0.5rem;
-    color: var(--color-primary);
-    font-weight: 600;
-    text-decoration: none;
-  }
   :global(.alert[role="status"]) {
     margin-bottom: 1rem;
   }

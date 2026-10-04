@@ -50,7 +50,6 @@ const time = timeRange(booking);
       <span class="time">
         <Icon name="clock" size={16} />
         {time ?? "Time not given"}
-        {booking.endsNextDay && <span class="next-day">next day</span>}
       </span>
       <span class="tags">
         {isConfirmed(booking.tracking) && <StatusTag status="Confirmed" />}
@@ -161,11 +160,6 @@ const time = timeRange(booking);
     font-weight: 600;
     font-variant-numeric: tabular-nums;
   }
-  .next-day {
-    color: var(--color-muted);
-    font-size: 0.8125rem;
-    font-weight: 500;
-  }
   .tags {
     display: flex;
     flex-wrap: wrap;
@@ -174,6 +168,22 @@ const time = timeRange(booking);
   .chevron {
     display: flex;
     color: var(--color-muted);
+  }
+  /* The tapped card shows a spinner in place of its arrow */
+  .card[aria-busy="true"] {
+    border-color: var(--color-primary);
+  }
+  .card[aria-busy="true"] .chevron :global(.icon) {
+    display: none;
+  }
+  .card[aria-busy="true"] .chevron::before {
+    content: "";
+    width: 1.125rem;
+    height: 1.125rem;
+    border: 2px solid var(--color-primary);
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
   }
 
   /* Wider screens: name, time and tags side by side */

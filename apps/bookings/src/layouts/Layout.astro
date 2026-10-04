@@ -72,6 +72,7 @@ const { title } = Astro.props;
     </script>
   </head>
   <body>
+    <div class="loading-bar" aria-hidden="true"></div>
     <slot />
   </body>
 </html>
@@ -80,4 +81,73 @@ const { title } = Astro.props;
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js");
   }
+</script>
+
+<script>
+  // While the next page loads (reading the sheet can take a few seconds),
+  // show a progress bar, dim the page so it doesn't look ready, and put a
+  // spinner on whatever was tapped. A form can't be sent twice.
+  const root = document.documentElement;
+
+  function startLoading(tapped: Element) {
+    root.dataset.loading = "";
+    tapped.setAttribute("aria-busy", "true");
+    document.querySelector("main")?.setAttribute("aria-busy", "true");
+    // If the next page never arrives (the connection dropped), let people
+    // try again
+    window.setTimeout(stopLoading, 20_000);
+  }
+
+  function stopLoading() {
+    delete root.dataset.loading;
+    for (const element of document.querySelectorAll("[aria-busy]")) {
+      element.removeAttribute("aria-busy");
+    }
+    for (const form of document.querySelectorAll<HTMLFormElement>(
+      "form[data-sending]"
+    )) {
+      delete form.dataset.sending;
+    }
+  }
+
+  document.addEventListener("click", (event) => {
+    const opensElsewhere =
+      event.button !== 0 ||
+      event.metaKey ||
+      event.ctrlKey ||
+      event.shiftKey ||
+      event.altKey;
+    const link = (event.target as Element).closest("a");
+    if (
+      opensElsewhere ||
+      !link ||
+      link.target === "_blank" ||
+      link.hasAttribute("download")
+    ) {
+      return;
+    }
+    const url = new URL(link.href);
+    // Other sites, and phone and email links, don't load a page here
+    const isOtherSite = url.origin !== location.origin;
+    const isSamePage =
+      url.pathname === location.pathname && url.search === location.search;
+    if (!isOtherSite && !isSamePage) {
+      startLoading(link);
+    }
+  });
+
+  document.addEventListener("submit", (event) => {
+    const form = event.target as HTMLFormElement;
+    if (form.dataset.sending !== undefined) {
+      // A second tap while the first is still sending
+      event.preventDefault();
+      return;
+    }
+    form.dataset.sending = "";
+    startLoading(event.submitter ?? form);
+  });
+
+  // Going back can show the previous page from the browser's memory, still
+  // in its loading state
+  window.addEventListener("pageshow", stopLoading);
 </script>

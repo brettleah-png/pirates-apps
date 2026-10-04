@@ -124,12 +124,15 @@ button {
   outline-offset: 2px;
 }
 
-/* The page's content, with side margins on phones and centred on wider screens */
+/* The page's content, with side margins on phones and centred on wider screens.
+   The variables let a full-width bar (BackBar) reach past the margins. */
 .page {
+  --page-top: var(--space);
+  --page-gutter: var(--space);
   width: 100%;
   max-width: 64rem;
   margin-inline: auto;
-  padding: var(--space);
+  padding: var(--page-top) var(--page-gutter) var(--space);
 }
 
 /* Hidden on screen, still read by screen readers */
@@ -194,14 +197,94 @@ button {
   color: var(--color-primary);
 }
 
+/*
+ * Loading: while the next page loads, Layout.astro sets data-loading on
+ * <html> and aria-busy on what was tapped
+ */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes slide {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+.loading-bar {
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 20;
+  height: 3px;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
+/* Just under the top bar on pages that have one, where the orange shows */
+body:has(.app-bar) .loading-bar {
+  top: 3.5rem;
+}
+.loading-bar::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 40%;
+  background: var(--color-primary);
+  animation: slide 1.1s ease-in-out infinite;
+}
+:root[data-loading] .loading-bar {
+  visibility: visible;
+}
+
+/* The page dims and ignores taps. The short delay keeps quick pages from
+   flickering. */
+main {
+  transition: opacity 0.2s 0.15s;
+}
+:root[data-loading] main {
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* The tapped button shows a spinner in place of its icon */
+:is(button, .button)[aria-busy="true"]::before {
+  content: "";
+  flex: none;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+:is(button, .button)[aria-busy="true"] .icon {
+  display: none;
+}
+
 @media (min-width: 48rem) {
   .page {
-    padding: calc(var(--space) * 1.5) calc(var(--space) * 2);
+    --page-top: calc(var(--space) * 1.5);
+    --page-gutter: calc(var(--space) * 2);
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+  }
+  /* A still bar and ring instead of moving ones */
+  .loading-bar::before {
+    width: 100%;
+    opacity: 0.6;
+    animation: none;
+  }
+  :is(button, .button)[aria-busy="true"]::before {
+    animation: none;
   }
 }

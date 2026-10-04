@@ -1,0 +1,120 @@
+---
+// A back link that stays pinned under the top bar while the page scrolls. Its
+// title (e.g. the person's name) appears once the page's heading has
+// scrolled out of view, so it's always clear which booking this is. Without
+// JavaScript the link still stays pinned; only the title doesn't appear.
+import Icon from "./Icon.astro";
+
+interface Props {
+  href: string;
+  label: string;
+  /** Shown beside the back link once the heading scrolls away */
+  title?: string;
+}
+
+const { href, label, title } = Astro.props;
+---
+
+<div class="back-bar" data-back-bar>
+  <a class="back" href={href} data-back>
+    <Icon name="chevron-left" size={20} />
+    {label}
+  </a>
+  {title && (
+    // The heading already gives the name to screen readers
+    <span class="title" aria-hidden="true">
+      {title}
+    </span>
+  )}
+</div>
+
+<script>
+  const bar = document.querySelector<HTMLElement>("[data-back-bar]");
+  const back = bar?.querySelector<HTMLAnchorElement>("[data-back]");
+
+  // Coming straight from the page the link goes to, go back instead, so that
+  // page is as you left it (same tab, search and scroll position)
+  back?.addEventListener("click", (event) => {
+    const from = document.referrer ? new URL(document.referrer) : null;
+    const to = new URL(back.href);
+    if (from?.origin === location.origin && from.pathname === to.pathname) {
+      event.preventDefault();
+      history.back();
+    }
+  });
+
+  // Show the title, and a shadow, once the heading is hidden behind the bars.
+  // The bar starts in its "at the top" look, so nothing flickers on load.
+  const heading = document.querySelector("main h1");
+  if (bar && heading) {
+    const barsHeight = parseFloat(getComputedStyle(bar).top) + bar.offsetHeight;
+    new IntersectionObserver(
+      ([entry]) => {
+        const headingIsHidden =
+          !entry.isIntersecting && entry.boundingClientRect.top < barsHeight;
+        if (headingIsHidden) {
+          bar.dataset.scrolled = "";
+        } else {
+          delete bar.dataset.scrolled;
+        }
+      },
+      { rootMargin: `-${barsHeight}px 0px 0px 0px` }
+    ).observe(heading);
+  }
+</script>
+
+<style>
+  .back-bar {
+    /* Pinned just under the top bar */
+    position: sticky;
+    top: 3.5rem;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: var(--tap-size);
+    /* Full width of the page, past its side margins, so nothing shows beside it */
+    margin: calc(-1 * var(--page-top)) calc(-1 * var(--page-gutter)) 0.75rem;
+    padding: 0 var(--page-gutter);
+    background: var(--color-background);
+    border-bottom: 1px solid transparent;
+    transition:
+      box-shadow 0.2s,
+      border-color 0.2s;
+  }
+  .back {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.25rem;
+    min-height: var(--tap-size);
+    margin-left: -0.375rem;
+    padding-right: 0.5rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .title {
+    min-width: 0;
+    overflow: hidden;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    /* Hidden at the top of the page, where the heading shows the name */
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.2s,
+      visibility 0.2s;
+  }
+
+  /* Scrolled down: the bar sits over the content */
+  .back-bar[data-scrolled] {
+    border-bottom-color: var(--color-border);
+    box-shadow: 0 4px 12px rgb(0 0 0 / 0.08);
+  }
+  .back-bar[data-scrolled] .title {
+    opacity: 1;
+    visibility: visible;
+  }
+</style>

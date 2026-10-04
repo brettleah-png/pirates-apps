@@ -46,9 +46,12 @@ const allContactDetails = [booking.name, phone, booking.email]
   .join("\n");
 const isPast = booking.date !== null && booking.date < today;
 const canEdit = editableFields(user.permissions).length > 0;
-// ID numbers are only shown to people who can edit booking details
-const canSeeIdNumber = user.permissions.editDetails;
-const showDeleteIdNumber = canSeeIdNumber && canDeleteIdNumber(booking, today);
+// The app never shows ID numbers (they're in the sheet if needed). People
+// who can edit booking details see whether one is on file, and can delete it
+// once the club no longer needs it.
+const canDeleteIdNumbers = user.permissions.editDetails;
+const showDeleteIdNumber =
+  canDeleteIdNumbers && canDeleteIdNumber(booking, today);
 const submitted = booking.submittedDate
   ? `${shortDate(booking.submittedDate)}${booking.submittedTime ? `, ${booking.submittedTime}` : ""}`
   : "Unknown";
@@ -264,11 +267,15 @@ const lastSavedBy =
               </span>
             </dd>
           </div>
-          {canSeeIdNumber && (
+          {canDeleteIdNumbers && (
             <div class="row">
               <dt>ID number</dt>
               <dd class="id-number-cell">
-                <span class="value id-number">{booking.idNumber || "—"}</span>
+                <span class="value">
+                  {booking.idNumber
+                    ? "On file in the spreadsheet"
+                    : "Not on file"}
+                </span>
                 {showDeleteIdNumber && (
                   <details class="delete-id">
                     <summary>
@@ -439,10 +446,6 @@ const lastSavedBy =
   }
   .multiline {
     white-space: pre-line;
-  }
-  .id-number {
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.04em;
   }
   .note {
     margin: 0;

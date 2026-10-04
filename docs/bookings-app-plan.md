@@ -82,17 +82,17 @@ Each dependency is added in the phase that first uses it.
 
 ## Permissions
 
-| Permission           | Allows                                                                                     |
-| -------------------- | ------------------------------------------------------------------------------------------ |
-| View bookings        | The list and detail pages, without ID numbers                                              |
-| Edit booking details | Changing the form's answers (date, times, contact details); seeing and deleting ID numbers |
-| Notes and status     | Adding notes and changing the booking status                                               |
-| Payments             | Changing the payment status, the invoice number and the damage deposit                     |
+| Permission           | Allows                                                                          |
+| -------------------- | ------------------------------------------------------------------------------- |
+| View bookings        | The list and detail pages                                                       |
+| Edit booking details | Changing the form's answers (date, times, contact details); deleting ID numbers |
+| Notes and status     | Adding notes and changing the booking status                                    |
+| Payments             | Changing the payment status, the invoice number and the damage deposit          |
 
 - **The `Users` tab** has a header row, then one row per person: `Email | VIEW_BOOKINGS | EDIT_BOOKING_DETAILS | NOTES_AND_STATUS | PAYMENTS`, with a ticked checkbox or "Yes" in each permission column the person has. Anything else, including "No" or a blank cell, means no. The permission headers are in capitals to show they're fixed names the app looks for, not labels to reword. The app needs those exact headers (upper or lower case), in any order. The app's pages show friendlier names, such as "View bookings".
 - Every permission includes viewing.
 - **Permissions are re-read every 5 minutes**, so changes in the `Users` tab take effect without signing out. People without access are re-checked on every visit, so they get in as soon as an admin adds them.
-- **ID numbers are only shown to people who can edit booking details.** An SA ID number gives away a person's date of birth and gender, so it's the most sensitive field in the sheet under POPIA.
+- **The app never shows ID numbers.** An SA ID number gives away a person's date of birth and gender, so it's the most sensitive field in the sheet under POPIA, and anyone who needs one can find it in the sheet. People who can edit booking details see whether one is on file, and can delete it once the club no longer needs it.
 - After signing in, people who aren't in `Users`, or have no boxes ticked, see a page that tells them to ask an admin.
 - **Checkboxes instead of roles:** with a handful of users, ticking boxes per person is easier to follow than a table of roles. If the list grows, roles can come later.
 - The sheet's owners manage users in the sheet, not in the app.
@@ -120,6 +120,7 @@ Each dependency is added in the phase that first uses it.
 - On phones, the booking list is a list of cards rather than a table. Wide screens can use a table if it helps.
 - Native controls: `<select>` for statuses, and `<input type="date">` for dates, so phones show their own pickers.
 - Colours come from the club website: orange `#c9491a`, dark `#222429` and light `#f4f5f8`.
+- **Loading:** the sheet can take a few seconds to read, so after a tap the page shows a progress bar under the top bar, dims and stops responding, and the tapped card or button shows a spinner. A form can't be sent twice. This matters most in the installed app, which has no browser loading indicator.
 
 ## Phases
 
@@ -150,7 +151,7 @@ Netlify deploys `master` to the live site and builds a preview for each pull req
 ### 3. Read bookings (built)
 
 - **The list** (`/`): a search box, Upcoming / Past / All tabs with counts, and cards grouped under month headings. Upcoming is the default and includes today; past and all are newest first. Search matches every word against the name, email, phone (with or without spaces), function, special considerations, status, invoice number and date ("october", "saturday"). Search and tab are in the address (`/?when=past&q=birthday`), so they work without JavaScript and can be shared.
-- **A booking** (`/bookings/<code>`): the date and time with how long it runs, contact details with copy buttons (and one to copy them all), tap-to-call and tap-to-email links, the form's answers, and the hand-typed tracking columns, read-only. ID numbers only show for people who can edit booking details.
+- **A booking** (`/bookings/<code>`): the date and time with how long it runs, contact details with copy buttons (and one to copy them all), tap-to-call and tap-to-email links, the form's answers, and the hand-typed tracking columns, read-only. The app doesn't show ID numbers.
 - **Themes:** System, Light or Dark, chosen in the account menu and saved on the device. A script in `<head>` applies it before the page is drawn, so it never flashes the wrong theme.
 - The responses tab is called `Form responses 1` (lowercase r), in both the real sheet and the test copy.
 - `src/lib/bookings.fixtures.ts` holds made-up rows in the API's raw format, covering both form versions. The tests read them.
@@ -192,7 +193,7 @@ On the real spreadsheet:
 | "Allow response editing"          | Off                                                                                                                                                                                                 |
 | Statuses                          | See [Statuses](#statuses)                                                                                                                                                                           |
 | When a booking holds its date     | Deposit Paid or Full Payment Received, unless Cancelled                                                                                                                                             |
-| ID numbers                        | The form keeps asking, to identify who's legally responsible for the hire. Only people who can edit booking details see them.                                                                       |
+| ID numbers                        | The form keeps asking, to identify who's legally responsible for the hire. The app never shows them: they're in the sheet if needed.                                                                |
 | Invoice number and damage deposit | Part of the payments permission                                                                                                                                                                     |
 | Refunds after a cancellation      | Usually not, but the payment status has a Refunded option for when it happens                                                                                                                       |
 | App name and colour on phones     | "Bookings" under the icon, and the website's orange in Android's title bar                                                                                                                          |
@@ -214,7 +215,7 @@ Nothing at the moment.
 
 - **Google sign-in inside an installed iPhone app.** Signing in leaves the app for Google's page, which then has to send the user back with their session intact. Test this on a real iPhone as soon as sign-in exists (phase 2), before building more on it.
 - **A leaked key gives full edit access to the sheet.** Keep it only in Netlify's environment variables and a local `.env`, never in the repo. Replace it when someone with access to it leaves the committee.
-- **Personal information.** Bookings hold names, phone numbers, email addresses and ID numbers, which South Africa's privacy law (POPIA) protects. Only listed users can see bookings, only editors see ID numbers, development uses made-up data, and the app doesn't log booking contents. The privacy policy covers committee members only: the booking form itself has no privacy notice yet, which POPIA expects when personal information is collected.
+- **Personal information.** Bookings hold names, phone numbers, email addresses and ID numbers, which South Africa's privacy law (POPIA) protects. Only listed users can see bookings, the app never shows ID numbers, development uses made-up data, and the app doesn't log booking contents. The privacy policy covers committee members only: the booking form itself has no privacy notice yet, which POPIA expects when personal information is collected.
 - **The sheet changes owner by copying.** The copy has a new ID and isn't shared with the service account. Update the app's setting and share the copy.
 - **Rows in `Form responses 1` are sorted or deleted.** `Tracking Data`'s copy shifts while the `App_` values stay put. The safeguard spots it, warns on every page and pauses saving. Someone then has to line the rows up again by hand.
 - **Netlify's free plan has a monthly usage allowance.** If the app used it all, Netlify would pause the site until the next month. A committee app should use a small fraction of it; check the usage after the first month.
