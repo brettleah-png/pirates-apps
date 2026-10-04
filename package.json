@@ -8,8 +8,10 @@
   "scripts": {
     "dev": "pnpm --filter website-v2 dev",
     "dev:website": "php -S localhost:8000 -t apps/website",
+    "dev:bookings": "pnpm --filter bookings dev",
     "build": "pnpm --filter website-v2 build",
     "preview": "pnpm --filter website-v2 preview",
+    "build:bookings": "pnpm --filter bookings build",
     "format": "prettier . --write",
     "format:check": "prettier . --check"
   },

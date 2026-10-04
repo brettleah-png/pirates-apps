@@ -1,0 +1,15 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// Built once as a plain HTML file, so the service worker can store it and show
+// it when there's no connection
+export const prerender = true;
+---
+
+<Layout title="Offline">
+  <h1>You're offline</h1>
+  <p>Bookings need a connection. Check your signal or Wi-Fi and try again.</p>
+  <button type="button" onclick="location.reload()">
+    Try again
+  </button>
+</Layout>

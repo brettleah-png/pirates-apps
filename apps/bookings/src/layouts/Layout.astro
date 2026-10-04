@@ -1,0 +1,37 @@
+---
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Private app: keep it out of search results -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{title} | Pirates Bookings</title>
+
+    <!-- Installable app: name, icons and colours are in the manifest -->
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#c9491a" />
+    <link rel="icon" type="image/png" href="/icons/icon-192.png" />
+    <!-- iPhones use this icon, not the manifest's, on the home screen -->
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-title" content="Bookings" />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<script>
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("/sw.js");
+  }
+</script>

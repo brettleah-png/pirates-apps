@@ -1,0 +1,56 @@
+/*
+ * Mobile first: the styles in this file and in components are for phones.
+ * Wider screens build on them with min-width media queries, never max-width.
+ */
+
+:root {
+  /* The club website's colours (apps/website/css/style.css) */
+  --color-primary: #c9491a;
+  --color-text: #222429;
+  --color-background: #f4f5f8;
+  --color-surface: #ffffff;
+
+  --space: 1rem;
+  /* Apple and Google recommend touch targets of at least 44–48px */
+  --tap-size: 3rem;
+
+  font-family: system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: var(--space);
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+  /* iOS zooms into any form field whose text is smaller than 16px */
+  font-size: 1rem;
+}
+
+input,
+select,
+button {
+  min-height: var(--tap-size);
+}
+
+/* Tablets and wider: centre the content instead of stretching it */
+@media (min-width: 48rem) {
+  body {
+    max-width: 60rem;
+    margin-inline: auto;
+    padding: calc(var(--space) * 2);
+  }
+}

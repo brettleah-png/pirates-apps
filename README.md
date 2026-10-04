@@ -4,12 +4,13 @@ Code for the Helderberg Pirates Baseball Club.
 
 ## Layout
 
-| Path                 | Contents                                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------- |
-| `apps/website/`      | The club website. Plain HTML and PHP with no build step, hosted on cPanel at Domains.co.za. |
-| `apps/website-v2/`   | The website's Astro rebuild, in progress (see `docs/website-v2-plan.md`). Not deployed yet. |
-| `docs/`              | Club history documents and planning notes. Not deployed.                                    |
-| `.github/workflows/` | GitHub Actions workflows.                                                                   |
+| Path                 | Contents                                                                                       |
+| -------------------- | ---------------------------------------------------------------------------------------------- |
+| `apps/website/`      | The club website. Plain HTML and PHP with no build step, hosted on cPanel at Domains.co.za.    |
+| `apps/website-v2/`   | The website's Astro rebuild, in progress (see `docs/website-v2-plan.md`). Not deployed yet.    |
+| `apps/bookings/`     | Clubhouse bookings admin app, in progress (see `docs/bookings-app-plan.md`). Not deployed yet. |
+| `docs/`              | Club history documents and planning notes. Not deployed.                                       |
+| `.github/workflows/` | GitHub Actions workflows.                                                                      |
 
 ## Development
 
@@ -23,6 +24,9 @@ pnpm install
 pnpm dev            # website-v2 dev server at http://localhost:4321
 pnpm build          # website-v2 static build into apps/website-v2/dist/
 pnpm preview        # serve that build locally
+
+pnpm dev:bookings   # bookings app dev server at http://localhost:4322
+pnpm build:bookings # bookings app server build into apps/bookings/dist/
 
 pnpm format         # format the repo with Prettier
 pnpm format:check   # check formatting without changing files
