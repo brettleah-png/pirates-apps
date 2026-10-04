@@ -9,7 +9,7 @@ const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -24,6 +24,52 @@ const { title } = Astro.props;
     <!-- iPhones use this icon, not the manifest's, on the home screen -->
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
     <meta name="apple-mobile-web-app-title" content="Bookings" />
+
+    <!--
+      Picks the light or dark theme before the page is drawn, so it never
+      flashes the wrong one. The choice is "light", "dark" or "system" (follow
+      the device), saved on this device only. The account menu calls
+      window.setTheme to change it.
+    -->
+    <script is:inline>
+      (function () {
+        var STATUS_BAR_COLOURS = { light: "#c9491a", dark: "#1d1f24" };
+        var systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+        function savedChoice() {
+          try {
+            return localStorage.getItem("theme") || "system";
+          } catch (error) {
+            return "system";
+          }
+        }
+
+        function apply(choice) {
+          var dark =
+            choice === "dark" || (choice === "system" && systemDark.matches);
+          var theme = dark ? "dark" : "light";
+          document.documentElement.dataset.theme = theme;
+          var statusBar = document.querySelector('meta[name="theme-color"]');
+          if (statusBar)
+            statusBar.setAttribute("content", STATUS_BAR_COLOURS[theme]);
+        }
+
+        window.setTheme = function (choice) {
+          try {
+            localStorage.setItem("theme", choice);
+          } catch (error) {
+            // Private browsing can block saving; the theme still changes now
+          }
+          apply(choice);
+        };
+        window.savedTheme = savedChoice;
+
+        systemDark.addEventListener("change", function () {
+          if (savedChoice() === "system") apply("system");
+        });
+        apply(savedChoice());
+      })();
+    </script>
   </head>
   <body>
     <slot />

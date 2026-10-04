@@ -1,0 +1,21 @@
+---
+// The frame for pages that need signing in: the top bar with the account
+// menu, and the page's content below it
+import AppHeader from "../components/AppHeader.astro";
+import type { SignedInUser } from "../lib/users";
+import Layout from "./Layout.astro";
+
+interface Props {
+  title: string;
+  user: SignedInUser;
+}
+
+const { title, user } = Astro.props;
+---
+
+<Layout title={title}>
+  <AppHeader user={user} />
+  <main class="page">
+    <slot />
+  </main>
+</Layout>

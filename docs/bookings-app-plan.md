@@ -2,7 +2,7 @@
 
 _Written 4 Oct 2026. A plan for `apps/bookings`: a private app where the committee manages clubhouse bookings that arrive through the club's Google Form._
 
-**Status:** the app runs on Netlify at `bookings.helderbergpirates.co.za`, and the Google Cloud project, service account and test copy of the spreadsheet are set up. Phase 1 is done except the phone tests. Sign-in (phase 2) is built and waiting to be tested with a real Google account.
+**Status:** the app runs on Netlify at `bookings.helderbergpirates.co.za`, and the Google Cloud project, service account and test copy of the spreadsheet are set up. Phase 1 is done except the phone tests, sign-in (phase 2) is live, and viewing, searching and filtering bookings (phase 3) is built.
 
 ## What it does
 
@@ -30,17 +30,17 @@ Bookings app (on Netlify)
 
 ## Stack
 
-| Concern          | Choice                                                                      | Why                                                                                                                                                                                 |
-| ---------------- | --------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Framework        | Astro 7 with `output: 'server'`                                             | Same as website-v2. A list, a detail page and forms suit server-rendered pages. Astro Actions handle form posts, with Zod validation.                                               |
-| Hosting          | Netlify's free plan, with `@astrojs/netlify`                                | The cPanel plan at Domains.co.za has no Node.js support. Netlify runs the server code, provides HTTPS and deploys from GitHub. The website, domain and email stay at Domains.co.za. |
-| Sign-in          | Google sign-in through [Arctic](https://arcticjs.dev)                       | A small, readable OAuth client. Auth.js is more than one provider needs.                                                                                                            |
-| Sessions         | Astro sessions, stored in Netlify Blobs                                     | Built in, and the Netlify adapter sets up the storage. Session data stays on the server.                                                                                            |
-| Sheets           | `@googleapis/sheets` with a service account key                             | Google's official client, with types.                                                                                                                                               |
-| Tests            | Vitest                                                                      | Tests the permission rules and the mapping from sheet rows to bookings without calling Google.                                                                                      |
-| Cross-site posts | Astro's `security.checkOrigin` (on by default in server mode)               | Rejects form posts sent from other sites.                                                                                                                                           |
-| Phone app        | A PWA: web app manifest, icons and a hand-written service worker            | Installs from the browser with no app store. About 40 lines of service worker, so no plugin is needed.                                                                              |
-| Styling          | Plain CSS, mobile first: `src/styles/global.css` plus Astro's scoped styles | A handful of screens doesn't need a CSS framework. Plain CSS is easy to follow.                                                                                                     |
+| Concern          | Choice                                                                                                  | Why                                                                                                                                                                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework        | Astro 7 with `output: 'server'`                                                                         | Same as website-v2. A list, a detail page and forms suit server-rendered pages. Astro Actions handle form posts, with Zod validation.                                               |
+| Hosting          | Netlify's free plan, with `@astrojs/netlify`                                                            | The cPanel plan at Domains.co.za has no Node.js support. Netlify runs the server code, provides HTTPS and deploys from GitHub. The website, domain and email stay at Domains.co.za. |
+| Sign-in          | Google sign-in through [Arctic](https://arcticjs.dev)                                                   | A small, readable OAuth client. Auth.js is more than one provider needs.                                                                                                            |
+| Sessions         | Astro sessions, stored in Netlify Blobs                                                                 | Built in, and the Netlify adapter sets up the storage. Session data stays on the server.                                                                                            |
+| Sheets           | `@googleapis/sheets` with a service account key                                                         | Google's official client, with types.                                                                                                                                               |
+| Tests            | Vitest                                                                                                  | Tests the permission rules and the mapping from sheet rows to bookings without calling Google.                                                                                      |
+| Cross-site posts | Astro's `security.checkOrigin` (on by default in server mode)                                           | Rejects form posts sent from other sites.                                                                                                                                           |
+| Phone app        | A PWA: web app manifest, icons and a hand-written service worker                                        | Installs from the browser with no app store. About 40 lines of service worker, so no plugin is needed.                                                                              |
+| Styling          | Plain CSS, mobile first: `src/styles/global.css` plus Astro's scoped styles, with light and dark themes | A handful of screens doesn't need a CSS framework. Plain CSS is easy to follow. Colours are variables with a light and a dark set.                                                  |
 
 Each dependency is added in the phase that first uses it.
 
@@ -59,7 +59,10 @@ The form's tab stays as Google Forms writes it. The app adds its own tabs:
 - **Booking key: the submission timestamp plus the email address.** The form collects emails and doesn't allow response editing, so a row's timestamp never changes. Row numbers aren't used, because they change as soon as someone sorts or deletes rows.
 - **Today's tracking columns move to `Tracking`.** The responses tab has three columns added by hand at the front: State, Damage Deposit Paid/Refunded and Invoice Number. A one-off script copies their values into `Tracking` when the app goes live, and then they're deleted from the responses tab.
 - **Columns are found by header, not position.** The form's columns aren't in question order (End Time comes before Start Time), and some headers include the question's help text, so the app matches the start of each header.
-- **Dates and times are read as the sheet's raw values**, not as text, so a date like 05/10 can't be misread as 10 May.
+- **Dates and times are read as the sheet's raw values**, not as text, so a date like 05/10 can't be misread as 10 May. "Today" is worked out in South African time, because Netlify's servers run on UTC.
+- **Two versions of the form share the same columns.** Older rows put the date and start time together in "Date of Function", leave Start Time empty, and hold the number of hours in End Time. Newer rows put only the date in "Date of Function", and times of day in Start Time and End Time. The app tells them apart by whether Start Time is filled in. An end time before the start time means the function ends after midnight.
+- **Numbers lose leading zeros.** ID numbers and phone numbers stored as numbers get their 0 back (13 digits for an ID, a 0 before 9-digit phone numbers).
+- **Bookings are linked by a short code** made from the timestamp and email (`/bookings/3a3311903f33`), so links survive sorting the sheet and don't reveal the email.
 - **Notes are only ever added.** Two people writing at the same time can't overwrite each other, and the history shows who wrote what and when.
 - **Whoever saves last wins** for statuses and other tracking fields, because Sheets has no locking. That's fine for a handful of admins. Dropdowns (data validation) on the `Tracking` tab keep edits made by hand valid.
 - **Development uses a copy.** Building and testing use a copy of the spreadsheet with made-up rows. The live sheet is only connected to the live app.
@@ -143,13 +146,14 @@ Netlify deploys `master` to the live site and builds a preview for each pull req
 - `pnpm test:bookings` covers reading the `Users` tab and the sign-in redirects. `pnpm check:bookings` type-checks the TypeScript. (`astro check` is broken with this setup's dependencies and is being deprecated, so the check runs `tsc` directly.)
 - **Done when** sign-in works inside the installed app on an iPhone and on an Android phone, not just in a browser.
 
-### 3. Read bookings
+### 3. Read bookings (built)
 
-- Map each row to a typed `Booking`, finding columns by header. Build the list page (cards, upcoming bookings first, with filters) and the detail page.
+- **The list** (`/`): a search box, Upcoming / Past / All tabs with counts, and cards grouped under month headings. Upcoming is the default and includes today; past and all are newest first. Search matches every word against the name, email, phone (with or without spaces), function, special considerations, status, invoice number and date ("october", "saturday"). Search and tab are in the address (`/?when=past&q=birthday`), so they work without JavaScript and can be shared.
+- **A booking** (`/bookings/<code>`): the date and time with how long it runs, contact details with copy buttons (and one to copy them all), tap-to-call and tap-to-email links, the form's answers, and the hand-typed tracking columns, read-only. ID numbers only show for people who can edit booking details.
+- **Themes:** System, Light or Dark, chosen in the account menu and saved on the device. A script in `<head>` applies it before the page is drawn, so it never flashes the wrong theme.
 - The responses tab is called `Form responses 1` (lowercase r), in both the real sheet and the test copy.
-- Show which dates are taken.
-- Show ID numbers only to people who can edit booking details.
-- Show iPhone users how to install the app.
+- `src/lib/bookings.fixtures.ts` holds made-up rows in the API's raw format, covering both form versions. The tests read them.
+- Still to do: show which dates are taken (needs the payment status from the `Tracking` tab, phase 4), and show iPhone users how to install the app.
 
 ### 4. Tracking and notes
 

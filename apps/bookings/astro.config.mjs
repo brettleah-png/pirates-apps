@@ -14,7 +14,16 @@ const secret = () => envField.string({ context: "server", access: "secret" });
 export default defineConfig({
   // Every page is rendered on request: bookings are private and change often
   output: "server",
-  adapter: netlify(),
+  adapter: netlify({
+    // The app has no edge functions. Emulating them locally needs a matching
+    // version of Deno, and a mismatch breaks the dev server.
+    // The other two are Netlify's defaults.
+    devFeatures: {
+      edgeFunctions: false,
+      images: true,
+      environmentVariables: false,
+    },
+  }),
   // website-v2 uses 4321, so both apps can run at the same time
   server: { port: 4322 },
   env: {

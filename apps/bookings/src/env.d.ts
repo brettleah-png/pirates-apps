@@ -8,3 +8,12 @@ declare namespace App {
     user: import("./lib/users").SignedInUser;
   }
 }
+
+/** Light, dark, or follow the device */
+type ThemeChoice = "system" | "light" | "dark";
+
+// Defined by the inline script in Layout.astro
+interface Window {
+  setTheme(choice: ThemeChoice): void;
+  savedTheme(): ThemeChoice;
+}

@@ -1,0 +1,119 @@
+---
+// A button that copies text to the clipboard and briefly shows "Copied"
+import Icon from "./Icon.astro";
+
+interface Props {
+  /** The text to copy */
+  value: string;
+  /** What's being copied, for screen readers: "Copy phone number" */
+  label: string;
+  /** Visible text next to the icon. Without it, the button is just an icon. */
+  text?: string;
+}
+
+const { value, label, text } = Astro.props;
+---
+
+<button
+  type="button"
+  class:list={["copy-button", { "has-text": text }]}
+  data-copy={value}
+  data-copy-label={label}
+  aria-label={`Copy ${label}`}
+>
+  <span class="idle">
+    <Icon name="copy" size={18} />
+    {text && <span>{text}</span>}
+  </span>
+  <span class="done" hidden>
+    <Icon name="check" size={18} />
+    <span>Copied</span>
+  </span>
+</button>
+
+<script>
+  // Older browsers, and pages not on HTTPS, have no clipboard API
+  function copyWithoutClipboardApi(text: string) {
+    const field = document.createElement("textarea");
+    field.value = text;
+    field.style.position = "fixed";
+    field.style.opacity = "0";
+    document.body.append(field);
+    field.select();
+    document.execCommand("copy");
+    field.remove();
+  }
+
+  async function copy(text: string) {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      copyWithoutClipboardApi(text);
+    }
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>(
+    "[data-copy]"
+  )) {
+    const idle = button.querySelector<HTMLElement>(".idle")!;
+    const done = button.querySelector<HTMLElement>(".done")!;
+    let timer: number | undefined;
+
+    button.addEventListener("click", async () => {
+      await copy(button.dataset.copy ?? "");
+      idle.hidden = true;
+      done.hidden = false;
+      // Tell screen readers too
+      const status = document.querySelector("[data-copy-status]");
+      if (status) status.textContent = `Copied ${button.dataset.copyLabel}`;
+
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        idle.hidden = false;
+        done.hidden = true;
+      }, 1500);
+    });
+  }
+</script>
+
+<style>
+  .copy-button {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    padding: 0 0.625rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    background: var(--color-surface);
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .copy-button:hover {
+    border-color: var(--color-muted);
+    color: var(--color-text);
+  }
+  .copy-button.has-text {
+    width: 100%;
+    min-height: var(--tap-size);
+    color: var(--color-text);
+    font-size: 1rem;
+  }
+  .idle,
+  .done {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+  }
+  .idle[hidden],
+  .done[hidden] {
+    display: none;
+  }
+  .done {
+    color: var(--color-success);
+  }
+</style>

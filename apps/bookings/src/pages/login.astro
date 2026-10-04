@@ -19,18 +19,22 @@ const signInUrl = `/auth/google?next=${encodeURIComponent(next)}`;
 ---
 
 <Layout title="Sign in">
-  <main class="sign-in">
-    <img src="/icons/icon-192.png" alt="" width="96" height="96" />
-    <h1>Clubhouse bookings</h1>
-    <p>For the Helderberg Pirates committee.</p>
-    {error && (
-      <p class="error" role="alert">
-        {error}
-      </p>
-    )}
-    <a class="button" href={signInUrl}>
-      Sign in with Google
-    </a>
+  <main class="page sign-in">
+    <div class="card">
+      <img src="/icons/icon-192.png" alt="" width="88" height="88" />
+      <div>
+        <h1>Clubhouse bookings</h1>
+        <p class="lede">For the Helderberg Pirates committee.</p>
+      </div>
+      {error && (
+        <p class="error" role="alert">
+          {error}
+        </p>
+      )}
+      <a class="button button-primary" href={signInUrl}>
+        Sign in with Google
+      </a>
+    </div>
     <a class="privacy-link" href="/privacy">
       Privacy policy
     </a>
@@ -41,40 +45,47 @@ const signInUrl = `/auth/google?next=${encodeURIComponent(next)}`;
   .sign-in {
     display: grid;
     justify-items: center;
-    gap: var(--space);
-    padding-block: calc(var(--space) * 3);
+    align-content: center;
+    gap: 1.25rem;
+    min-height: 100dvh;
+  }
+  .card {
+    display: grid;
+    justify-items: center;
+    gap: 1.25rem;
+    width: 100%;
+    max-width: 24rem;
+    padding: 2rem 1.5rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
     text-align: center;
   }
-  h1,
-  p {
-    margin: 0;
+  .card img {
+    border-radius: 50%;
+    background: #ffffff;
   }
-  .privacy-link {
-    color: var(--color-text);
-    font-size: 0.875rem;
+  h1 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+  .lede {
+    margin: 0.25rem 0 0;
+    color: var(--color-muted);
   }
   .error {
-    padding: 0.75rem var(--space);
-    border-radius: 6px;
-    background: #fdecea;
-    color: #8a1c13;
+    margin: 0;
+    padding: 0.75rem 1rem;
+    border-radius: var(--radius-small);
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
   }
   .button {
-    display: grid;
-    place-items: center;
     width: 100%;
-    min-height: var(--tap-size);
-    border-radius: 6px;
-    background: var(--color-primary);
-    color: #ffffff;
-    font-weight: 600;
-    text-decoration: none;
   }
-
-  @media (min-width: 48rem) {
-    .button {
-      width: auto;
-      padding-inline: calc(var(--space) * 2);
-    }
+  .privacy-link {
+    color: var(--color-muted);
+    font-size: 0.875rem;
   }
 </style>

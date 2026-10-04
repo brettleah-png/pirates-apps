@@ -11,7 +11,7 @@ if (canView(user.permissions)) {
 ---
 
 <Layout title="No access yet">
-  <main class="no-access">
+  <main class="page no-access">
     <h1>No access yet</h1>
     <p>
       You're signed in as <strong>{user.email}</strong>, but that account isn't
@@ -22,7 +22,9 @@ if (canView(user.permissions)) {
       this page.
     </p>
     <form method="post" action="/logout">
-      <button type="submit">Sign in with a different account</button>
+      <button class="button" type="submit">
+        Sign in with a different account
+      </button>
     </form>
   </main>
 </Layout>
@@ -31,6 +33,8 @@ if (canView(user.permissions)) {
   .no-access {
     display: grid;
     gap: var(--space);
+    max-width: 32rem;
+    padding-top: 3rem;
   }
   h1,
   p,

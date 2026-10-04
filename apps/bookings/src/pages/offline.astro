@@ -7,9 +7,34 @@ export const prerender = true;
 ---
 
 <Layout title="Offline">
-  <h1>You're offline</h1>
-  <p>Bookings need a connection. Check your signal or Wi-Fi and try again.</p>
-  <button type="button" onclick="location.reload()">
-    Try again
-  </button>
+  <main class="page offline">
+    <h1>You're offline</h1>
+    <p>Bookings need a connection. Check your signal or Wi-Fi and try again.</p>
+    <button
+      class="button button-primary"
+      type="button"
+      onclick="location.reload()"
+    >
+      Try again
+    </button>
+  </main>
 </Layout>
+
+<style>
+  .offline {
+    display: grid;
+    justify-items: center;
+    align-content: center;
+    gap: 1rem;
+    min-height: 100dvh;
+    text-align: center;
+  }
+  h1,
+  p {
+    margin: 0;
+  }
+  p {
+    max-width: 24rem;
+    color: var(--color-muted);
+  }
+</style>

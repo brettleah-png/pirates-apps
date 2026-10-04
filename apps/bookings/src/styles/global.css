@@ -1,23 +1,78 @@
 /*
  * Mobile first: the styles in this file and in components are for phones.
  * Wider screens build on them with min-width media queries, never max-width.
+ *
+ * Colours are variables with a light and a dark set. Layout.astro sets
+ * data-theme="light" or "dark" on <html> before the page is drawn, from the
+ * person's choice or their device's setting.
  */
 
 :root {
-  /* The club website's colours (apps/website/css/style.css) */
+  /* The club website's orange (apps/website/css/style.css), and its darker
+     shade for pressed buttons */
   --color-primary: #c9491a;
+  --color-primary-strong: #a83c14;
+  --color-on-primary: #ffffff;
+  --color-primary-soft: #fbebe4;
+
   --color-text: #222429;
+  --color-muted: #5b6070;
   --color-background: #f4f5f8;
   --color-surface: #ffffff;
+  --color-surface-sunken: #eceef3;
+  --color-border: #dfe2e9;
+
+  --color-app-bar: #c9491a;
+  --color-on-app-bar: #ffffff;
+
+  --color-success: #2d7a4b;
+  --color-danger: #b3261e;
+  --color-danger-soft: #fdecea;
+
+  --shadow-card: 0 1px 2px rgb(16 24 40 / 0.06), 0 1px 3px rgb(16 24 40 / 0.08);
 
   --space: 1rem;
+  --radius: 0.75rem;
+  --radius-small: 0.5rem;
   /* Apple and Google recommend touch targets of at least 44–48px */
   --tap-size: 3rem;
 
-  font-family: system-ui, sans-serif;
+  color-scheme: light;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    sans-serif;
   line-height: 1.5;
   color: var(--color-text);
   background: var(--color-background);
+  -webkit-text-size-adjust: 100%;
+}
+
+:root[data-theme="dark"] {
+  --color-primary: #ec7643;
+  --color-primary-strong: #f39167;
+  --color-on-primary: #16171b;
+  --color-primary-soft: #3a241b;
+
+  --color-text: #eceef3;
+  --color-muted: #a2a7b5;
+  --color-background: #121316;
+  --color-surface: #1d1f24;
+  --color-surface-sunken: #17181c;
+  --color-border: #31343d;
+
+  --color-app-bar: #1d1f24;
+  --color-on-app-bar: #eceef3;
+
+  --color-success: #63c48b;
+  --color-danger: #f08a80;
+  --color-danger-soft: #3b1f1d;
+
+  --shadow-card: none;
+
+  color-scheme: dark;
 }
 
 *,
@@ -28,7 +83,18 @@
 
 body {
   margin: 0;
-  padding: var(--space);
+  min-height: 100dvh;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+a {
+  color: var(--color-primary);
 }
 
 input,
@@ -38,6 +104,7 @@ button {
   font: inherit;
   /* iOS zooms into any form field whose text is smaller than 16px */
   font-size: 1rem;
+  color: inherit;
 }
 
 input,
@@ -46,11 +113,89 @@ button {
   min-height: var(--tap-size);
 }
 
-/* Tablets and wider: centre the content instead of stretching it */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* The page's content, with side margins on phones and centred on wider screens */
+.page {
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+  padding: var(--space);
+}
+
+/* Hidden on screen, still read by screen readers */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* A button that looks like a plain outlined button */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--tap-size);
+  padding: 0 1.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover {
+  border-color: var(--color-muted);
+}
+
+.button-primary {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.button-primary:hover {
+  border-color: var(--color-primary-strong);
+  background: var(--color-primary-strong);
+}
+
+/* A small rounded label, e.g. a booking's status */
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border-radius: 999px;
+  background: var(--color-surface-sunken);
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.tag-accent {
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
 @media (min-width: 48rem) {
-  body {
-    max-width: 60rem;
-    margin-inline: auto;
-    padding: calc(var(--space) * 2);
+  .page {
+    padding: calc(var(--space) * 1.5) calc(var(--space) * 2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }

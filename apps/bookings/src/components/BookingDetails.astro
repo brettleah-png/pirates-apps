@@ -1,0 +1,340 @@
+---
+// Everything about one booking: when, how to reach the person, their answers
+// on the form, and the committee's tracking
+import {
+  durationInMinutes,
+  durationLabel,
+  formatPhone,
+  timeRange,
+  type Booking,
+} from "../lib/bookings";
+import { longDate, relativeDay, shortDate } from "../lib/dates";
+import CopyButton from "./CopyButton.astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  booking: Booking;
+  today: string;
+  /** ID numbers are only shown to people who can edit booking details */
+  canSeeIdNumber: boolean;
+}
+
+const { booking, today, canSeeIdNumber } = Astro.props;
+const time = timeRange(booking);
+const duration = durationInMinutes(booking);
+const phone = formatPhone(booking.phone);
+const allContactDetails = [booking.name, phone, booking.email]
+  .filter(Boolean)
+  .join("\n");
+const isPast = booking.date !== null && booking.date < today;
+const submitted = booking.submittedDate
+  ? `${shortDate(booking.submittedDate)}${booking.submittedTime ? `, ${booking.submittedTime}` : ""}`
+  : "Unknown";
+---
+
+<article class="booking">
+  <header class="heading">
+    <h1>{booking.name || "No name given"}</h1>
+    <p class="function">{booking.functionType || "No function type given"}</p>
+    <div class="tags">
+      {booking.state && <span class="tag tag-accent">{booking.state}</span>}
+      {booking.isMember && <span class="tag">Club member</span>}
+      {isPast && <span class="tag">Past</span>}
+    </div>
+  </header>
+
+  <div class="columns">
+    <div class="column">
+      <section class="panel when" aria-label="When">
+        <div class="when-row">
+          <span class="when-icon">
+            <Icon name="calendar" />
+          </span>
+          <div>
+            <strong>
+              {booking.date ? longDate(booking.date) : "No date given"}
+            </strong>
+            {booking.date && <span>{relativeDay(booking.date, today)}</span>}
+          </div>
+        </div>
+        <div class="when-row">
+          <span class="when-icon">
+            <Icon name="clock" />
+          </span>
+          <div>
+            <strong>{time ?? "No time given"}</strong>
+            {duration !== null && (
+              <span>
+                {durationLabel(duration)}
+                {booking.endsNextDay && " · ends the next day"}
+              </span>
+            )}
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>Contact</h2>
+        <dl class="rows">
+          <div class="row">
+            <dt>Name</dt>
+            <dd>
+              <span class="value">{booking.name || "—"}</span>
+              {booking.name && <CopyButton value={booking.name} label="name" />}
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Phone</dt>
+            <dd>
+              {booking.phone ? (
+                <a
+                  class="value"
+                  href={`tel:${booking.phone.replace(/[^\d+]/g, "")}`}
+                >
+                  {phone}
+                </a>
+              ) : (
+                <span class="value">—</span>
+              )}
+              {booking.phone && (
+                <CopyButton value={phone} label="phone number" />
+              )}
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Email</dt>
+            <dd>
+              {booking.email ? (
+                <a class="value" href={`mailto:${booking.email}`}>
+                  {booking.email}
+                </a>
+              ) : (
+                <span class="value">—</span>
+              )}
+              {booking.email && (
+                <CopyButton value={booking.email} label="email address" />
+              )}
+            </dd>
+          </div>
+        </dl>
+        <CopyButton
+          value={allContactDetails}
+          label="all contact details"
+          text="Copy all contact details"
+        />
+      </section>
+    </div>
+
+    <div class="column">
+      <section class="panel">
+        <h2>From the booking form</h2>
+        <dl class="rows">
+          <div class="row">
+            <dt>Special considerations</dt>
+            <dd>
+              <span class="value multiline">
+                {booking.specialConsiderations || "None"}
+              </span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Club member</dt>
+            <dd>
+              <span class="value">{booking.isMember ? "Yes" : "No"}</span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Terms and conditions</dt>
+            <dd>
+              <span class="value">
+                {booking.acceptedTerms ? "Accepted" : "Not accepted"}
+              </span>
+            </dd>
+          </div>
+          {canSeeIdNumber && (
+            <div class="row">
+              <dt>ID number</dt>
+              <dd>
+                <span class="value id-number">{booking.idNumber || "—"}</span>
+              </dd>
+            </div>
+          )}
+          <div class="row">
+            <dt>Requested</dt>
+            <dd>
+              <span class="value">{submitted}</span>
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <section class="panel">
+        <h2>Tracking</h2>
+        <dl class="rows">
+          <div class="row">
+            <dt>Status</dt>
+            <dd>
+              <span class="value">{booking.state || "—"}</span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Invoice number</dt>
+            <dd>
+              <span class="value">{booking.invoiceNumber || "—"}</span>
+            </dd>
+          </div>
+          <div class="row">
+            <dt>Damage deposit</dt>
+            <dd>
+              <span class="value">{booking.damageDeposit || "—"}</span>
+            </dd>
+          </div>
+        </dl>
+        <p class="note">As typed in the spreadsheet.</p>
+      </section>
+    </div>
+  </div>
+
+  <p class="visually-hidden" aria-live="polite" data-copy-status></p>
+</article>
+
+<style>
+  .booking {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .heading h1 {
+    margin: 0;
+    font-size: 1.625rem;
+  }
+  .function {
+    margin: 0.25rem 0 0;
+    color: var(--color-muted);
+    font-size: 1.0625rem;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.375rem;
+    margin-top: 0.75rem;
+  }
+  .tags:empty {
+    display: none;
+  }
+
+  .columns,
+  .column {
+    display: grid;
+    gap: 1rem;
+    align-content: start;
+  }
+
+  .panel {
+    display: grid;
+    gap: 0.75rem;
+    padding: 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-card);
+  }
+  .panel h2 {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .when-row {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+  }
+  .when-row div {
+    display: grid;
+  }
+  .when-row strong {
+    font-size: 1.0625rem;
+    font-variant-numeric: tabular-nums;
+  }
+  .when-row span {
+    color: var(--color-muted);
+    font-size: 0.9375rem;
+  }
+  .when-icon {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: var(--radius-small);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+
+  .rows {
+    display: grid;
+    margin: 0;
+  }
+  .row {
+    display: grid;
+    gap: 0.125rem;
+    padding: 0.625rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .row:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+  dt {
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+    font-weight: 600;
+  }
+  dd {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0;
+  }
+  .value {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  a.value {
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+  }
+  .multiline {
+    white-space: pre-line;
+  }
+  .id-number {
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.04em;
+  }
+  .note {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: 0.8125rem;
+  }
+
+  /* Wider screens: two columns, and labels beside their values */
+  @media (min-width: 56rem) {
+    .heading h1 {
+      font-size: 2rem;
+    }
+    .columns {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .row {
+      grid-template-columns: 9.5rem minmax(0, 1fr);
+      align-items: center;
+      gap: 1rem;
+    }
+  }
+</style>
