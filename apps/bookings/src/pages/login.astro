@@ -31,6 +31,9 @@ const signInUrl = `/auth/google?next=${encodeURIComponent(next)}`;
     <a class="button" href={signInUrl}>
       Sign in with Google
     </a>
+    <a class="privacy-link" href="/privacy">
+      Privacy policy
+    </a>
   </main>
 </Layout>
 
@@ -45,6 +48,10 @@ const signInUrl = `/auth/google?next=${encodeURIComponent(next)}`;
   h1,
   p {
     margin: 0;
+  }
+  .privacy-link {
+    color: var(--color-text);
+    font-size: 0.875rem;
   }
   .error {
     padding: 0.75rem var(--space);

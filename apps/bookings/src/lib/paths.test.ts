@@ -2,11 +2,18 @@ import { describe, expect, it } from "vitest";
 import { isPublicPath, safeNextPath } from "./paths";
 
 describe("isPublicPath", () => {
-  it("lets the sign-in pages, signing out and the offline page through", () => {
+  it("lets the sign-in pages, signing out, the privacy policy and the offline page through", () => {
     expect(isPublicPath("/login")).toBe(true);
     expect(isPublicPath("/auth/callback")).toBe(true);
     expect(isPublicPath("/offline/")).toBe(true);
     expect(isPublicPath("/logout")).toBe(true);
+    expect(isPublicPath("/privacy")).toBe(true);
+  });
+
+  it("treats a trailing slash as the same page", () => {
+    expect(isPublicPath("/privacy/")).toBe(true);
+    expect(isPublicPath("/offline")).toBe(true);
+    expect(isPublicPath("/no-access/")).toBe(false);
   });
 
   it("protects everything else", () => {

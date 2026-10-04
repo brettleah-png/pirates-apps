@@ -1,0 +1,157 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+// Public, so Google's sign-in screen can link to it and anyone can read it
+// before signing in. Built once as a plain HTML file, since it's the same for
+// everyone. Update LAST_UPDATED whenever the text changes.
+export const prerender = true;
+
+const LAST_UPDATED = "4 October 2026";
+const CONTACT_EMAIL = "info@helderbergpirates.co.za";
+---
+
+<Layout title="Privacy policy">
+  <main class="privacy">
+    <h1>Privacy policy</h1>
+    <p class="meta">
+      Clubhouse bookings app, Helderberg Pirates Baseball Club. Last updated{" "}
+      {LAST_UPDATED}.
+    </p>
+
+    <p>
+      This page explains what the clubhouse bookings app stores about the
+      committee members who sign in to it, and why. The Helderberg Pirates
+      Baseball Club ("the club") runs the app.
+    </p>
+    <p>
+      It doesn't cover the clubhouse booking form. For questions about a
+      booking, email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+    </p>
+
+    <h2>What the app stores about you</h2>
+    <ul>
+      <li>
+        <strong>Your name and email address</strong>, from your Google account
+        when you sign in. The app asks Google for nothing else: not your
+        contacts, files or calendar.
+      </li>
+      <li>
+        <strong>What you're allowed to do</strong> in the app, such as viewing
+        bookings or changing payment statuses. Club admins set this in the
+        club's bookings spreadsheet.
+      </li>
+      <li>
+        <strong>What you change.</strong> When you change a booking or add a
+        note, the app saves your email address and the time with it, so the
+        committee can see who did what.
+      </li>
+      <li>
+        <strong>A sign-in cookie</strong> that keeps you signed in for 30 days,
+        and two short-lived cookies used while you sign in, which expire after
+        10 minutes. The app has no advertising or tracking cookies and no
+        analytics.
+      </li>
+    </ul>
+
+    <h2>Why</h2>
+    <ul>
+      <li>
+        To check that you're a committee member who's allowed in, and what you
+        may do.
+      </li>
+      <li>To keep a record of who changed what on each booking.</li>
+    </ul>
+    <p>
+      Nothing else. The club doesn't sell or share this information, or use it
+      for marketing.
+    </p>
+
+    <h2>Where it's kept</h2>
+    <ul>
+      <li>
+        <strong>Google</strong> handles signing in, and holds the club's
+        bookings spreadsheet, which contains the list of app users and the
+        record of changes.
+      </li>
+      <li>
+        <strong>Netlify</strong> runs the app and stores sign-in sessions. Like
+        most hosting companies, it may keep technical logs of visits, such as IP
+        addresses, for a short time.
+      </li>
+    </ul>
+    <p>Both companies may store data outside South Africa.</p>
+
+    <h2>How long it's kept</h2>
+    <ul>
+      <li>Your sign-in session: 30 days, or until you sign out.</li>
+      <li>
+        Your place in the list of app users: until an admin removes you, for
+        example when you leave the committee.
+      </li>
+      <li>
+        Your email address on changes and notes: as long as the booking record
+        is kept, which is 5 years.
+      </li>
+    </ul>
+
+    <h2>Your rights</h2>
+    <p>
+      Under the Protection of Personal Information Act (POPIA), you can ask the
+      club:
+    </p>
+    <ul>
+      <li>what it holds about you;</li>
+      <li>to correct it;</li>
+      <li>
+        to delete it, or stop using it. Without your place in the list of app
+        users, you can't sign in to the app.
+      </li>
+    </ul>
+    <p>
+      Email <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. The club's
+      Information Officer is the Chairperson.
+    </p>
+    <p>
+      If you're not happy with the club's answer, you can complain to the
+      Information Regulator at{" "}
+      <a href="https://inforegulator.org.za" rel="noopener">
+        inforegulator.org.za
+      </a>
+      .
+    </p>
+
+    <p class="back">
+      <a href="/login">Back to the app</a>
+    </p>
+  </main>
+</Layout>
+
+<style>
+  .privacy {
+    display: grid;
+    gap: var(--space);
+    max-width: 40rem;
+  }
+  .privacy > * {
+    margin: 0;
+  }
+  h2 {
+    margin-top: var(--space);
+    font-size: 1.125rem;
+  }
+  ul {
+    display: grid;
+    gap: 0.5rem;
+    padding-left: 1.25rem;
+  }
+  .meta {
+    color: #5b6070;
+    font-size: 0.875rem;
+  }
+  a {
+    color: var(--color-primary);
+  }
+  .back {
+    margin-top: var(--space);
+  }
+</style>

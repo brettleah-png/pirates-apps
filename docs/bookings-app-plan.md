@@ -96,7 +96,7 @@ The form's tab stays as Google Forms writes it. The app adds its own tabs:
 ## Google accounts
 
 - **Users sign in with personal Gmail accounts**, so the OAuth consent screen is "External" and the `Users` tab decides what each person can do.
-- **The consent screen stays in "Testing" for now**, because publishing it needs a privacy policy page. In Testing, only accounts listed under Google Auth Platform → Audience → Test users can sign in (up to 100), and anyone else sees "Access blocked". So each person has to be added in two places: the test users and the `Users` tab. A privacy policy page would let the consent screen be published, after which only the `Users` tab matters. The app only asks for name and email, so publishing needs no Google review.
+- **The consent screen stays in "Testing" for now**, because publishing it needs a privacy policy page. In Testing, only accounts listed under Google Auth Platform → Audience → Test users can sign in (up to 100), and anyone else sees "Access blocked". So each person has to be added in two places: the test users and the `Users` tab. The public privacy policy at `/privacy` lets the consent screen be published, after which only the `Users` tab matters. The app only asks for name and email, so publishing needs no Google review.
 - **The Google Cloud project is owned by `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as a second owner.** Both have to be Google accounts. If `treasury@` is only a mailbox at Domains.co.za, create a Google account for that address first (no Gmail needed).
 - **The sheet is owned by `lian.pirates@gmail.com` today and may move.** Transferring ownership between Gmail accounts keeps the sharing, so the app keeps working. If the sheet is copied instead, the app needs the copy's ID and the copy has to be shared with the service account.
 
@@ -167,31 +167,33 @@ Netlify deploys `master` to the live site and builds a preview for each pull req
 
 ## Decided
 
-| Decision                          | Answer                                                                                                                    |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| Hosting                           | Netlify. The cPanel plan has no Node.js support.                                                                          |
-| Who can sign in                   | Personal Gmail accounts that are test users in Google Cloud and listed in `Users` ("External" consent screen, in Testing) |
-| Google Cloud project owner        | `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as second owner                                    |
-| Booking key                       | Timestamp plus email                                                                                                      |
-| "Allow response editing"          | Off                                                                                                                       |
-| Statuses                          | See [Statuses](#statuses)                                                                                                 |
-| When a booking holds its date     | Deposit Paid or Full Payment Received, unless Cancelled                                                                   |
-| ID numbers                        | The form keeps asking. Only people who can edit booking details see them.                                                 |
-| Invoice number and damage deposit | Part of the payments permission                                                                                           |
-| Refunds after a cancellation      | Usually not, but the payment status has a Refunded option for when it happens                                             |
-| App name and colour on phones     | "Bookings" under the icon, and the website's orange in Android's title bar                                                |
+| Decision                          | Answer                                                                                                                                                                                  |
+| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hosting                           | Netlify. The cPanel plan has no Node.js support.                                                                                                                                        |
+| Who can sign in                   | Personal Gmail accounts that are test users in Google Cloud and listed in `Users` ("External" consent screen, in Testing)                                                               |
+| Google Cloud project owner        | `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as second owner                                                                                                  |
+| Booking key                       | Timestamp plus email                                                                                                                                                                    |
+| "Allow response editing"          | Off                                                                                                                                                                                     |
+| Statuses                          | See [Statuses](#statuses)                                                                                                                                                               |
+| When a booking holds its date     | Deposit Paid or Full Payment Received, unless Cancelled                                                                                                                                 |
+| ID numbers                        | The form keeps asking, to identify who's legally responsible for the hire. Only people who can edit booking details see them.                                                           |
+| Invoice number and damage deposit | Part of the payments permission                                                                                                                                                         |
+| Refunds after a cancellation      | Usually not, but the payment status has a Refunded option for when it happens                                                                                                           |
+| App name and colour on phones     | "Bookings" under the icon, and the website's orange in Android's title bar                                                                                                              |
+| How long records are kept         | Bookings and payments: 5 years, the usual period for financial records. ID numbers: deleted once the damage deposit is settled.                                                         |
+| Privacy policy                    | A public page at `/privacy`, covering committee members who sign in, not the booking form. Requests go to info@helderbergpirates.co.za, and the Information Officer is the Chairperson. |
 
 ## Still open
 
-| Question            | Options                                                                                                                                                                                                    | Needed by                  |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------- |
-| Privacy policy page | A public `/privacy` page in the app, or a page on the club website. It lets the consent screen be published, and a privacy notice for the booking form's personal data is worth having under POPIA anyway. | Before inviting many users |
+| Question                                                      | Options                                                                                    | Needed by |
+| ------------------------------------------------------------- | ------------------------------------------------------------------------------------------ | --------- |
+| How ID numbers get deleted once the damage deposit is settled | By hand in the spreadsheet, or a button in the app for people who can edit booking details | Phase 4   |
 
 ## Risks
 
 - **Google sign-in inside an installed iPhone app.** Signing in leaves the app for Google's page, which then has to send the user back with their session intact. Test this on a real iPhone as soon as sign-in exists (phase 2), before building more on it.
 - **A leaked key gives full edit access to the sheet.** Keep it only in Netlify's environment variables and a local `.env`, never in the repo. Replace it when someone with access to it leaves the committee.
-- **Personal information.** Bookings hold names, phone numbers, email addresses and ID numbers, which South Africa's privacy law (POPIA) protects. Only listed users can see bookings, only editors see ID numbers, development uses made-up data, and the app doesn't log booking contents.
+- **Personal information.** Bookings hold names, phone numbers, email addresses and ID numbers, which South Africa's privacy law (POPIA) protects. Only listed users can see bookings, only editors see ID numbers, development uses made-up data, and the app doesn't log booking contents. The privacy policy covers committee members only: the booking form itself has no privacy notice yet, which POPIA expects when personal information is collected.
 - **The sheet changes owner by copying.** The copy has a new ID and isn't shared with the service account. Update the app's setting and share the copy.
 - **The sheet is sorted or edited by hand.** Keying bookings by timestamp and email instead of row number keeps notes and tracking attached to the right booking.
 - **Netlify's free plan has a monthly usage allowance.** If the app used it all, Netlify would pause the site until the next month. A committee app should use a small fraction of it; check the usage after the first month.

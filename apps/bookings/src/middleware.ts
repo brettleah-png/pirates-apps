@@ -8,31 +8,33 @@ import { canView, type SignedInUser } from "./lib/users";
 const PERMISSIONS_MAX_AGE_MS = 5 * 60 * 1000;
 
 // Every page except the public ones needs someone signed in with access
-export const onRequest = defineMiddleware(
-  async ({ url, session, locals, redirect }, next) => {
-    if (isPublicPath(url.pathname)) {
-      return next();
-    }
-
-    const savedUser = await session?.get("user");
-    if (!savedUser) {
-      return redirect(
-        `/login?next=${encodeURIComponent(url.pathname + url.search)}`
-      );
-    }
-
-    const user = await refreshPermissions(savedUser);
-    if (user !== savedUser) {
-      session?.set("user", user);
-    }
-    locals.user = user;
-
-    if (!canView(user.permissions) && url.pathname !== "/no-access") {
-      return redirect("/no-access");
-    }
+export const onRequest = defineMiddleware(async (context, next) => {
+  const { url } = context;
+  if (isPublicPath(url.pathname)) {
     return next();
   }
-);
+
+  // Read only after the public check: the session comes from a cookie, and
+  // public pages that are built ahead of time have no request to read it from
+  const { session, locals, redirect } = context;
+  const savedUser = await session?.get("user");
+  if (!savedUser) {
+    return redirect(
+      `/login?next=${encodeURIComponent(url.pathname + url.search)}`
+    );
+  }
+
+  const user = await refreshPermissions(savedUser);
+  if (user !== savedUser) {
+    session?.set("user", user);
+  }
+  locals.user = user;
+
+  if (!canView(user.permissions) && url.pathname !== "/no-access") {
+    return redirect("/no-access");
+  }
+  return next();
+});
 
 // Re-reads the Users tab when the saved permissions are old. People without
 // access are re-checked on every visit, so they get in as soon as an admin
