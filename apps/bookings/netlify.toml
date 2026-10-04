@@ -5,5 +5,5 @@
 # Paths here are relative to the repo root. Node's version comes from .nvmrc.
 
 [build]
-  command = "pnpm --filter bookings build"
+  command = "pnpm build:bookings"
   publish = "apps/bookings/dist"
