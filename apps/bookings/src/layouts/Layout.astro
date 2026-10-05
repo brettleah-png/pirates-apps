@@ -20,6 +20,12 @@ const { title } = Astro.props;
     <!-- Installable app: name, icons and colours are in the manifest -->
     <link rel="manifest" href="/manifest.webmanifest" />
     <meta name="theme-color" content="#c9491a" />
+    <!--
+      The colour the browser paints before the styles are applied, e.g. while
+      pull-to-refresh reloads the page. Without it that's always white, which
+      flashes in the dark theme. The script below sets the chosen theme.
+    -->
+    <meta name="color-scheme" content="light dark" />
     <link rel="icon" type="image/png" href="/icons/icon-192.png" />
     <!-- iPhones use this icon, not the manifest's, on the home screen -->
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
@@ -44,14 +50,18 @@ const { title } = Astro.props;
           }
         }
 
+        function setMeta(name, content) {
+          var meta = document.querySelector('meta[name="' + name + '"]');
+          if (meta) meta.setAttribute("content", content);
+        }
+
         function apply(choice) {
           var dark =
             choice === "dark" || (choice === "system" && systemDark.matches);
           var theme = dark ? "dark" : "light";
           document.documentElement.dataset.theme = theme;
-          var statusBar = document.querySelector('meta[name="theme-color"]');
-          if (statusBar)
-            statusBar.setAttribute("content", STATUS_BAR_COLOURS[theme]);
+          setMeta("theme-color", STATUS_BAR_COLOURS[theme]);
+          setMeta("color-scheme", theme);
         }
 
         window.setTheme = function (choice) {
