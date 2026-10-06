@@ -153,7 +153,7 @@
     <div class="container-fluid programe px-5 mt-5">
         <div class="row g-5 gb-5">
             <div class="col-lg-4 col-md-6">
-                <div class="bg-light rounded text-center p-5">
+                <div class="bg-light rounded text-center h-100 p-5">
                     <i class="display-1 text-primary"><img src="img/icons/diamond.png" width="100px"></i>
                     <h3 class="text-uppercase my-4">Teamwork</h3>
                     <p>Baseball is the ultimate team sport—every pitch, every catch, every swing matters. Success comes not from one player, but from nine working together with trust, support, and shared determination. Teamwork turns individual effort into collective victory.</p>
@@ -161,7 +161,7 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="bg-light rounded text-center p-5">
+                <div class="bg-light rounded text-center h-100 p-5">
                     <i class="display-1 text-primary"><img src="img/icons/baseball.png" width="100px"></i>
                     <h3 class="text-uppercase my-4">Batting</h3>
                     <p>Batting is about focus, patience, and confidence. Every time a player steps up to the plate, they carry the chance to spark momentum for the whole team. Whether it’s a hard hit, a smart walk, or simply putting the ball in play, every at-bat counts and adds to the team’s success.</p>
@@ -169,7 +169,7 @@
                 </div>
             </div>
             <div class="col-lg-4 col-md-6">
-                <div class="bg-light rounded text-center p-5">
+                <div class="bg-light rounded text-center h-100 p-5">
                     <i class="display-1 text-primary"><img src="img/icons/glove.png" width="100px"></i>
                     <h3 class="text-uppercase my-4">Fielding</h3>
                     <p>Fielding is where quick reactions and smart decisions make all the difference. From tracking fly balls to making clean throws, every defensive play protects the team’s chances. Great fielding is not just about skill, but about communication and trust—knowing your teammates are ready to back you up.</p>
@@ -214,7 +214,7 @@
                             </tr>
                             <tr>
                                 <th scope="row">U/15</th>
-                                <td>Ian</td>
+                                <td>Brett</td>
                             </tr>
                             <tr>
                                 <th scope="row">U/18</th>
@@ -265,23 +265,7 @@
                     </div>
                     <div class="team-name position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
                         <h5 class="text-uppercase text-light">Coach Brett</h5>
-                        <p class="text-uppercase text-secondary m-0">U/18 Head Coach</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-6">
-                <div class="team-item position-relative" tabindex="0">
-                    <div class="position-relative overflow-hidden rounded">
-                        <div class="team-placeholder"><i class="bi bi-person-fill" aria-hidden="true"></i></div>
-                        <div class="team-overlay">
-                            <div class="d-flex align-items-center justify-content-start">
-                                <h6 class="text-light mb-0">Coach Ian leads our U/15 side</h6>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="team-name position-absolute start-0 bottom-0 w-100 rounded-bottom text-center p-4" style="background: rgba(34, 36, 41, .9);">
-                        <h5 class="text-uppercase text-light">Coach Ian</h5>
-                        <p class="text-uppercase text-secondary m-0">U/15 Head Coach</p>
+                        <p class="text-uppercase text-secondary m-0">U/15 &amp; U/18 Head Coach</p>
                     </div>
                 </div>
             </div>
