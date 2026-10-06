@@ -84,13 +84,11 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
 							<a href="gallery.php" class="nav-item nav-link">Gallery</a>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                             <a href="https://forms.gle/N7LtqnF7r7RMRC8r5" class="nav-item nav-link" target="_blank">Book the Clubhouse<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
+                            <a href="https://forms.gle/ru51iYuxmogGMkm86" class="nav-item nav-link" target="_blank">Become a Pirate<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
                         </div>
-                        <div class="d-flex flex-column flex-xl-row align-items-xl-center gap-3 py-3 py-xl-0">
-                            <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary header-cta" target="_blank">Become a Pirate<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
-                            <div class="d-flex gap-2">
-                                <a class="btn btn-primary btn-square rounded-circle" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
-                                <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
-                            </div>
+                        <div class="d-flex gap-2 py-3 py-xl-0">
+                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
+                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
                         </div>
                     </div>
                 </nav>

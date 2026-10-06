@@ -126,7 +126,7 @@ h6,
   white-space: nowrap;
 }
 
-/* Narrow desktops: tighter spacing keeps the whole menu and the button on one line */
+/* Narrow desktops: tighter spacing keeps the whole menu on one line */
 @media (min-width: 1200px) and (max-width: 1399.98px) {
   .navbar-dark .navbar-nav .nav-link {
     margin-right: 18px;
@@ -144,11 +144,6 @@ h6,
     margin-right: 0;
     padding: 10px 0;
   }
-}
-
-/* "Become a Pirate" in the header */
-.header-cta {
-  white-space: nowrap;
 }
 
 /* Home page hero photo: half the window height, cropped to fit instead of stretched.
