@@ -1,0 +1,1833 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Helderberg Pirates — 2026–27 Fixtures</title>
+    <link href="img/favicon.jpg" rel="icon" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Graduate&family=Alex+Brush&family=Montserrat:wght@300;400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        /* ---- Official Pirates brand palette (2022 Design Manual) ---- */
+        --black: #000000;
+        --navy: #273581;
+        --navy-bright: #5164d6;
+        --grey: #dedcdc;
+        --pink: #ffe1e1;
+        --white: #ffffff;
+        --ink-2: #0c0e1c;
+        --line: rgba(255, 255, 255, 0.14);
+        --line-soft: rgba(0, 0, 0, 0.12);
+        --radius: 10px;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      * {
+        box-sizing: inherit;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        background: var(--white);
+        color: var(--black);
+        font-family: "Montserrat", system-ui, sans-serif;
+        font-weight: 400;
+        -webkit-font-smoothing: antialiased;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --white: #faf8f8;
+        }
+      }
+      :root[data-theme="dark"] {
+        --white: #faf8f8;
+      }
+
+      h1,
+      h2,
+      h3,
+      .display {
+        font-family: "Graduate", system-ui, sans-serif;
+        font-weight: 400;
+        margin: 0;
+      }
+      .script {
+        font-family: "Alex Brush", cursive;
+        font-weight: 400;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      /* ---------- Hero ---------- */
+      .back-link {
+        position: relative;
+        z-index: 1;
+        display: inline-block;
+        margin-bottom: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        color: rgba(255, 255, 255, 0.7);
+        text-decoration: none;
+      }
+      .back-link:hover,
+      .back-link:focus-visible {
+        color: var(--white);
+        text-decoration: underline;
+      }
+      .hero {
+        background:
+          radial-gradient(
+            ellipse at 88% -15%,
+            rgba(81, 100, 214, 0.3),
+            transparent 55%
+          ),
+          linear-gradient(180deg, var(--black) 0%, var(--ink-2) 100%);
+        color: var(--white);
+        position: relative;
+        overflow: hidden;
+        padding: clamp(28px, 6vw, 52px) clamp(20px, 6vw, 64px) 28px;
+      }
+      .hero::after {
+        content: "";
+        position: absolute;
+        right: -10%;
+        top: -22%;
+        width: 560px;
+        height: 560px;
+        border-radius: 50%;
+        border: 1px solid rgba(81, 100, 214, 0.25);
+        pointer-events: none;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        right: 2%;
+        top: -4%;
+        width: 380px;
+        height: 380px;
+        border-radius: 50%;
+        border: 1px dashed rgba(255, 225, 225, 0.1);
+        pointer-events: none;
+      }
+      .hero-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+        position: relative;
+        z-index: 1;
+      }
+      .crest {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .crest-mark {
+        width: 64px;
+        height: 64px;
+        flex: none;
+        filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
+      }
+      .crest-mark img {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+      .club {
+        font-family: "Montserrat", sans-serif;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--navy-bright);
+        margin-bottom: 3px;
+        letter-spacing: 0.01em;
+      }
+      h1 {
+        font-size: clamp(34px, 7vw, 62px);
+        line-height: 1.02;
+        color: var(--white);
+      }
+      .script-tag {
+        display: block;
+        margin-top: 4px;
+        font-size: clamp(24px, 4vw, 34px);
+        color: var(--navy-bright);
+        line-height: 1;
+      }
+      .tagline {
+        margin-top: 12px;
+        font-size: clamp(13.5px, 2vw, 15.5px);
+        font-weight: 300;
+        color: rgba(255, 255, 255, 0.7);
+        max-width: 44ch;
+        line-height: 1.55;
+      }
+      .season-badge {
+        font-family: "Montserrat", sans-serif;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: var(--white);
+        background: var(--navy);
+        padding: 8px 15px;
+        border-radius: 999px;
+        white-space: nowrap;
+        align-self: flex-start;
+      }
+
+      .stat-strip {
+        position: relative;
+        z-index: 1;
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 1px;
+        background: var(--line);
+        border-top: 1px solid var(--line);
+        border-bottom: 1px solid var(--line);
+        margin-top: clamp(24px, 5vw, 38px);
+      }
+      .stat {
+        background: var(--black);
+        padding: 16px 14px;
+        text-align: left;
+      }
+      .stat b {
+        display: block;
+        font-family: "Graduate", sans-serif;
+        font-size: clamp(24px, 4vw, 34px);
+        font-weight: 400;
+        color: var(--navy-bright);
+        line-height: 1;
+      }
+      .stat span {
+        display: block;
+        margin-top: 6px;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        color: rgba(255, 255, 255, 0.55);
+        font-weight: 500;
+      }
+
+      /* ---------- Controls ---------- */
+      .controls {
+        position: sticky;
+        top: env(safe-area-inset-top, 0px);
+        z-index: 5;
+        background: var(--white);
+        border-bottom: 1px solid var(--line-soft);
+        padding: 16px clamp(20px, 6vw, 64px);
+      }
+      .controls-inner {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        align-items: flex-end;
+        max-width: 1180px;
+        margin: 0 auto;
+      }
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .field label {
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        color: rgba(0, 0, 0, 0.55);
+        font-weight: 600;
+      }
+      select,
+      input[type="search"] {
+        font-family: "Montserrat", sans-serif;
+        font-weight: 500;
+        font-size: 14px;
+        padding: 10px 12px;
+        border-radius: 8px;
+        border: 1.5px solid rgba(0, 0, 0, 0.18);
+        background: var(--white);
+        color: var(--black);
+        min-height: 42px;
+      }
+      select {
+        min-width: 190px;
+        appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23273581' stroke-width='2.4'><polyline points='6 9 12 15 18 9'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 34px;
+      }
+      select:focus-visible,
+      input:focus-visible,
+      .chip:focus-visible {
+        outline: 2.5px solid var(--navy);
+        outline-offset: 2px;
+      }
+      .venue-toggle {
+        display: flex;
+        gap: 6px;
+      }
+      .chip {
+        font-family: "Montserrat", sans-serif;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 10px 15px;
+        border-radius: 8px;
+        border: 1.5px solid rgba(0, 0, 0, 0.18);
+        background: var(--white);
+        color: var(--black);
+        cursor: pointer;
+        min-height: 42px;
+      }
+      .chip[aria-pressed="true"] {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: var(--white);
+      }
+      .field.grow {
+        flex: 1 1 220px;
+      }
+      input[type="search"] {
+        width: 100%;
+      }
+      .result-count {
+        margin-left: auto;
+        font-size: 13px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.5);
+        white-space: nowrap;
+        padding-bottom: 11px;
+      }
+
+      /* ---------- Next up ---------- */
+      .wrap {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 26px clamp(20px, 6vw, 64px) 70px;
+      }
+      .next-up {
+        border: 1.5px solid var(--navy);
+        border-radius: var(--radius);
+        background: linear-gradient(
+          135deg,
+          var(--pink) 0%,
+          rgba(255, 225, 225, 0.35) 100%
+        );
+        padding: 18px 22px;
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 30px;
+      }
+      .next-up .eyebrow {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: var(--navy);
+      }
+      .next-up .headline {
+        font-family: "Graduate", sans-serif;
+        font-size: clamp(19px, 3vw, 26px);
+        font-weight: 400;
+        line-height: 1.15;
+        margin-top: 3px;
+        color: var(--black);
+      }
+      .next-up .meta {
+        font-size: 13px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.6);
+        margin-top: 5px;
+      }
+      .next-up .countdown {
+        margin-left: auto;
+        text-align: right;
+      }
+      .next-up .countdown b {
+        display: block;
+        font-family: "Graduate", sans-serif;
+        font-weight: 400;
+        font-size: 30px;
+        color: var(--navy);
+        line-height: 1;
+      }
+      .next-up .countdown span {
+        font-size: 11px;
+        font-weight: 600;
+        color: rgba(0, 0, 0, 0.45);
+      }
+
+      /* ---------- Schedule ---------- */
+      .month-heading {
+        font-family: "Graduate", sans-serif;
+        font-weight: 400;
+        font-size: clamp(19px, 2.6vw, 24px);
+        color: var(--black);
+        margin: 30px 0 10px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid var(--navy);
+        display: flex;
+        align-items: baseline;
+        gap: 10px;
+      }
+      .month-heading small {
+        font-family: "Montserrat", sans-serif;
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.45);
+      }
+
+      .row {
+        display: grid;
+        grid-template-columns: 78px 1fr auto auto;
+        align-items: center;
+        gap: 16px;
+        padding: 13px 6px;
+        border-bottom: 1px solid var(--line-soft);
+      }
+      .row:hover {
+        background: rgba(255, 225, 225, 0.25);
+      }
+      .date-block {
+        text-align: center;
+        line-height: 1.05;
+      }
+      .date-block .dow {
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--navy);
+      }
+      .date-block .dom {
+        font-family: "Graduate", sans-serif;
+        font-weight: 400;
+        font-size: 25px;
+        color: var(--black);
+      }
+      .matchup {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        min-width: 0;
+      }
+      .matchup .opp {
+        font-size: 15.5px;
+        font-weight: 600;
+        color: var(--black);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .matchup .opp.bye {
+        color: rgba(0, 0, 0, 0.4);
+        font-style: italic;
+        font-weight: 500;
+      }
+      .matchup .league-tag {
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.5);
+      }
+      .venue-pill {
+        font-size: 11px;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 999px;
+        white-space: nowrap;
+      }
+      .venue-pill.home {
+        background: var(--navy);
+        color: var(--white);
+      }
+      .venue-pill.away {
+        background: transparent;
+        color: rgba(0, 0, 0, 0.55);
+        border: 1.5px solid var(--grey);
+      }
+      .status-note {
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.45);
+        text-align: right;
+        white-space: nowrap;
+      }
+
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: rgba(0, 0, 0, 0.55);
+      }
+      .empty-state .glyph {
+        font-size: 34px;
+        margin-bottom: 10px;
+      }
+      .empty-state button {
+        margin-top: 14px;
+        font-family: "Montserrat", sans-serif;
+        font-size: 13.5px;
+        font-weight: 600;
+        padding: 9px 16px;
+        border-radius: 8px;
+        border: 1.5px solid var(--black);
+        background: transparent;
+        color: var(--black);
+        cursor: pointer;
+      }
+
+      footer {
+        text-align: center;
+        font-size: 12px;
+        font-weight: 500;
+        color: rgba(0, 0, 0, 0.4);
+        padding: 10px 20px 40px;
+      }
+
+      @media (max-width: 620px) {
+        .row {
+          grid-template-columns: 54px 1fr auto;
+          row-gap: 4px;
+        }
+        .status-note {
+          display: none;
+        }
+        .date-block .dom {
+          font-size: 20px;
+        }
+        .venue-pill {
+          padding: 4px 10px;
+          font-size: 10px;
+        }
+        .next-up .countdown {
+          margin-left: 0;
+          text-align: left;
+        }
+        .result-count {
+          margin-left: 0;
+          padding-bottom: 0;
+        }
+        .controls-inner {
+          align-items: stretch;
+        }
+      }
+
+      @media (prefers-reduced-motion: no-preference) {
+        .row,
+        .next-up {
+          animation: fadein 0.25s ease both;
+        }
+      }
+      @keyframes fadein {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="hero">
+      <a class="back-link" href="index.php"
+        >&larr; Back to the Pirates website</a
+      >
+      <div class="hero-top">
+        <div class="crest">
+          <div class="crest-mark">
+            <img src="img/Logo.png" alt="Helderberg Pirates crest" />
+          </div>
+          <div>
+            <div class="club">Cape Town Baseball Federation</div>
+            <h1>Helderberg<br />Pirates</h1>
+            <span class="script-tag script">Fixture schedule</span>
+          </div>
+        </div>
+        <div class="season-badge">3 OCT 2026 → 13 MAR 2027</div>
+      </div>
+
+      <p class="tagline">
+        Every fixture, every age group, one home for the Pirates' 2026–27
+        season. Pick a team below to see who stands between us and the win
+        column.
+      </p>
+
+      <div class="stat-strip">
+        <div class="stat">
+          <b id="statFixtures">–</b><span>SCHEDULED GAMES</span>
+        </div>
+        <div class="stat"><b id="statHome">–</b><span>HOME GAMES</span></div>
+        <div class="stat"><b id="statAway">–</b><span>AWAY GAMES</span></div>
+        <div class="stat">
+          <b id="statLeagues">–</b><span>PIRATES TEAMS</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="controls">
+      <div class="controls-inner">
+        <div class="field">
+          <label for="teamSelect">Pirates team</label>
+          <select id="teamSelect">
+            <option value="ALL">All teams</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="leagueSelect">League / competition</label>
+          <select id="leagueSelect">
+            <option value="ALL">All leagues</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Venue</label>
+          <div class="venue-toggle" id="venueToggle">
+            <button class="chip" data-venue="ALL" aria-pressed="true">
+              All
+            </button>
+            <button class="chip" data-venue="Home" aria-pressed="false">
+              Home
+            </button>
+            <button class="chip" data-venue="Away" aria-pressed="false">
+              Away
+            </button>
+          </div>
+        </div>
+        <div class="field grow">
+          <label for="oppSearch">Search opponent</label>
+          <input
+            type="search"
+            id="oppSearch"
+            placeholder="e.g. Bellville, Durbanville…"
+          />
+        </div>
+        <div class="result-count" id="resultCount"></div>
+      </div>
+    </div>
+
+    <div class="wrap">
+      <div class="next-up" id="nextUp" hidden>
+        <div>
+          <div class="eyebrow">Next up for the Pirates</div>
+          <div class="headline" id="nextUpHeadline">—</div>
+          <div class="meta" id="nextUpMeta">—</div>
+        </div>
+        <div class="countdown">
+          <b id="nextUpDays">—</b>
+          <span id="nextUpDaysLabel">days to go</span>
+        </div>
+      </div>
+
+      <div id="schedule"></div>
+
+      <div class="empty-state" id="emptyState" hidden>
+        <div class="glyph">⚾</div>
+        <div>No fixtures match those filters.</div>
+        <button id="resetFilters">Clear filters</button>
+      </div>
+    </div>
+
+    <footer>
+      Helderberg Pirates · CTBF 2026–27 fixture programme · schedule subject to
+      League amendment
+    </footer>
+
+    <script>
+      // ---- Data: every Helderberg Pirates fixture and bye, all age groups & leagues ----
+      const FIXTURES = [
+        {
+          DateISO: "2026-10-03",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Grassy Park",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "CENTRALIZED",
+        },
+        {
+          DateISO: "2026-10-10",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Bellville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-10",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Durbanville",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-10",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Bellville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-10",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Bellville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-10",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Bellville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-10",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Durbanville",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-17",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Maitland",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-17",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Bellville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-17",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Maitland",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-17",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "BYE",
+          Venue: "Away",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-17",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "BYE",
+          Venue: "Away",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-17",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Maitland",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-24",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Grassy Park",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-24",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Bothasig",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-24",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Grassy Park",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-24",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Grassy Park",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-24",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Grassy Park",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-24",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Bothasig",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-31",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "BYE",
+          Venue: "Away",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-31",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "VOB",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-31",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Kuilsriver",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-31",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Kuilsriver",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-31",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Kuilsriver",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-10-31",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "VOB",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-07",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Thistles",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-07",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Athlone",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-07",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Thistles",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-07",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Thistles",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-07",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "BYE",
+          Venue: "Away",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-07",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Athlone",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-14",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Fish Hoek",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-14",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Maitland",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-14",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-14",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-14",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Fish Hoek",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-14",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Lansdowne",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-21",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Silvertree",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-21",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Westridge",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-21",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Silvertree",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-21",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Silvertree",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-21",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Silvertree",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-21",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Grassy Park",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-28",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Goodwood",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-28",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Thistles",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-28",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-28",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Dunoon",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-28",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Dunoon",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-11-28",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Thistles",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-05",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "BYE",
+          Venue: "Away",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-05",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "BYE",
+          Venue: "Away",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-05",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Westridge",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-05",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Westridge",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-05",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Westridge",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-05",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Kuilsriver",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-12",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Athlone",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-12",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Durbanville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-12",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Athlone",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-12",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Athlone",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-12",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Athlone",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-12",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Durbanville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2026-12-16",
+          Day: "WED",
+          League: "U18",
+          Opponent: "Bellville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-09",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "Scheduled bye",
+        },
+        {
+          DateISO: "2027-01-09",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Bellville",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-09",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "Scheduled bye",
+        },
+        {
+          DateISO: "2027-01-09",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "Scheduled bye",
+        },
+        {
+          DateISO: "2027-01-09",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "Scheduled bye",
+        },
+        {
+          DateISO: "2027-01-09",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Bellville",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-16",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "VOB",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-16",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Bothasig",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-16",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "VOB",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-16",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "VOB",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-16",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "VOB",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-16",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Bothasig",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-23",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Durbanville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-23",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "VOB",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-23",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Durbanville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-23",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Durbanville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-23",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Durbanville",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-23",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "VOB",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-30",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Bothasig",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-30",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Athlone",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-30",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Bothasig",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-30",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Bothasig",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-30",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Bothasig",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-01-30",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Athlone",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-06",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Lansdowne",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-06",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Maitland",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-06",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-06",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Lansdowne",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-06",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Lansdowne",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-06",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Lansdowne",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-13",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Milnerton",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-13",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Westridge",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-13",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "Khayelitsha",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-13",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Khayelitsha",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-13",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Khayelitsha",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-13",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-20",
+          Day: "SAT",
+          League: "Masters",
+          Opponent: "Battswood",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-20",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "Thistles",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-20",
+          Day: "SAT",
+          League: "U10",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-20",
+          Day: "SAT",
+          League: "U12",
+          Opponent: "Battswood",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-20",
+          Day: "SAT",
+          League: "U15",
+          Opponent: "Battswood",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-20",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Thistles",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-27",
+          Day: "SAT",
+          League: "Second League",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-02-27",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Kuilsriver",
+          Venue: "Home",
+          Status: "Fixture",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-03-06",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "BYE",
+          Venue: "Home",
+          Status: "Bye",
+          Notes: "",
+        },
+        {
+          DateISO: "2027-03-13",
+          Day: "SAT",
+          League: "U18",
+          Opponent: "Maitland",
+          Venue: "Away",
+          Status: "Fixture",
+          Notes: "",
+        },
+      ];
+
+      // League display order (senior team first, then age groups oldest-to-youngest)
+      const LEAGUE_ORDER = [
+        "Second League",
+        "Masters",
+        "U18",
+        "U15",
+        "U12",
+        "U10",
+      ];
+      const leaguesPresent = [...new Set(FIXTURES.map((f) => f.League))].sort(
+        (a, b) => LEAGUE_ORDER.indexOf(a) - LEAGUE_ORDER.indexOf(b)
+      );
+
+      const teamSelect = document.getElementById("teamSelect");
+      const leagueSelect = document.getElementById("leagueSelect");
+      leaguesPresent.forEach((lg) => {
+        const o1 = document.createElement("option");
+        o1.value = lg;
+        o1.textContent = lg + " Pirates";
+        teamSelect.appendChild(o1);
+        const o2 = document.createElement("option");
+        o2.value = lg;
+        o2.textContent = lg;
+        leagueSelect.appendChild(o2);
+      });
+      // Selecting a "team" is the same underlying filter as league (each Pirates
+      // side plays in exactly one competition) — keep both controls in sync.
+      teamSelect.addEventListener("change", () => {
+        leagueSelect.value = teamSelect.value;
+        render();
+      });
+      leagueSelect.addEventListener("change", () => {
+        teamSelect.value = leagueSelect.value;
+        render();
+      });
+
+      let venueFilter = "ALL";
+      document.querySelectorAll("#venueToggle .chip").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          venueFilter = btn.dataset.venue;
+          document
+            .querySelectorAll("#venueToggle .chip")
+            .forEach((b) => b.setAttribute("aria-pressed", b === btn));
+          render();
+        });
+      });
+
+      const oppSearch = document.getElementById("oppSearch");
+      oppSearch.addEventListener("input", render);
+
+      document.getElementById("resetFilters").addEventListener("click", () => {
+        teamSelect.value = "ALL";
+        leagueSelect.value = "ALL";
+        venueFilter = "ALL";
+        oppSearch.value = "";
+        document
+          .querySelectorAll("#venueToggle .chip")
+          .forEach((b) =>
+            b.setAttribute("aria-pressed", b.dataset.venue === "ALL")
+          );
+        render();
+      });
+
+      const MONTHS = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+      ];
+      const DOW = {
+        SUN: "Sun",
+        MON: "Mon",
+        TUE: "Tue",
+        WED: "Wed",
+        THU: "Thu",
+        FRI: "Fri",
+        SAT: "Sat",
+      };
+
+      function fmtDate(iso) {
+        const [y, m, d] = iso.split("-").map(Number);
+        return { y, m, d, monthLabel: MONTHS[m - 1] };
+      }
+
+      function computeStats() {
+        const fixtures = FIXTURES.filter((f) => f.Status === "Fixture");
+        document.getElementById("statFixtures").textContent = fixtures.length;
+        document.getElementById("statHome").textContent = fixtures.filter(
+          (f) => f.Venue === "Home"
+        ).length;
+        document.getElementById("statAway").textContent = fixtures.filter(
+          (f) => f.Venue === "Away"
+        ).length;
+        document.getElementById("statLeagues").textContent =
+          leaguesPresent.length;
+      }
+
+      function updateNextUp(filtered) {
+        const now = new Date();
+        const upcoming = filtered
+          .filter(
+            (f) =>
+              f.Status === "Fixture" &&
+              new Date(f.DateISO + "T00:00:00") >= new Date(now.toDateString())
+          )
+          .sort((a, b) => a.DateISO.localeCompare(b.DateISO));
+        const box = document.getElementById("nextUp");
+        if (!upcoming.length) {
+          box.hidden = true;
+          return;
+        }
+        const next = upcoming[0];
+        box.hidden = false;
+        const d = fmtDate(next.DateISO);
+        const verb = next.Venue === "Home" ? "host" : "travel to";
+        document.getElementById("nextUpHeadline").textContent =
+          `Pirates ${verb} ${next.Opponent} — ${next.League}`;
+        document.getElementById("nextUpMeta").textContent =
+          `${DOW[next.Day] || next.Day}, ${d.d} ${d.monthLabel} ${d.y} · ${next.Venue === "Home" ? "Home fixture" : "Away fixture"}`;
+        const diffDays = Math.round(
+          (new Date(next.DateISO + "T00:00:00") -
+            new Date(now.toDateString())) /
+            86400000
+        );
+        document.getElementById("nextUpDays").textContent =
+          diffDays === 0 ? "Today" : diffDays;
+        document.getElementById("nextUpDaysLabel").textContent =
+          diffDays === 0 ? "" : diffDays === 1 ? "day to go" : "days to go";
+      }
+
+      function render() {
+        const teamVal = teamSelect.value;
+        const search = oppSearch.value.trim().toLowerCase();
+
+        const filtered = FIXTURES.filter((f) => {
+          if (teamVal !== "ALL" && f.League !== teamVal) return false;
+          if (venueFilter !== "ALL" && f.Venue !== venueFilter) return false;
+          if (search && !f.Opponent.toLowerCase().includes(search))
+            return false;
+          return true;
+        }).sort(
+          (a, b) =>
+            a.DateISO.localeCompare(b.DateISO) ||
+            a.League.localeCompare(b.League)
+        );
+
+        document.getElementById("resultCount").textContent = filtered.length
+          ? `${filtered.length} ${filtered.length === 1 ? "fixture" : "fixtures"}`
+          : "";
+
+        updateNextUp(filtered);
+
+        const container = document.getElementById("schedule");
+        const empty = document.getElementById("emptyState");
+        container.innerHTML = "";
+
+        if (!filtered.length) {
+          empty.hidden = false;
+          return;
+        }
+        empty.hidden = true;
+
+        let currentMonthKey = null;
+        filtered.forEach((f) => {
+          const d = fmtDate(f.DateISO);
+          const monthKey = `${d.y}-${d.m}`;
+          if (monthKey !== currentMonthKey) {
+            currentMonthKey = monthKey;
+            const h = document.createElement("div");
+            h.className = "month-heading";
+            h.innerHTML = `${d.monthLabel} <small>${d.y}</small>`;
+            container.appendChild(h);
+          }
+
+          const row = document.createElement("div");
+          row.className = "row";
+
+          const isBye = f.Status === "Bye";
+          const oppLabel = isBye ? "Bye week" : f.Opponent;
+
+          row.innerHTML = `
+        <div class="date-block">
+          <div class="dow">${DOW[f.Day] || f.Day}</div>
+          <div class="dom">${d.d}</div>
+        </div>
+        <div class="matchup">
+          <div class="opp ${isBye ? "bye" : ""}">${oppLabel}</div>
+          <div class="league-tag">${f.League}${f.Notes ? " · " + f.Notes : ""}</div>
+        </div>
+        <div class="venue-pill ${f.Venue.toLowerCase()}">${isBye ? "—" : f.Venue}</div>
+        <div class="status-note">${isBye ? "No fixture this round" : f.Venue === "Home" ? "at Helderberg" : "away trip"}</div>
+      `;
+          container.appendChild(row);
+        });
+      }
+
+      computeStats();
+      render();
+    </script>
+  </body>
+</html>

@@ -41,9 +41,9 @@
 
   <body>
     <!-- Header Start -->
-    <div class="container-fluid bg-dark px-0">
+    <div class="container-fluid bg-dark px-0 site-header">
       <div class="row gx-0">
-        <div class="col-lg-3 bg-dark d-none d-lg-block" z-index="-1">
+        <div class="col-lg-3 bg-dark d-none d-xl-block" z-index="-1">
           <a
             href="index.php"
             class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center"
@@ -52,11 +52,11 @@
             <!--<h1 class="m-0 display-4 text-primary text-uppercase"><img src="img/Logo.png" height=100px> Helderberg<br>Pirates</h1>-->
           </a>
         </div>
-        <div class="col-lg-9 d-flex align-items-center">
+        <div class="col-xl-9 d-flex align-items-center">
           <nav
-            class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0 px-lg-5 w-100"
+            class="navbar navbar-expand-xl bg-dark navbar-dark p-3 p-xl-0 px-xl-5 w-100"
           >
-            <a href="index.php" class="navbar-brand d-block d-lg-none">
+            <a href="index.php" class="navbar-brand d-block d-xl-none">
               <img src="img/Logo.png" height="56" alt="Helderberg Pirates" />
             </a>
             <button
@@ -76,6 +76,7 @@
                 <a href="about.html" class="nav-item nav-link active">About</a>
                 <!--<a href="shop.html" class="nav-item nav-link">Shop</a>-->
                 <a href="schedule.php" class="nav-item nav-link">Schedule</a>
+                <a href="fixtures.html" class="nav-item nav-link">Fixtures</a>
                 <a href="gallery.php" class="nav-item nav-link">Gallery</a>
                 <a href="contact.html" class="nav-item nav-link">Contact</a>
                 <a
@@ -89,23 +90,36 @@
                   ><span class="visually-hidden"> (opens in a new tab)</span></a
                 >
               </div>
-              <div class="d-flex gap-2 py-3 py-lg-0">
+              <div
+                class="d-flex flex-column flex-xl-row align-items-xl-center gap-3 py-3 py-xl-0"
+              >
                 <a
-                  class="btn btn-primary btn-square rounded-circle"
-                  href="https://www.facebook.com/profile.php?id=61581433657465"
+                  href="https://forms.gle/ru51iYuxmogGMkm86"
+                  class="btn btn-primary header-cta"
                   target="_blank"
-                  aria-label="Facebook (opens in a new tab)"
-                  ><i class="fab fa-facebook-f"></i
-                ></a>
-                <a
-                  class="btn btn-primary btn-square rounded-circle"
-                  href="https://www.instagram.com/helderbergpirates/"
-                  target="_blank"
-                  aria-label="Instagram (opens in a new tab)"
-                  ><i class="fab fa-instagram"></i
-                ></a>
+                  >Become a Pirate<i
+                    class="bi bi-arrow-up-right external-icon"
+                    aria-hidden="true"
+                  ></i
+                  ><span class="visually-hidden"> (opens in a new tab)</span></a
+                >
+                <div class="d-flex gap-2">
+                  <a
+                    class="btn btn-primary btn-square rounded-circle"
+                    href="https://www.facebook.com/profile.php?id=61581433657465"
+                    target="_blank"
+                    aria-label="Facebook (opens in a new tab)"
+                    ><i class="fab fa-facebook-f"></i
+                  ></a>
+                  <a
+                    class="btn btn-primary btn-square rounded-circle"
+                    href="https://www.instagram.com/helderbergpirates/"
+                    target="_blank"
+                    aria-label="Instagram (opens in a new tab)"
+                    ><i class="fab fa-instagram"></i
+                  ></a>
+                </div>
               </div>
-              <!--<a href="" class="btn btn-primary py-md-2 px-md-2 d-none d-lg-block">Become a Pirate</a>-->
             </div>
           </nav>
         </div>
@@ -113,176 +127,178 @@
     </div>
     <!-- Header End -->
 
-    <!-- Hero Start -->
-    <div class="container-fluid bg-primary bg-hero">
-      <div class="row py-5">
-        <div class="col-12 text-center">
-          <h1 class="display-2 text-uppercase text-white mb-md-4">About Us</h1>
-        </div>
-      </div>
-    </div>
-    <!-- Hero End -->
-
-    <!-- About Start -->
-    <div class="container-fluid p-5">
-      <div class="row gx-5">
-        <div
-          class="col-lg-5 mb-5 mb-lg-0 d-flex flex-column"
-          style="min-height: 500px"
-        >
-          <div class="position-relative flex-grow-1">
-            <img
-              class="position-absolute w-100 h-100 rounded"
-              src="img/about.jpg"
-              style="object-fit: cover"
-            />
-          </div>
-        </div>
-        <div class="col-lg-7">
-          <div class="mb-4">
-            <h5 class="text-primary text-uppercase">About Us</h5>
-            <h1 class="display-3 text-uppercase mb-0">
-              Welcome to the Helderberg Pirates
+    <main class="site-main">
+      <!-- Hero Start -->
+      <div class="container-fluid bg-primary bg-hero">
+        <div class="row py-5">
+          <div class="col-12 text-center">
+            <h1 class="display-2 text-uppercase text-white mb-md-4">
+              About Us
             </h1>
           </div>
-          <h4 class="text-body mb-4">Since 1952</h4>
-          <p class="mb-4">
-            Welcome to the Helderberg Pirates Baseball Club, where the love of
-            baseball and vibrant community spirit meet.
-          </p>
-          <div class="rounded bg-dark p-5">
-            <ul class="nav nav-pills justify-content-between mb-3">
-              <li class="nav-item w-50">
-                <a
-                  class="nav-link text-uppercase text-center w-100 active"
-                  data-bs-toggle="pill"
-                  href="#pills-1"
-                  >About Us</a
-                >
-              </li>
-              <li class="nav-item w-50">
-                <a
-                  class="nav-link text-uppercase text-center w-100"
-                  data-bs-toggle="pill"
-                  href="#pills-2"
-                  >Why Choose Us</a
-                >
-              </li>
-            </ul>
-            <div class="tab-content">
-              <div class="tab-pane fade show active" id="pills-1">
-                <p class="text-secondary mb-0">
-                  The Helderberg Pirates Baseball Club is an amateur baseball
-                  club situated at Radloff Park Somerset West. The Helderberg
-                  Pirates Baseball ‘family’ is dedicated to the training of
-                  adults and children in the sport of baseball within the
-                  Helderberg District. Helderberg Pirates was originally started
-                  in 1952 and was original known as Strand / Somerset West
-                  Baseball Club. The club originally operated from the ‘Old
-                  Rugby Club’ after which it moved to the Charles Morkel stadium
-                  in Strand. Then after a short stint at the old De Beers AFC
-                  soccer fields, the club eventually found its own home at
-                  Radloff Park in 1995. Since moving to the new grounds a
-                  clubhouse with change-rooms, hot showers, events hall, batting
-                  cages and a licenced bar has been established while dugouts
-                  (where player’s sit during games) and a scorers box have also
-                  been constructed on the main field.
-                </p>
-              </div>
-              <div class="tab-pane fade" id="pills-2">
-                <p class="text-secondary mb-0">
-                  At our club, baseball is more than just a game – it’s a
-                  community. We provide a welcoming environment where players of
-                  all ages and skill levels can learn, grow, and thrive both on
-                  and off the field. Our dedicated coaches focus on building
-                  strong fundamentals while encouraging teamwork, discipline,
-                  and sportsmanship. Whether you’re looking to develop your
-                  skills, make new friends, or simply enjoy the spirit of the
-                  game, our club offers the perfect balance of fun, development,
-                  and competitive opportunity. Join us and become part of a team
-                  that feels like family.
-                </p>
+        </div>
+      </div>
+      <!-- Hero End -->
+
+      <!-- About Start -->
+      <div class="container-fluid p-5">
+        <div class="row gx-5">
+          <div
+            class="col-lg-5 mb-5 mb-lg-0 d-flex flex-column"
+            style="min-height: 500px"
+          >
+            <div class="position-relative flex-grow-1">
+              <img
+                class="position-absolute w-100 h-100 rounded"
+                src="img/about.jpg"
+                style="object-fit: cover"
+              />
+            </div>
+          </div>
+          <div class="col-lg-7">
+            <div class="mb-4">
+              <h5 class="text-primary text-uppercase">About Us</h5>
+              <h1 class="display-3 text-uppercase mb-0">
+                Welcome to the Helderberg Pirates
+              </h1>
+            </div>
+            <h4 class="text-body mb-4">Since 1952</h4>
+            <p class="mb-4">
+              Welcome to the Helderberg Pirates Baseball Club, where the love of
+              baseball and vibrant community spirit meet.
+            </p>
+            <div class="rounded bg-dark p-5">
+              <ul class="nav nav-pills justify-content-between mb-3">
+                <li class="nav-item w-50">
+                  <a
+                    class="nav-link text-uppercase text-center w-100 active"
+                    data-bs-toggle="pill"
+                    href="#pills-1"
+                    >About Us</a
+                  >
+                </li>
+                <li class="nav-item w-50">
+                  <a
+                    class="nav-link text-uppercase text-center w-100"
+                    data-bs-toggle="pill"
+                    href="#pills-2"
+                    >Why Choose Us</a
+                  >
+                </li>
+              </ul>
+              <div class="tab-content">
+                <div class="tab-pane fade show active" id="pills-1">
+                  <p class="text-secondary mb-0">
+                    The Helderberg Pirates Baseball Club is an amateur baseball
+                    club situated at Radloff Park Somerset West. The Helderberg
+                    Pirates Baseball ‘family’ is dedicated to the training of
+                    adults and children in the sport of baseball within the
+                    Helderberg District. Helderberg Pirates was originally
+                    started in 1952 and was original known as Strand / Somerset
+                    West Baseball Club. The club originally operated from the
+                    ‘Old Rugby Club’ after which it moved to the Charles Morkel
+                    stadium in Strand. Then after a short stint at the old De
+                    Beers AFC soccer fields, the club eventually found its own
+                    home at Radloff Park in 1995. Since moving to the new
+                    grounds a clubhouse with change-rooms, hot showers, events
+                    hall, batting cages and a licenced bar has been established
+                    while dugouts (where player’s sit during games) and a
+                    scorers box have also been constructed on the main field.
+                  </p>
+                </div>
+                <div class="tab-pane fade" id="pills-2">
+                  <p class="text-secondary mb-0">
+                    At our club, baseball is more than just a game – it’s a
+                    community. We provide a welcoming environment where players
+                    of all ages and skill levels can learn, grow, and thrive
+                    both on and off the field. Our dedicated coaches focus on
+                    building strong fundamentals while encouraging teamwork,
+                    discipline, and sportsmanship. Whether you’re looking to
+                    develop your skills, make new friends, or simply enjoy the
+                    spirit of the game, our club offers the perfect balance of
+                    fun, development, and competitive opportunity. Join us and
+                    become part of a team that feels like family.
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- About End -->
+      <!-- About End -->
 
-    <!-- Programe Start -->
-    <div
-      class="container-fluid programe position-relative px-5 mt-5"
-      style="margin-bottom: 180px"
-    >
-      <div class="row g-5 gb-5">
-        <div class="col-lg-3 col-md-6">
-          <div class="bg-light rounded text-center p-5">
-            <i class="display-1 text-primary"
-              ><img src="img/icons/friendship.png" width="100px"
-            /></i>
-            <h3 class="text-uppercase my-4">Respect</h3>
-            <p>
-              On the diamond, respect means honoring the game, your teammates,
-              opponents, and umpires — playing hard but fair, and recognizing
-              the effort everyone puts in.
-            </p>
+      <!-- Programe Start -->
+      <div class="container-fluid programe px-5 mt-5">
+        <div
+          class="row g-4 row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-5 justify-content-center"
+        >
+          <div class="col">
+            <div class="bg-light rounded text-center h-100 p-4">
+              <i class="display-1 text-primary"
+                ><img src="img/icons/friendship.png" width="100px"
+              /></i>
+              <h3 class="text-uppercase my-4">Respect</h3>
+              <p>
+                On the diamond, respect means honoring the game, your teammates,
+                opponents, and umpires — playing hard but fair, and recognizing
+                the effort everyone puts in.
+              </p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="bg-light rounded text-center h-100 p-4">
+              <i class="display-1 text-primary"
+                ><img src="img/icons/box.png" width="100px"
+              /></i>
+              <h3 class="text-uppercase my-4">Openness</h3>
+              <p>
+                Baseball thrives when players are open to learning, trying new
+                roles, and sharing ideas, because every swing, pitch, and play
+                is a chance to grow.
+              </p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="bg-light rounded text-center h-100 p-4">
+              <i class="display-1 text-primary"
+                ><img src="img/icons/community.png" width="100px"
+              /></i>
+              <h3 class="text-uppercase my-4">Community</h3>
+              <p>
+                A team is more than nine players — it’s families, friends, and
+                fans coming together, building a supportive community that
+                cheers every run and pick-off.
+              </p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="bg-light rounded text-center h-100 p-4">
+              <i class="display-1 text-primary"
+                ><img src="img/icons/kindness.png" width="100px"
+              /></i>
+              <h3 class="text-uppercase my-4">Kindness</h3>
+              <p>
+                Kindness in baseball is helping a rookie with their glove,
+                offering encouragement after a strikeout, and celebrating
+                others’ successes as much as your own.
+              </p>
+            </div>
+          </div>
+          <div class="col">
+            <div class="bg-light rounded text-center h-100 p-4">
+              <i class="display-1 text-primary"
+                ><img src="img/icons/help.png" width="100px"
+              /></i>
+              <h3 class="text-uppercase my-4">Support</h3>
+              <p>
+                Every player needs a strong bench behind them — support means
+                backing each other up on the field and in life, knowing your
+                team has your back no matter the score.
+              </p>
+            </div>
           </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="bg-light rounded text-center p-5">
-            <i class="display-1 text-primary"
-              ><img src="img/icons/box.png" width="100px"
-            /></i>
-            <h3 class="text-uppercase my-4">Openness</h3>
-            <p>
-              Baseball thrives when players are open to learning, trying new
-              roles, and sharing ideas, because every swing, pitch, and play is
-              a chance to grow.
-            </p>
-            <br />
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="bg-light rounded text-center p-5">
-            <i class="display-1 text-primary"
-              ><img src="img/icons/community.png" width="100px"
-            /></i>
-            <h3 class="text-uppercase my-4">Community</h3>
-            <p>
-              A team is more than nine players — it’s families, friends, and
-              fans coming together, building a supportive community that cheers
-              every run and pick-off.
-            </p>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="bg-light rounded text-center p-5">
-            <i class="display-1 text-primary"
-              ><img src="img/icons/kindness.png" width="100px"
-            /></i>
-            <h3 class="text-uppercase my-4">Kindness</h3>
-            <p>
-              Kindness in baseball is helping a rookie with their glove,
-              offering encouragement after a strikeout, and celebrating others’
-              successes as much as your own.
-            </p>
-          </div>
-        </div>
-        <div class="col-lg-3 col-md-6">
-          <div class="bg-light rounded text-center p-5">
-            <i class="display-1 text-primary"
-              ><img src="img/icons/help.png" width="100px"
-            /></i>
-            <h3 class="text-uppercase my-4">Support</h3>
-            <p>
-              Every player needs a strong bench behind them — support means
-              backing each other up on the field and in life, knowing your team
-              has your back no matter the score.
-            </p>
-          </div>
-        </div>
-        <div class="col-lg-12 col-md-6 text-center">
+        <div class="text-center mt-5">
           <h1 class="text-uppercase text-light mb-4">
             Ready to become a Pirate?
           </h1>
@@ -298,11 +314,10 @@
           >
         </div>
       </div>
-    </div>
-    <!-- Programe Start -->
+      <!-- Programe Start -->
 
-    <!-- Class Timetable Start -->
-    <!-- <div class="container-fluid p-5">
+      <!-- Class Timetable Start -->
+      <!-- <div class="container-fluid p-5">
         <div class="mb-5 text-center">
             <h1 class="display-3 text-uppercase mb-0">Our History in Pictures</h1>
         </div>
@@ -317,10 +332,11 @@
             </div>
         </div>
     </div>-->
-    <!-- Class Timetable Start -->
+      <!-- Class Timetable Start -->
+    </main>
 
     <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-secondary px-5 mt-5">
+    <div class="container-fluid bg-dark text-secondary px-5 mt-5 site-footer">
       <div class="row gx-5">
         <div class="col-lg-8 col-md-6">
           <div class="row gx-5">
@@ -378,6 +394,10 @@
                   ><i class="bi bi-arrow-right text-primary me-2"></i
                   >Schedule</a
                 >
+                <a class="text-secondary mb-2" href="fixtures.html"
+                  ><i class="bi bi-arrow-right text-primary me-2"></i
+                  >Fixtures</a
+                >
                 <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                 <a class="text-secondary" href="contact.html"
                   ><i class="bi bi-arrow-right text-primary me-2"></i>Contact
@@ -398,6 +418,10 @@
                 <a class="text-secondary mb-2" href="schedule.php"
                   ><i class="bi bi-arrow-right text-primary me-2"></i
                   >Schedule</a
+                >
+                <a class="text-secondary mb-2" href="fixtures.html"
+                  ><i class="bi bi-arrow-right text-primary me-2"></i
+                  >Fixtures</a
                 >
                 <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                 <a class="text-secondary" href="contact.html"
@@ -466,7 +490,10 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid py-4 py-lg-0 px-5" style="background: #111111">
+    <div
+      class="container-fluid py-4 py-lg-0 px-5 site-footer-bar"
+      style="background: #111111"
+    >
       <div class="row gx-5">
         <div class="col-lg-8">
           <div class="py-lg-4 text-center">

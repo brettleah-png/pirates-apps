@@ -60,9 +60,9 @@
 
   <body>
     <!-- Header Start -->
-    <div class="container-fluid bg-dark px-0">
+    <div class="container-fluid bg-dark px-0 site-header">
       <div class="row gx-0">
-        <div class="col-lg-3 bg-dark d-none d-lg-block" z-index="-1">
+        <div class="col-lg-3 bg-dark d-none d-xl-block" z-index="-1">
           <a
             href="index.php"
             class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center"
@@ -71,11 +71,11 @@
             <!--<h1 class="m-0 display-4 text-primary text-uppercase"><img src="img/Logo.png" height=100px> Helderberg<br>Pirates</h1>-->
           </a>
         </div>
-        <div class="col-lg-9 d-flex align-items-center">
+        <div class="col-xl-9 d-flex align-items-center">
           <nav
-            class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0 px-lg-5 w-100"
+            class="navbar navbar-expand-xl bg-dark navbar-dark p-3 p-xl-0 px-xl-5 w-100"
           >
-            <a href="index.php" class="navbar-brand d-block d-lg-none">
+            <a href="index.php" class="navbar-brand d-block d-xl-none">
               <img src="img/Logo.png" height="56" alt="Helderberg Pirates" />
             </a>
             <button
@@ -95,6 +95,7 @@
                 <a href="about.html" class="nav-item nav-link">About</a>
                 <!--<a href="shop.html" class="nav-item nav-link">Shop</a>-->
                 <a href="schedule.php" class="nav-item nav-link">Schedule</a>
+                <a href="fixtures.html" class="nav-item nav-link">Fixtures</a>
                 <a href="gallery.php" class="nav-item nav-link">Gallery</a>
                 <a href="contact.html" class="nav-item nav-link active"
                   >Contact</a
@@ -110,23 +111,36 @@
                   ><span class="visually-hidden"> (opens in a new tab)</span></a
                 >
               </div>
-              <div class="d-flex gap-2 py-3 py-lg-0">
+              <div
+                class="d-flex flex-column flex-xl-row align-items-xl-center gap-3 py-3 py-xl-0"
+              >
                 <a
-                  class="btn btn-primary btn-square rounded-circle"
-                  href="https://www.facebook.com/profile.php?id=61581433657465"
+                  href="https://forms.gle/ru51iYuxmogGMkm86"
+                  class="btn btn-primary header-cta"
                   target="_blank"
-                  aria-label="Facebook (opens in a new tab)"
-                  ><i class="fab fa-facebook-f"></i
-                ></a>
-                <a
-                  class="btn btn-primary btn-square rounded-circle"
-                  href="https://www.instagram.com/helderbergpirates/"
-                  target="_blank"
-                  aria-label="Instagram (opens in a new tab)"
-                  ><i class="fab fa-instagram"></i
-                ></a>
+                  >Become a Pirate<i
+                    class="bi bi-arrow-up-right external-icon"
+                    aria-hidden="true"
+                  ></i
+                  ><span class="visually-hidden"> (opens in a new tab)</span></a
+                >
+                <div class="d-flex gap-2">
+                  <a
+                    class="btn btn-primary btn-square rounded-circle"
+                    href="https://www.facebook.com/profile.php?id=61581433657465"
+                    target="_blank"
+                    aria-label="Facebook (opens in a new tab)"
+                    ><i class="fab fa-facebook-f"></i
+                  ></a>
+                  <a
+                    class="btn btn-primary btn-square rounded-circle"
+                    href="https://www.instagram.com/helderbergpirates/"
+                    target="_blank"
+                    aria-label="Instagram (opens in a new tab)"
+                    ><i class="fab fa-instagram"></i
+                  ></a>
+                </div>
               </div>
-              <!--<a href="" class="btn btn-primary py-md-2 px-md-2 d-none d-lg-block">Become a Pirate</a>-->
             </div>
           </nav>
         </div>
@@ -134,168 +148,172 @@
     </div>
     <!-- Header End -->
 
-    <!-- Contact Start -->
-    <div class="container-fluid p-5">
-      <div class="mb-5 text-center">
-        <h5 class="text-primary text-uppercase">Contact Us</h5>
-        <h1 class="display-3 text-uppercase mb-0">Get In Touch</h1>
-      </div>
-      <div class="row g-5 mb-5">
-        <div class="col-lg-4">
-          <div
-            class="d-flex flex-column align-items-center bg-dark rounded text-center py-5 px-3"
-          >
-            <div
-              class="bg-primary rounded-circle d-flex align-items-center justify-content-center mb-3"
-              style="width: 60px; height: 60px"
-            >
-              <i class="fa fa-map-marker-alt fs-4 text-white"></i>
-            </div>
-            <h5 class="text-uppercase text-primary2">Visit Us</h5>
-            <p class="text-secondary mb-0">153 Lourensford Rd, Somerset West</p>
-          </div>
+    <main class="site-main">
+      <!-- Contact Start -->
+      <div class="container-fluid p-5">
+        <div class="mb-5 text-center">
+          <h5 class="text-primary text-uppercase">Contact Us</h5>
+          <h1 class="display-3 text-uppercase mb-0">Get In Touch</h1>
         </div>
-        <div class="col-lg-4">
-          <div
-            class="d-flex flex-column align-items-center bg-dark rounded text-center py-5 px-3"
-          >
+        <div class="row g-5 mb-5">
+          <div class="col-lg-4">
             <div
-              class="bg-primary rounded-circle d-flex align-items-center justify-content-center mb-3"
-              style="width: 60px; height: 60px"
+              class="d-flex flex-column align-items-center bg-dark rounded text-center py-5 px-3"
             >
-              <i class="fa fa-envelope fs-4 text-white"></i>
-            </div>
-            <h5 class="text-uppercase text-primary2">Email Us</h5>
-            <p class="text-secondary mb-0">
-              <a href="mailto:info@helderbergpirates.co.za" class="text-reset"
-                >info@helderbergpirates.co.za</a
+              <div
+                class="bg-primary rounded-circle d-flex align-items-center justify-content-center mb-3"
+                style="width: 60px; height: 60px"
               >
-            </p>
-          </div>
-        </div>
-        <div class="col-lg-4">
-          <div
-            class="d-flex flex-column align-items-center bg-dark rounded text-center py-5 px-3"
-          >
-            <div
-              class="bg-primary rounded-circle d-flex align-items-center justify-content-center mb-3"
-              style="width: 60px; height: 60px"
-            >
-              <i class="fa fa-phone fs-4 text-white"></i>
-            </div>
-            <h5 class="text-uppercase text-primary2">Call Us</h5>
-            <p class="text-secondary mb-0">
-              <a href="tel:+27769093707" class="text-reset">076 909 3707</a>
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="row g-0">
-        <div class="col-lg-6">
-          <div class="bg-dark p-5">
-            <form action="contact.php" id="contactForm" method="POST">
-              <div class="row g-3">
-                <div class="col-12 col-sm-6">
-                  <input
-                    type="text"
-                    class="form-control bg-light border-0 px-4"
-                    placeholder="Your Name"
-                    id="name"
-                    name="name"
-                    style="height: 55px"
-                  />
-                </div>
-                <div class="col-12 col-sm-6">
-                  <input
-                    type="email"
-                    class="form-control bg-light border-0 px-4"
-                    placeholder="Your Email"
-                    id="email"
-                    name="email"
-                    style="height: 55px"
-                  />
-                </div>
-                <div class="col-12">
-                  <input
-                    type="text"
-                    class="form-control bg-light border-0 px-4"
-                    placeholder="Subject"
-                    id="subject"
-                    name="subject"
-                    style="height: 55px"
-                  />
-                </div>
-                <div class="col-12">
-                  <textarea
-                    class="form-control bg-light border-0 px-4 py-3"
-                    rows="4"
-                    placeholder="Message"
-                    id="message"
-                    name="message"
-                  ></textarea>
-                </div>
-                <div class="col-12">
-                  <button class="btn btn-primary w-100 py-3" type="submit">
-                    Send Message
-                  </button>
-                </div>
+                <i class="fa fa-map-marker-alt fs-4 text-white"></i>
               </div>
-            </form>
-            <div id="formMessage"></div>
-
-            <script>
-              document
-                .getElementById("contactForm")
-                .addEventListener("submit", function (e) {
-                  e.preventDefault();
-
-                  let formData = new FormData(this);
-
-                  fetch("contact.php", {
-                    method: "POST",
-                    body: formData,
-                  })
-                    .then((response) => response.text())
-                    .then((data) => {
-                      let msg = document.getElementById("formMessage");
-                      msg.style.display = "block";
-
-                      if (data.includes("Thank you")) {
-                        msg.className = "success";
-                        msg.innerHTML = data;
-                        document.getElementById("contactForm").reset();
-                      } else {
-                        msg.className = "error";
-                        msg.innerHTML = data;
-                      }
-                    })
-                    .catch((error) => {
-                      let msg = document.getElementById("formMessage");
-                      msg.style.display = "block";
-                      msg.className = "error";
-                      msg.innerHTML = "An error occurred. Please try again.";
-                    });
-                });
-            </script>
+              <h5 class="text-uppercase text-primary2">Visit Us</h5>
+              <p class="text-secondary mb-0">
+                153 Lourensford Rd, Somerset West
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div
+              class="d-flex flex-column align-items-center bg-dark rounded text-center py-5 px-3"
+            >
+              <div
+                class="bg-primary rounded-circle d-flex align-items-center justify-content-center mb-3"
+                style="width: 60px; height: 60px"
+              >
+                <i class="fa fa-envelope fs-4 text-white"></i>
+              </div>
+              <h5 class="text-uppercase text-primary2">Email Us</h5>
+              <p class="text-secondary mb-0">
+                <a href="mailto:info@helderbergpirates.co.za" class="text-reset"
+                  >info@helderbergpirates.co.za</a
+                >
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4">
+            <div
+              class="d-flex flex-column align-items-center bg-dark rounded text-center py-5 px-3"
+            >
+              <div
+                class="bg-primary rounded-circle d-flex align-items-center justify-content-center mb-3"
+                style="width: 60px; height: 60px"
+              >
+                <i class="fa fa-phone fs-4 text-white"></i>
+              </div>
+              <h5 class="text-uppercase text-primary2">Call Us</h5>
+              <p class="text-secondary mb-0">
+                <a href="tel:+27769093707" class="text-reset">076 909 3707</a>
+              </p>
+            </div>
           </div>
         </div>
-        <div class="col-lg-6">
-          <iframe
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3304.600727278536!2d18.87151867658154!3d-34.07974813001755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1dcdb58a2c508081%3A0xd43ff89b72f1696b!2sHelderberg%20Pirates%20Baseball%20Club!5e0!3m2!1sen!2sza!4v1741779759484!5m2!1sen!2sza"
-            width="100%"
-            height="450"
-            style="border: 0; display: block"
-            allowfullscreen=""
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-          ></iframe>
+        <div class="row g-0">
+          <div class="col-lg-6">
+            <div class="bg-dark p-5">
+              <form action="contact.php" id="contactForm" method="POST">
+                <div class="row g-3">
+                  <div class="col-12 col-sm-6">
+                    <input
+                      type="text"
+                      class="form-control bg-light border-0 px-4"
+                      placeholder="Your Name"
+                      id="name"
+                      name="name"
+                      style="height: 55px"
+                    />
+                  </div>
+                  <div class="col-12 col-sm-6">
+                    <input
+                      type="email"
+                      class="form-control bg-light border-0 px-4"
+                      placeholder="Your Email"
+                      id="email"
+                      name="email"
+                      style="height: 55px"
+                    />
+                  </div>
+                  <div class="col-12">
+                    <input
+                      type="text"
+                      class="form-control bg-light border-0 px-4"
+                      placeholder="Subject"
+                      id="subject"
+                      name="subject"
+                      style="height: 55px"
+                    />
+                  </div>
+                  <div class="col-12">
+                    <textarea
+                      class="form-control bg-light border-0 px-4 py-3"
+                      rows="4"
+                      placeholder="Message"
+                      id="message"
+                      name="message"
+                    ></textarea>
+                  </div>
+                  <div class="col-12">
+                    <button class="btn btn-primary w-100 py-3" type="submit">
+                      Send Message
+                    </button>
+                  </div>
+                </div>
+              </form>
+              <div id="formMessage"></div>
+
+              <script>
+                document
+                  .getElementById("contactForm")
+                  .addEventListener("submit", function (e) {
+                    e.preventDefault();
+
+                    let formData = new FormData(this);
+
+                    fetch("contact.php", {
+                      method: "POST",
+                      body: formData,
+                    })
+                      .then((response) => response.text())
+                      .then((data) => {
+                        let msg = document.getElementById("formMessage");
+                        msg.style.display = "block";
+
+                        if (data.includes("Thank you")) {
+                          msg.className = "success";
+                          msg.innerHTML = data;
+                          document.getElementById("contactForm").reset();
+                        } else {
+                          msg.className = "error";
+                          msg.innerHTML = data;
+                        }
+                      })
+                      .catch((error) => {
+                        let msg = document.getElementById("formMessage");
+                        msg.style.display = "block";
+                        msg.className = "error";
+                        msg.innerHTML = "An error occurred. Please try again.";
+                      });
+                  });
+              </script>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3304.600727278536!2d18.87151867658154!3d-34.07974813001755!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1dcdb58a2c508081%3A0xd43ff89b72f1696b!2sHelderberg%20Pirates%20Baseball%20Club!5e0!3m2!1sen!2sza!4v1741779759484!5m2!1sen!2sza"
+              width="100%"
+              height="450"
+              style="border: 0; display: block"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
         </div>
       </div>
-    </div>
-    <!-- Contact End -->
+      <!-- Contact End -->
+    </main>
 
     <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-secondary px-5 mt-5">
+    <div class="container-fluid bg-dark text-secondary px-5 mt-5 site-footer">
       <div class="row gx-5">
         <div class="col-lg-8 col-md-6">
           <div class="row gx-5">
@@ -353,6 +371,10 @@
                   ><i class="bi bi-arrow-right text-primary me-2"></i
                   >Schedule</a
                 >
+                <a class="text-secondary mb-2" href="fixtures.html"
+                  ><i class="bi bi-arrow-right text-primary me-2"></i
+                  >Fixtures</a
+                >
                 <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                 <a class="text-secondary" href="contact.html"
                   ><i class="bi bi-arrow-right text-primary me-2"></i>Contact
@@ -373,6 +395,10 @@
                 <a class="text-secondary mb-2" href="schedule.php"
                   ><i class="bi bi-arrow-right text-primary me-2"></i
                   >Schedule</a
+                >
+                <a class="text-secondary mb-2" href="fixtures.html"
+                  ><i class="bi bi-arrow-right text-primary me-2"></i
+                  >Fixtures</a
                 >
                 <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                 <a class="text-secondary" href="contact.html"
@@ -441,7 +467,10 @@
         </div>
       </div>
     </div>
-    <div class="container-fluid py-4 py-lg-0 px-5" style="background: #111111">
+    <div
+      class="container-fluid py-4 py-lg-0 px-5 site-footer-bar"
+      style="background: #111111"
+    >
       <div class="row gx-5">
         <div class="col-lg-8">
           <div class="py-lg-4 text-center">

@@ -29,8 +29,6 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-	
-	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 
  <style>
        h1 { margin-top: 30px; }
@@ -60,17 +58,17 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
 <body>
 
     <!-- Header Start -->
-    <div class="container-fluid bg-dark px-0">
+    <div class="container-fluid bg-dark px-0 site-header">
         <div class="row gx-0">
-            <div class="col-lg-3 bg-dark d-none d-lg-block" z-index=-1>
+            <div class="col-lg-3 bg-dark d-none d-xl-block" z-index=-1>
                 <a href="index.php" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
                     <img src="img/Logo.png" height=150px> 
 					<!--<h1 class="m-0 display-4 text-primary text-uppercase"><img src="img/Logo.png" height=100px> Helderberg<br>Pirates</h1>-->
                 </a>
             </div>
-            <div class="col-lg-9 d-flex align-items-center">
-                <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0 px-lg-5 w-100">
-                    <a href="index.php" class="navbar-brand d-block d-lg-none">
+            <div class="col-xl-9 d-flex align-items-center">
+                <nav class="navbar navbar-expand-xl bg-dark navbar-dark p-3 p-xl-0 px-xl-5 w-100">
+                    <a href="index.php" class="navbar-brand d-block d-xl-none">
                         <img src="img/Logo.png" height="56" alt="Helderberg Pirates">
                     </a>
                     <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -82,21 +80,26 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
                             <a href="about.html" class="nav-item nav-link">About</a>
 							<!--<a href="shop.html" class="nav-item nav-link">Shop</a>-->
                             <a href="schedule.php" class="nav-item nav-link">Schedule</a>
+                            <a href="fixtures.html" class="nav-item nav-link">Fixtures</a>
 							<a href="gallery.php" class="nav-item nav-link">Gallery</a>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                             <a href="https://forms.gle/N7LtqnF7r7RMRC8r5" class="nav-item nav-link" target="_blank">Book the Clubhouse<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
                         </div>
-                        <div class="d-flex gap-2 py-3 py-lg-0">
-                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
+                        <div class="d-flex flex-column flex-xl-row align-items-xl-center gap-3 py-3 py-xl-0">
+                            <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary header-cta" target="_blank">Become a Pirate<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
+                            <div class="d-flex gap-2">
+                                <a class="btn btn-primary btn-square rounded-circle" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
+                            </div>
                         </div>
-                      <!--<a href="" class="btn btn-primary py-md-2 px-md-2 d-none d-lg-block">Become a Pirate</a>-->
                     </div>
                 </nav>
             </div>
         </div>
     </div>
     <!-- Header End -->
+
+    <main class="site-main">
 
 
 
@@ -153,8 +156,10 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
     
     
 
+    </main>
+
     <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-secondary px-5 mt-5">
+    <div class="container-fluid bg-dark text-secondary px-5 mt-5 site-footer">
         <div class="row gx-5">
             <div class="col-lg-8 col-md-6">
                 <div class="row gx-5">
@@ -185,6 +190,7 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
                             <a class="text-secondary mb-2" href="index.php"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
                             <a class="text-secondary mb-2" href="about.html"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
                             <a class="text-secondary mb-2" href="schedule.php"><i class="bi bi-arrow-right text-primary me-2"></i>Schedule</a>
+                            <a class="text-secondary mb-2" href="fixtures.html"><i class="bi bi-arrow-right text-primary me-2"></i>Fixtures</a>
                             <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                             <a class="text-secondary" href="contact.html"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
                         </div>
@@ -195,6 +201,7 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
                             <a class="text-secondary mb-2" href="index.php"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
                             <a class="text-secondary mb-2" href="about.html"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
                             <a class="text-secondary mb-2" href="schedule.php"><i class="bi bi-arrow-right text-primary me-2"></i>Schedule</a>
+                            <a class="text-secondary mb-2" href="fixtures.html"><i class="bi bi-arrow-right text-primary me-2"></i>Fixtures</a>
                             <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                             <a class="text-secondary" href="contact.html"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
                         </div>
@@ -228,7 +235,7 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
             </div>
         </div>
     </div>
-    <div class="container-fluid py-4 py-lg-0 px-5" style="background: #111111;">
+    <div class="container-fluid py-4 py-lg-0 px-5 site-footer-bar" style="background: #111111;">
         <div class="row gx-5">
             <div class="col-lg-8">
                 <div class="py-lg-4 text-center">

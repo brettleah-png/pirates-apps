@@ -7,6 +7,35 @@
   --dark: #222429;
 }
 
+/* On screens wider than Full HD the page stops growing and sits in the middle */
+body {
+  max-width: 1920px;
+  margin: 0 auto;
+}
+
+/* The header and footer bars still reach the screen edges: a border image in the bar's
+   colour is pushed out 100vmax to the left and right ("outset"), filling the space either side */
+.site-header,
+.site-footer {
+  border-image: linear-gradient(var(--dark), var(--dark)) fill 0 / 0 / 0 100vmax;
+}
+
+.site-footer-bar {
+  border-image: linear-gradient(#111111, #111111) fill 0 / 0 / 0 100vmax;
+}
+
+/* Short pages: the footer stays at the bottom of the screen and the spare space goes
+   above it. Only <main> grows; the sections inside it keep their normal block layout */
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.site-main {
+  flex-grow: 1;
+}
+
 [class^="flaticon-"]:before,
 [class*=" flaticon-"]:before,
 [class^="flaticon-"]:after,
@@ -97,8 +126,8 @@ h6,
   white-space: nowrap;
 }
 
-/* Narrow desktops: tighter spacing keeps the whole menu on one line */
-@media (min-width: 992px) and (max-width: 1199.98px) {
+/* Narrow desktops: tighter spacing keeps the whole menu and the button on one line */
+@media (min-width: 1200px) and (max-width: 1399.98px) {
   .navbar-dark .navbar-nav .nav-link {
     margin-right: 18px;
   }
@@ -109,11 +138,25 @@ h6,
   color: var(--primary);
 }
 
-@media (max-width: 991.98px) {
+/* Below 1200px the menu folds into the burger, with one link per row */
+@media (max-width: 1199.98px) {
   .navbar-dark .navbar-nav .nav-link {
     margin-right: 0;
     padding: 10px 0;
   }
+}
+
+/* "Become a Pirate" in the header */
+.header-cta {
+  white-space: nowrap;
+}
+
+/* Home page hero photo: half the window height, cropped to fit instead of stretched.
+   Wide screens crop it top and bottom, so keep the top, where the player's head is */
+.hero-image {
+  height: 50vh;
+  object-fit: cover;
+  object-position: center top;
 }
 
 .carousel-caption {
@@ -155,15 +198,11 @@ h6,
   background-size: cover;
 }
 
-.programe::after {
-  position: absolute;
-  content: "";
-  width: 100%;
-  height: calc(100% - 45px);
-  top: 135px;
-  left: 0;
+/* Dark section holding the feature cards (Teamwork, Batting, ...) */
+.programe {
   background: var(--dark);
-  z-index: -1;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
 .team-item img {
@@ -173,6 +212,18 @@ h6,
 .team-item:hover img,
 .team-item:focus img {
   transform: scale(1.2);
+}
+
+/* Stands in for a coach photo we don't have yet, at the same 2:3 shape as the photos */
+.team-item .team-placeholder {
+  aspect-ratio: 2 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 25%; /* keeps the icon clear of the name bar */
+  background: var(--dark);
+  color: var(--secondary);
+  font-size: 8rem;
 }
 
 .team-item .team-overlay {
@@ -208,27 +259,6 @@ h6,
 .team-item:hover .team-name,
 .team-item:focus .team-name {
   opacity: 0;
-}
-
-/* Desktops show five small cards in a row, so the bio gets less padding and smaller text */
-@media (min-width: 992px) and (max-width: 1199.98px) {
-  .team-item .team-overlay {
-    padding: 12px;
-  }
-
-  .team-item .team-overlay h6 {
-    font-size: 13px;
-  }
-}
-
-@media (min-width: 1200px) and (max-width: 1399.98px) {
-  .team-item .team-overlay {
-    padding: 16px;
-  }
-
-  .team-item .team-overlay h6 {
-    font-size: 15px;
-  }
 }
 
 .team-item {

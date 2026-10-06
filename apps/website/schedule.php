@@ -26,61 +26,6 @@
 
     <!-- Template Stylesheet -->
     <link href="css/style.css" rel="stylesheet">
-	
-	<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
-
- <style>
-
-    #calendar {
-      max-width: 100%;
-      margin: 0 auto 20px auto;
-    }
-    #legend {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 16px;          
-      border-top: 1px solid #ddd;
-      padding-top: 12px;
-      justify-content: flex-start; /* row layout on desktop */
-    }
-    .legend-item {
-      display: flex;
-      align-items: center;
-      font-size: 15px;
-      cursor: pointer;
-      user-select: none;
-    }
-    .legend-color {
-      width: 14px;
-      height: 14px;
-      margin-right: 6px;
-      border: 1px solid #444;
-      border-radius: 3px;
-    }
-    .legend-item.inactive {
-      opacity: 0.5;
-      color: #888;
-    }
-
-    /* ✅ Mobile responsiveness */
-    @media (max-width: 600px) {
-      #legend {
-        flex-direction: column;
-        gap: 6px;
-      }
-      .fc-toolbar.fc-header-toolbar {
-        flex-wrap: wrap;
-        justify-content: center;
-        text-align: center;
-      }
-      .fc-toolbar-chunk {
-        margin-bottom: 6px;
-      }
-      .legend-item {
-        font-size: 13px;
-      }
-    }
-  </style>
 
 </head>
 
@@ -90,17 +35,17 @@
 <body>
 
     <!-- Header Start -->
-    <div class="container-fluid bg-dark px-0">
+    <div class="container-fluid bg-dark px-0 site-header">
         <div class="row gx-0">
-            <div class="col-lg-3 bg-dark d-none d-lg-block" z-index=-1>
+            <div class="col-lg-3 bg-dark d-none d-xl-block" z-index=-1>
                 <a href="index.php" class="navbar-brand w-100 h-100 m-0 p-0 d-flex align-items-center justify-content-center">
                     <img src="img/Logo.png" height=150px> 
 					<!--<h1 class="m-0 display-4 text-primary text-uppercase"><img src="img/Logo.png" height=100px> Helderberg<br>Pirates</h1>-->
                 </a>
             </div>
-            <div class="col-lg-9 d-flex align-items-center">
-                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark p-3 p-lg-0 px-lg-5 w-100">
-                    <a href="index.php" class="navbar-brand d-block d-lg-none">
+            <div class="col-xl-9 d-flex align-items-center">
+                 <nav class="navbar navbar-expand-xl bg-dark navbar-dark p-3 p-xl-0 px-xl-5 w-100">
+                    <a href="index.php" class="navbar-brand d-block d-xl-none">
                         <img src="img/Logo.png" height="56" alt="Helderberg Pirates">
                     </a>
                     <button type="button" class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -112,21 +57,26 @@
                             <a href="about.html" class="nav-item nav-link">About</a>
 							<!--<a href="shop.html" class="nav-item nav-link">Shop</a>-->
                             <a href="schedule.php" class="nav-item nav-link active">Schedule</a>
+                            <a href="fixtures.html" class="nav-item nav-link">Fixtures</a>
 							<a href="gallery.php" class="nav-item nav-link">Gallery</a>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                             <a href="https://forms.gle/N7LtqnF7r7RMRC8r5" class="nav-item nav-link" target="_blank">Book the Clubhouse<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
                         </div>
-                        <div class="d-flex gap-2 py-3 py-lg-0">
-                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
+                        <div class="d-flex flex-column flex-xl-row align-items-xl-center gap-3 py-3 py-xl-0">
+                            <a href="https://forms.gle/ru51iYuxmogGMkm86" class="btn btn-primary header-cta" target="_blank">Become a Pirate<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
+                            <div class="d-flex gap-2">
+                                <a class="btn btn-primary btn-square rounded-circle" href="https://www.facebook.com/profile.php?id=61581433657465" target="_blank" aria-label="Facebook (opens in a new tab)"><i class="fab fa-facebook-f"></i></a>
+                                <a class="btn btn-primary btn-square rounded-circle" href="https://www.instagram.com/helderbergpirates/" target="_blank" aria-label="Instagram (opens in a new tab)"><i class="fab fa-instagram"></i></a>
+                            </div>
                         </div>
-                      <!--<a href="" class="btn btn-primary py-md-2 px-md-2 d-none d-lg-block">Become a Pirate</a>-->
                     </div>
                 </nav>
             </div>
         </div>
     </div>
     <!-- Header End -->
+
+    <main class="site-main">
 
 
     <!-- Class Timetable Start -->
@@ -135,109 +85,55 @@
             <h5 class="text-primary text-uppercase">Schedule</h5>
             <h1 class="display-3 text-uppercase mb-0">Our Schedule</h1>
         </div>
-        <div class="tab-class text-center">
-            <ul class="nav nav-pills d-inline-flex justify-content-center bg-dark text-uppercase rounded-pill mb-5">
-                
-                <li class="nav-item">
-                    <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-1">Tuesday</a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-2">Thursday</a>
-                </li>
-                
-                <li class="nav-item">
-                    <a class="nav-link rounded-pill text-white" data-bs-toggle="pill" href="#tab-3">Saturday</a>
-                </li>
-                
-            </ul>
-            <div class="tab-content">
-                <div id="tab-1" class="tab-pane fade show p-0 active">
-                    <div class="row g-5">
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:00PM</h6>
-                                <h5 class="text-uppercase text-primary2">U/10 Training</h5>
-								<p class="text-uppercase text-secondary mb-0">Coach Jacques</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary2">U/12 Training</h5>
-                                <p class="text-uppercase text-secondary mb-0">Coach Josh</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary2">U/15 Training</h5>
-                                <p class="text-uppercase text-secondary mb-0">Coach Ian</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary2">Senior Side Training</h5>
-                                <p class="text-uppercase text-secondary mb-0">Coach Devan</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary2">Masters Training</h5>
-                                <p class="text-uppercase text-secondary mb-0">Coach Peter</p>
-                            </div>
-                        </div>
+        <div class="row g-5">
+            <div class="col-lg-7">
+                <div class="bg-light rounded h-100 p-4 p-md-5">
+                    <h2 class="text-uppercase mb-3">Training</h2>
+                    <p class="fs-5 mb-4"><strong>Tuesdays &amp; Thursdays</strong> &middot; 5:30 &ndash; 7:30 PM &middot; Radloff Park</p>
+                    <table class="table mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Team</th>
+                                <th scope="col">Coach</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row">U/10 <small class="text-muted fw-normal">until 7:00 PM</small></th>
+                                <td>James</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">U/12</th>
+                                <td>Josh</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">U/15</th>
+                                <td>Ian</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">U/18</th>
+                                <td>Brett</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Seniors</th>
+                                <td>Devan</td>
+                            </tr>
+                            <tr>
+                                <th scope="row">Masters</th>
+                                <td>Peter</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="bg-dark rounded h-100 p-4 p-md-5 d-flex flex-column justify-content-center text-center">
+                    <h5 class="text-primary2 text-uppercase">2026&ndash;27 Season</h5>
+                    <h2 class="display-5 text-uppercase text-light mb-3">Match Fixtures</h2>
+                    <p class="text-secondary mb-4">Every game for every team, home and away. Filter by team or search for an opponent.</p>
+                    <div>
+                        <a href="fixtures.html" class="btn btn-primary py-3 px-5">See Match Fixtures<i class="bi bi-arrow-right ms-2" aria-hidden="true"></i></a>
                     </div>
-                </div>
-                <div id="tab-2" class="tab-pane fade p-0">
-                    <div class="row g-5">
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:00PM</h6>
-                                <h5 class="text-uppercase text-primary2">U/10 Training</h5>
-								<p class="text-uppercase text-secondary mb-0">Coach Jacques</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary2">U/12 Training</h5>
-                                <p class="text-uppercase text-secondary mb-0">Coach Josh</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary2">U/15 Training</h5>
-                                <p class="text-uppercase text-secondary mb-0">Coach Ian</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary2">Senior Side Training</h5>
-                                <p class="text-uppercase text-secondary mb-0">Coach Devan</p>
-                            </div>
-                        </div>
-                        <div class="col-lg-3 col-md-4 col-sm-6">
-                            <div class="bg-dark rounded text-center py-5 px-3">
-                                <h6 class="text-uppercase text-light mb-3">5:30 PM - 7:30PM</h6>
-                                <h5 class="text-uppercase text-primary2">Masters Training</h5>
-                                <p class="text-uppercase text-secondary mb-0">Coach Peter</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="tab-3" class="tab-pane fade p-0">
-                    <div class="row g-5">
-                       <div id="calendar"></div>
-					   <div id="legend"> show or hide calendars by clicking on the names: </div>
-			
-					
-                </div>
-					* Team named first are the home(hosting) team
                 </div>
             </div>
         </div>
@@ -245,8 +141,10 @@
 
     <!-- Class Timetable Start -->
 
+    </main>
+
     <!-- Footer Start -->
-    <div class="container-fluid bg-dark text-secondary px-5 mt-5">
+    <div class="container-fluid bg-dark text-secondary px-5 mt-5 site-footer">
         <div class="row gx-5">
             <div class="col-lg-8 col-md-6">
                 <div class="row gx-5">
@@ -277,6 +175,7 @@
                             <a class="text-secondary mb-2" href="index.php"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
                             <a class="text-secondary mb-2" href="about.html"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
                             <a class="text-secondary mb-2" href="schedule.php"><i class="bi bi-arrow-right text-primary me-2"></i>Schedule</a>
+                            <a class="text-secondary mb-2" href="fixtures.html"><i class="bi bi-arrow-right text-primary me-2"></i>Fixtures</a>
                             <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                             <a class="text-secondary" href="contact.html"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
                         </div>
@@ -287,6 +186,7 @@
                             <a class="text-secondary mb-2" href="index.php"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
                             <a class="text-secondary mb-2" href="about.html"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
                             <a class="text-secondary mb-2" href="schedule.php"><i class="bi bi-arrow-right text-primary me-2"></i>Schedule</a>
+                            <a class="text-secondary mb-2" href="fixtures.html"><i class="bi bi-arrow-right text-primary me-2"></i>Fixtures</a>
                             <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                             <a class="text-secondary" href="contact.html"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
                         </div>
@@ -321,7 +221,7 @@
     
         </div>
     </div>
-    <div class="container-fluid py-4 py-lg-0 px-5" style="background: #111111;">
+    <div class="container-fluid py-4 py-lg-0 px-5 site-footer-bar" style="background: #111111;">
         <div class="row gx-5">
             <div class="col-lg-8">
                 <div class="py-lg-4 text-center">
@@ -352,87 +252,6 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
- <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      const calendarEl = document.getElementById('calendar');
-      const legendEl = document.getElementById('legend');
-
-      try {
-        const res = await fetch("feeds.json?t=" + new Date().getTime());
-        const feeds = await res.json();
-
-       const calendar = new FullCalendar.Calendar(calendarEl, {
-  initialView: window.innerWidth < 768 ? 'listWeek' : 'dayGridMonth', // list view fits phones better
-     displayEventEnd: false,
-   timeZone: 'UTC', // ✅ Force GMT/UTC timezone
-  headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: 'dayGridMonth,listWeek,listDay'
-  },
-        eventTimeFormat: { // ✅ Only show start time
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false
-      },
-  views: {
-    listWeek: { buttonText: 'Week' },
-    listDay: { buttonText: 'Day' }
-  },
-  height: "auto"
-});
-calendar.render();
-
-// ✅ Fix squashed month view by forcing a resize after render
-setTimeout(() => {
-  calendar.updateSize();
-}, 100);
-
-
-        const sourceMap = {};
-
-        feeds.forEach(feed => {
-          const item = document.createElement('div');
-          item.className = "legend-item";
-
-          const colorBox = document.createElement('div');
-          colorBox.className = "legend-color";
-          colorBox.style.backgroundColor = feed.color;
-
-          const label = document.createElement('span');
-          label.textContent = feed.name || feed.url;
-
-          item.appendChild(colorBox);
-          item.appendChild(label);
-          legendEl.appendChild(item);
-
-          const source = {
-            id: feed.name,
-            url: "ics-to-json.php?url=" + encodeURIComponent(feed.url),
-            color: feed.color,
-            textColor: "#fff"
-          };
-          calendar.addEventSource(source);
-          sourceMap[feed.name] = source;
-
-          item.addEventListener('click', () => {
-            if (item.classList.contains("inactive")) {
-              calendar.addEventSource(sourceMap[feed.name]);
-              item.classList.remove("inactive");
-            } else {
-              const evSource = calendar.getEventSourceById(feed.name);
-              if (evSource) evSource.remove();
-              item.classList.add("inactive");
-            }
-          });
-        });
-
-      } catch (e) {
-        console.error("Error loading feeds:", e);
-        calendarEl.innerHTML = "<p style='color:red;'>Failed to load calendar feeds.</p>";
-      }
-    });
-  </script>
 	
 </body>
 
