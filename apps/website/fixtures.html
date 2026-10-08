@@ -417,6 +417,66 @@
       .field-slot .slot-team {
         font-weight: 600;
         color: var(--black);
+        margin-right: auto;
+      }
+      .umpire-select {
+        font-family: "Montserrat", sans-serif;
+        font-size: 11.5px;
+        font-weight: 500;
+        color: var(--navy);
+        background: var(--pink);
+        border: 1px solid rgba(39, 53, 129, 0.25);
+        border-radius: 6px;
+        padding: 3px 22px 3px 8px;
+        appearance: none;
+        background-image:
+          url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23273581' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>"),
+          linear-gradient(var(--pink), var(--pink));
+        background-repeat: no-repeat;
+        background-position:
+          right 6px center,
+          0 0;
+        max-width: 150px;
+        cursor: pointer;
+      }
+      .umpire-select.is-assigned {
+        background-color: rgba(63, 107, 72, 0.14);
+        border-color: rgba(63, 107, 72, 0.4);
+        color: #2c4a32;
+      }
+      .umpire-select:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+        background-image: none;
+        padding-right: 8px;
+      }
+      .umpire-bar {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+        font-size: 12px;
+        color: rgba(0, 0, 0, 0.5);
+        margin: -2px 0 16px;
+      }
+      .umpire-lock-btn {
+        font-family: "Montserrat", sans-serif;
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--navy);
+        background: none;
+        border: 1px solid rgba(39, 53, 129, 0.3);
+        border-radius: 999px;
+        padding: 5px 13px;
+        cursor: pointer;
+      }
+      .umpire-lock-btn:hover {
+        background: rgba(39, 53, 129, 0.06);
+      }
+      .umpire-lock-btn.is-unlocked {
+        color: #2c4a32;
+        border-color: rgba(63, 107, 72, 0.4);
+        background: rgba(63, 107, 72, 0.08);
       }
       .day-empty {
         font-size: 13px;
@@ -839,6 +899,12 @@
             are also home that day, Masters move to the C-Field at 13:15. If
             Masters are home alone, they take the Main Diamond at 13:15. All
             games run 2 hours.
+          </div>
+          <div class="umpire-bar">
+            <button type="button" class="umpire-lock-btn" id="umpireLockBtn">
+              🔒 Enter PIN to edit umpires
+            </button>
+            <span id="umpireSyncNote"></span>
           </div>
           <div id="clashList"></div>
         </div>
@@ -2026,6 +2092,189 @@
         return d.innerHTML;
       }
 
+      // ---------- Umpire assignments (synced via a small Google Apps Script) ----------
+      // After deploying the companion Apps Script (see UmpireSync_Code.gs), paste
+      // its web app URL below. Until it's set, umpire picking stays switched off
+      // and the page says so rather than failing silently.
+      const APPS_SCRIPT_URL =
+        "https://script.google.com/macros/s/AKfycbwQ3O6uGKqxP6GZjv-JXwusgIfbdJdJg5bVPFUdb8iu5IBRPeYKPzu9YAJ2cqFq7KWu/exec";
+
+      const UMPIRES = [
+        "Alex Buys",
+        "Bruce Smith",
+        "Chirs Tapping",
+        "Christopher Groenewald",
+        "Cole Quattro",
+        "Constant Brand",
+        "Daniel Frank",
+        "Devan Rolfe",
+        "Ethan Burgess",
+        "Garth Uys",
+        "Jason Bands",
+        "Justin Smith",
+        "Kieran Clacket",
+        "Kurt Mealing",
+        "Lian Malan",
+        "Michael Smith",
+        "Peter Jokumsen",
+        "Richard Footman",
+        "Richard Rowe",
+        "Rocco King",
+      ];
+
+      const UMPIRE_PIN_KEY = "pirates_umpire_pin_v1";
+      let umpireMap = {}; // { "2026-10-24|Second League": "Alex Buys", ... }
+      let umpireUnlocked = false;
+      let umpirePin = null;
+      let umpireConfigured = APPS_SCRIPT_URL.indexOf("REPLACE_WITH") === -1;
+
+      function umpireKey(dateISO, team) {
+        return dateISO + "|" + team;
+      }
+
+      function setUmpireSyncNote(text, isError) {
+        const el = document.getElementById("umpireSyncNote");
+        if (!el) return;
+        el.textContent = text;
+        el.style.color = isError ? "#9a1f2b" : "rgba(0,0,0,0.5)";
+      }
+
+      async function fetchUmpireData() {
+        if (!umpireConfigured) {
+          setUmpireSyncNote(
+            "Umpire sync isn\u2019t set up yet — add the Apps Script URL to enable it.",
+            true
+          );
+          return;
+        }
+        try {
+          const res = await fetch(APPS_SCRIPT_URL, { method: "GET" });
+          const json = await res.json();
+          if (json && json.ok) {
+            umpireMap = json.data || {};
+            setUmpireSyncNote(
+              "Umpire picks are shared live with everyone on this page.",
+              false
+            );
+            buildGantt();
+          } else {
+            setUmpireSyncNote(
+              "Could not load umpire assignments right now.",
+              true
+            );
+          }
+        } catch (err) {
+          setUmpireSyncNote(
+            "Could not reach the umpire sheet — check your connection.",
+            true
+          );
+        }
+      }
+
+      async function saveUmpireAssignment(key, umpireName, selectEl) {
+        if (!umpireConfigured || !umpirePin) return;
+        selectEl.disabled = true;
+        try {
+          const res = await fetch(APPS_SCRIPT_URL, {
+            method: "POST",
+            headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids a CORS preflight to Apps Script
+            body: JSON.stringify({
+              key: key,
+              umpire: umpireName,
+              pin: umpirePin,
+            }),
+          });
+          const json = await res.json();
+          if (json && json.ok) {
+            if (umpireName) {
+              umpireMap[key] = umpireName;
+            } else {
+              delete umpireMap[key];
+            }
+            setUmpireSyncNote(
+              "Saved. Umpire picks are shared live with everyone on this page.",
+              false
+            );
+          } else if (json && json.error === "bad_pin") {
+            setUmpireSyncNote(
+              "That PIN was rejected — locking editing again.",
+              true
+            );
+            lockUmpireEditing();
+          } else {
+            setUmpireSyncNote("Could not save that umpire — try again.", true);
+          }
+        } catch (err) {
+          setUmpireSyncNote(
+            "Could not reach the umpire sheet — change was not saved.",
+            true
+          );
+        }
+        buildGantt();
+      }
+
+      function wireUmpireSelects() {
+        document.querySelectorAll(".umpire-select").forEach((sel) => {
+          sel.addEventListener("change", () => {
+            saveUmpireAssignment(sel.dataset.key, sel.value, sel);
+          });
+        });
+      }
+
+      function lockUmpireEditing() {
+        umpireUnlocked = false;
+        umpirePin = null;
+        try {
+          localStorage.removeItem(UMPIRE_PIN_KEY);
+        } catch (e) {}
+        const btn = document.getElementById("umpireLockBtn");
+        if (btn) {
+          btn.textContent = "🔒 Enter PIN to edit umpires";
+          btn.classList.remove("is-unlocked");
+        }
+        buildGantt();
+      }
+
+      function unlockUmpireEditing(pin) {
+        umpireUnlocked = true;
+        umpirePin = pin;
+        try {
+          localStorage.setItem(UMPIRE_PIN_KEY, pin);
+        } catch (e) {}
+        const btn = document.getElementById("umpireLockBtn");
+        if (btn) {
+          btn.textContent = "🔓 Umpire editing on (tap to lock)";
+          btn.classList.add("is-unlocked");
+        }
+        buildGantt();
+      }
+
+      function initUmpireControls() {
+        const btn = document.getElementById("umpireLockBtn");
+        if (!btn) return;
+        btn.addEventListener("click", () => {
+          if (umpireUnlocked) {
+            lockUmpireEditing();
+            return;
+          }
+          if (!umpireConfigured) {
+            setUmpireSyncNote(
+              "Umpire sync isn\u2019t set up yet — add the Apps Script URL to enable it.",
+              true
+            );
+            return;
+          }
+          const pin = window.prompt("Enter the umpire editing PIN:");
+          if (pin) unlockUmpireEditing(pin.trim());
+        });
+        let savedPin = null;
+        try {
+          savedPin = localStorage.getItem(UMPIRE_PIN_KEY);
+        } catch (e) {}
+        if (savedPin) unlockUmpireEditing(savedPin);
+        fetchUmpireData();
+      }
+
       function buildGantt() {
         const scrollEl = document.getElementById("ganttScroll");
         const clashListEl = document.getElementById("clashList");
@@ -2249,12 +2498,23 @@
                     const slots = info.assignments
                       .filter((a) => a.field === fld)
                       .sort((a, b) => a.start.localeCompare(b.start))
-                      .map(
-                        (a) => `<div class="field-slot">
+                      .map((a) => {
+                        const key = umpireKey(info.dISO, a.team);
+                        const current = umpireMap[key] || "";
+                        const options = ['<option value="">— Umpire —</option>']
+                          .concat(
+                            UMPIRES.map(
+                              (u) =>
+                                `<option value="${escapeHtml(u)}"${u === current ? " selected" : ""}>${escapeHtml(u)}</option>`
+                            )
+                          )
+                          .join("");
+                        return `<div class="field-slot">
                 <span class="slot-time">${a.start}</span>
                 <span class="slot-team">${escapeHtml(a.team)}</span>
-              </div>`
-                      )
+                <select class="umpire-select${current ? " is-assigned" : ""}" data-key="${key}" ${umpireUnlocked ? "" : "disabled"} aria-label="Umpire for ${escapeHtml(a.team)} on ${escapeHtml(dateLabel)}">${options}</select>
+              </div>`;
+                      })
                       .join("");
                     return `<div class="field-col"><div class="field-name">${escapeHtml(fld)}</div>${slots}</div>`;
                   })
@@ -2275,6 +2535,7 @@
               .join("") +
             "</div>";
         }
+        wireUmpireSelects();
       }
 
       function updateNextUp(filtered) {
@@ -2397,6 +2658,7 @@
       computeStats();
       render();
       buildGantt();
+      initUmpireControls();
     </script>
   </body>
 </html>
