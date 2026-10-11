@@ -1,0 +1,10 @@
+# The host's defaults let browsers reuse pages for a day and CSS for a week
+# without asking the server, so visitors kept seeing old menus after a deploy.
+# "no-cache" makes the browser check first; unchanged files still come back
+# as a quick "304 Not Modified". Images keep the host's default caching.
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|php|css|js)$">
+    Header set Cache-Control "no-cache"
+    Header unset Expires
+  </FilesMatch>
+</IfModule>
