@@ -80,7 +80,7 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
                             <a href="about.html" class="nav-item nav-link">About</a>
 							<!--<a href="shop.html" class="nav-item nav-link">Shop</a>-->
                             <a href="schedule.php" class="nav-item nav-link">Schedule</a>
-                            <a href="fixtures.html" class="nav-item nav-link">Fixtures</a>
+                            <a href="fixtures.php" class="nav-item nav-link">Fixtures</a>
 							<a href="gallery.php" class="nav-item nav-link">Gallery</a>
                             <a href="contact.html" class="nav-item nav-link">Contact</a>
                             <a href="https://forms.gle/N7LtqnF7r7RMRC8r5" class="nav-item nav-link" target="_blank">Book the Clubhouse<i class="bi bi-arrow-up-right external-icon" aria-hidden="true"></i><span class="visually-hidden"> (opens in a new tab)</span></a>
@@ -188,7 +188,7 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
                             <a class="text-secondary mb-2" href="index.php"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
                             <a class="text-secondary mb-2" href="about.html"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
                             <a class="text-secondary mb-2" href="schedule.php"><i class="bi bi-arrow-right text-primary me-2"></i>Schedule</a>
-                            <a class="text-secondary mb-2" href="fixtures.html"><i class="bi bi-arrow-right text-primary me-2"></i>Fixtures</a>
+                            <a class="text-secondary mb-2" href="fixtures.php"><i class="bi bi-arrow-right text-primary me-2"></i>Fixtures</a>
                             <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                             <a class="text-secondary" href="contact.html"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
                         </div>
@@ -199,7 +199,7 @@ $albums = array_filter(glob('uploads/*'), 'is_dir');
                             <a class="text-secondary mb-2" href="index.php"><i class="bi bi-arrow-right text-primary me-2"></i>Home</a>
                             <a class="text-secondary mb-2" href="about.html"><i class="bi bi-arrow-right text-primary me-2"></i>About Us</a>
                             <a class="text-secondary mb-2" href="schedule.php"><i class="bi bi-arrow-right text-primary me-2"></i>Schedule</a>
-                            <a class="text-secondary mb-2" href="fixtures.html"><i class="bi bi-arrow-right text-primary me-2"></i>Fixtures</a>
+                            <a class="text-secondary mb-2" href="fixtures.php"><i class="bi bi-arrow-right text-primary me-2"></i>Fixtures</a>
                             <!--<a class="text-secondary mb-2" href="#"><i class="bi bi-arrow-right text-primary me-2"></i>Our Coaches</a>-->
                             <a class="text-secondary" href="contact.html"><i class="bi bi-arrow-right text-primary me-2"></i>Contact Us</a>
                         </div>
