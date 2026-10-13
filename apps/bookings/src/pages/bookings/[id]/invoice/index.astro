@@ -1,0 +1,326 @@
+---
+// A booking's invoice, and the ways to get it to the client: share or
+// download the PDF, then email it from the person's own email app. The app
+// can't tell when an email has gone, so "Mark as sent" is pressed by hand.
+import { actions, isInputError } from "astro:actions";
+import Alert from "../../../../components/Alert.astro";
+import BackBar from "../../../../components/BackBar.astro";
+import EmailTools from "../../../../components/EmailTools.astro";
+import Icon from "../../../../components/Icon.astro";
+import AppLayout from "../../../../layouts/AppLayout.astro";
+import { loadBookingData } from "../../../../lib/data";
+import { dayMonthYear } from "../../../../lib/dates";
+import { invoiceEmail } from "../../../../lib/emails";
+import {
+  currentInvoice,
+  formatRand,
+  invoiceFileName,
+  invoiceTotal,
+  replacedInvoices,
+} from "../../../../lib/invoices";
+
+const { user } = Astro.locals;
+const id = Astro.params.id ?? "";
+
+const result = Astro.getActionResult(actions.markInvoiceSent);
+if (result && !result.error) {
+  return Astro.redirect(`/bookings/${id}/invoice?done=sent`);
+}
+const actionError = result?.error
+  ? isInputError(result.error)
+    ? (result.error.issues[0]?.message ?? "Try again.")
+    : result.error.message
+  : undefined;
+
+const DONE_MESSAGES: Record<string, string> = {
+  saved: "Invoice saved.",
+  sent: "Marked as sent.",
+};
+const doneMessage = DONE_MESSAGES[Astro.url.searchParams.get("done") ?? ""];
+
+if (!user.permissions.payments) {
+  return Astro.redirect(`/bookings/${id}`);
+}
+
+const data = await loadBookingData();
+const booking = data.bookings.find((b) => b.id === id);
+if (!booking) {
+  return Astro.redirect(`/bookings/${id}`);
+}
+const invoice = currentInvoice(data.invoices.invoices, booking.timestampKey);
+if (!invoice) {
+  return Astro.redirect(`/bookings/${id}/invoice/edit`);
+}
+const replaced = replacedInvoices(data.invoices.invoices, booking.timestampKey);
+const pdfUrl = (number: string) =>
+  `/bookings/${booking.id}/invoice/${number}.pdf`;
+const email = invoiceEmail(booking);
+---
+
+<AppLayout title={invoice.number} user={user}>
+  <BackBar
+    href={`/bookings/${booking.id}`}
+    label={booking.name || "Booking"}
+    title={invoice.number}
+  />
+
+  {doneMessage && <Alert tone="success">{doneMessage}</Alert>}
+  {actionError && (
+    <Alert tone="danger" title="Not saved">
+      {actionError}
+    </Alert>
+  )}
+
+  <header class="heading">
+    <div>
+      <h1>{invoice.number}</h1>
+      <p class="lede">
+        {booking.name} · {invoice.issuedOn && dayMonthYear(invoice.issuedOn)}
+      </p>
+      <div class="tags">
+        <span
+          class:list={["tag", { "tag-accent": invoice.status === "Draft" }]}
+        >
+          {invoice.status === "Draft" ? "Not sent yet" : "Sent"}
+        </span>
+      </div>
+    </div>
+    <a class="button" href={`/bookings/${booking.id}/invoice/edit`}>
+      <Icon name="edit" size={18} />
+      Edit
+    </a>
+  </header>
+
+  <div class="columns">
+    <section class="panel">
+      <h2>Invoice</h2>
+      <table class="lines">
+        <tbody>
+          {invoice.lines.map((line) => (
+            <tr>
+              <td>{line.description}</td>
+              <td class="amount">{formatRand(line.amount)}</td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row">Total</th>
+            <td class="amount">{formatRand(invoiceTotal(invoice.lines))}</td>
+          </tr>
+        </tfoot>
+      </table>
+      <a class="button" href={pdfUrl(invoice.number)} target="_blank">
+        <Icon name="file" size={18} />
+        View PDF
+      </a>
+    </section>
+
+    <section class="panel">
+      <h2>Send it to the client</h2>
+      <ol class="steps">
+        <li>
+          <strong>Get the PDF.</strong> Share it straight into your email app,
+          or download it and attach it.
+          <div class="pdf-buttons">
+            <button
+              class="button button-primary"
+              type="button"
+              data-share-pdf
+              data-url={pdfUrl(invoice.number)}
+              data-file-name={invoiceFileName(invoice)}
+              data-subject={email.subject}
+              data-body={email.body}
+              hidden
+            >
+              <Icon name="share" size={18} />
+              Share PDF
+            </button>
+            <a
+              class="button"
+              href={`${pdfUrl(invoice.number)}?download`}
+              download={invoiceFileName(invoice)}
+            >
+              <Icon name="download" size={18} />
+              Download PDF
+            </a>
+          </div>
+        </li>
+        <li>
+          <strong>Write the email.</strong> Open it filled in, or copy the
+          subject and message to paste.
+          <EmailTools email={email} />
+        </li>
+        <li>
+          <strong>Once it's sent,</strong> mark it here. The payment status
+          becomes Invoice Sent.
+          {invoice.status === "Draft" ? (
+            <form method="POST" action={actions.markInvoiceSent}>
+              <input type="hidden" name="bookingId" value={booking.id} />
+              <input type="hidden" name="number" value={invoice.number} />
+              <button class="button" type="submit">
+                <Icon name="check" size={18} />
+                Mark as sent
+              </button>
+            </form>
+          ) : (
+            <p class="sent">
+              <Icon name="check" size={18} />
+              Sent
+            </p>
+          )}
+        </li>
+      </ol>
+    </section>
+
+    {replaced.length > 0 && (
+      <section class="panel">
+        <h2>Replaced invoices</h2>
+        <ul class="replaced">
+          {replaced.map((old) => (
+            <li>
+              <a href={pdfUrl(old.number)} target="_blank">
+                {old.number}
+              </a>{" "}
+              · {formatRand(invoiceTotal(old.lines))}
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+  </div>
+</AppLayout>
+
+<script>
+  // Sharing a file needs it ready when the button is tapped: phones only
+  // allow sharing straight after a tap, not after waiting for a download.
+  // So the PDF is fetched first, and the button only shows where sharing
+  // files works (mostly phones).
+  const button = document.querySelector<HTMLButtonElement>("[data-share-pdf]");
+
+  async function prepareShare(button: HTMLButtonElement) {
+    const { url, fileName, subject, body } = button.dataset;
+    const response = await fetch(url!);
+    if (!response.ok) return;
+    const file = new File([await response.blob()], fileName!, {
+      type: "application/pdf",
+    });
+    if (!navigator.canShare?.({ files: [file] })) return;
+
+    button.hidden = false;
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.share({ files: [file], title: subject, text: body });
+      } catch (error) {
+        // Closing the share sheet without picking an app isn't an error
+        if ((error as Error).name !== "AbortError") throw error;
+      }
+    });
+  }
+
+  if (button) {
+    prepareShare(button);
+  }
+</script>
+
+<style>
+  :global(.alert) {
+    margin-bottom: 1rem;
+  }
+  .heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  h1 {
+    margin: 0;
+    font-size: 1.625rem;
+    overflow-wrap: anywhere;
+  }
+  .lede {
+    margin: 0.25rem 0 0;
+    color: var(--color-muted);
+  }
+  .tags {
+    margin-top: 0.75rem;
+  }
+  .heading .button {
+    flex: none;
+  }
+
+  .columns {
+    display: grid;
+    gap: 1rem;
+    align-items: start;
+  }
+
+  .lines {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .lines td,
+  .lines th {
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--color-border);
+    text-align: left;
+    vertical-align: top;
+  }
+  .lines tr:first-child td {
+    border-top: 0;
+  }
+  .lines .amount {
+    padding-left: 1rem;
+    text-align: right;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .lines tfoot :is(th, td) {
+    border-top: 2px solid var(--color-text);
+    font-weight: 700;
+  }
+
+  .steps {
+    display: grid;
+    gap: 1.25rem;
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+  .steps li {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .pdf-buttons {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .pdf-buttons [hidden] {
+    display: none;
+  }
+  .sent {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    margin: 0;
+    color: var(--color-success);
+    font-weight: 600;
+  }
+  .steps form {
+    display: grid;
+  }
+
+  .replaced {
+    margin: 0;
+    padding-left: 1.25rem;
+  }
+
+  @media (min-width: 56rem) {
+    h1 {
+      font-size: 2rem;
+    }
+    .columns {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+</style>

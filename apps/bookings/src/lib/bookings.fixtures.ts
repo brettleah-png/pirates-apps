@@ -47,6 +47,7 @@ export const TRACKING_HEADERS = [
   "App_DamageDeposit",
   "App_DamageKeptBack",
   "App_DamageNote",
+  "App_DeclineReason",
   "App_UpdatedBy",
   "App_UpdatedAt",
   "Timestamp",
@@ -56,22 +57,22 @@ export const TRACKING_HEADERS = [
 // prettier-ignore
 export const TRACKING_ROWS: unknown[][] = [
   // John Doe: confirmed (deposit paid)
-  [46276.75166995371, "Client Contacted", "Deposit Paid", "INV-TEST-001", "Paid", "", "", "committee@example.com", 46297.5, 46276.75166995371],
+  [46276.75166995371, "Client Contacted", "Deposit Paid", "INV-TEST-001", "Paid", "", "", "", "committee@example.com", 46297.5, 46276.75166995371],
   // Jane Someone: not tracked yet
-  ["", "", "", "", "", "", "", "", "", 46227.39008162037],
+  ["", "", "", "", "", "", "", "", "", "", 46227.39008162037],
   // Mary Anyone: confirmed, on the same date as Jane
-  [46275.77846052083, "New", "Full Payment Received", "", "Outstanding", "", "", "committee@example.com", 46298.25, 46275.77846052083],
+  [46275.77846052083, "New", "Full Payment Received", "", "Outstanding", "", "", "", "committee@example.com", 46298.25, 46275.77846052083],
   // Person Sur: not tracked yet
-  ["", "", "", "", "", "", "", "", "", 46279.352024618056],
+  ["", "", "", "", "", "", "", "", "", "", 46279.352024618056],
   // Berry Allen: paid a deposit, then cancelled
-  [46282.41912167824, "Cancelled", "Deposit Paid", "INV-TEST-002", "Not required", "", "", "committee@example.com", 46299.75, 46282.41912167824],
+  [46282.41912167824, "Cancelled", "Deposit Paid", "INV-TEST-002", "Not required", "", "", "", "committee@example.com", 46299.75, 46282.41912167824],
   // Djou Ma, Hond Kat: not tracked yet
-  ["", "", "", "", "", "", "", "", "", 46050.55517096065],
-  ["", "", "", "", "", "", "", "", "", 46258.35165928241],
+  ["", "", "", "", "", "", "", "", "", "", 46050.55517096065],
+  ["", "", "", "", "", "", "", "", "", "", 46258.35165928241],
   // Sam Past: deposit refunded, with some kept back for damage
-  [46200.4, "Client Contacted", "Full Payment Received", "INV-TEST-003", "Refunded", 350, "Broken chair", "treasurer@example.com", 46245.5, 46200.4],
+  [46200.4, "Client Contacted", "Full Payment Received", "INV-TEST-003", "Refunded", 350, "Broken chair", "", "treasurer@example.com", 46245.5, 46200.4],
   // Alex Earlier: not tracked yet
-  ["", "", "", "", "", "", "", "", "", 46250.5],
+  ["", "", "", "", "", "", "", "", "", "", 46250.5],
 ];
 
 // "History": notes and saved changes

@@ -9,6 +9,8 @@ _Written 4 Oct 2026. A plan for `apps/bookings`: a private app where the committ
 - Sign in with a Google account. Only people listed in the app get in.
 - List the bookings from the form's response sheet, with a page per booking.
 - Track each booking's status, payment status, invoice number and damage deposit, and add notes, all stored in the same spreadsheet.
+- Make a booking's invoice as a PDF, and email it to the client from your own email app.
+- Decline a booking the club can't take, and email the client why.
 - Four permissions: view bookings, edit booking details, add notes and set status, and payments.
 - Installs from the browser as an app on Android phones and iPhones, and is designed for phones first.
 
@@ -51,11 +53,13 @@ Each dependency is added in the phase that first uses it.
 | `Form responses 1` | Google Forms. The app only ever clears an ID number.             | One row per booking request, and nothing else                         |
 | `Tracking Data`    | A formula copies the form tab; the app writes its `App_` columns | The form responses copied row by row, beside the app's `App_` columns |
 | `History`          | The app                                                          | One row per note or saved change                                      |
+| `Invoices`         | The app                                                          | One row per invoice                                                   |
 | `Users`            | The sheet's owners, by hand                                      | Email, plus one permission per column                                 |
 
-- **`App_` columns belong to the app.** Every column the app reads or writes in `Tracking Data` and `History` starts with `App_`. It ignores all other columns, except the copied Timestamp.
-  - `Tracking Data`: `App_Timestamp`, `App_Status`, `App_PaymentStatus`, `App_InvoiceNumber`, `App_DamageDeposit`, `App_DamageKeptBack`, `App_DamageNote`, `App_UpdatedBy`, `App_UpdatedAt`
+- **`App_` columns belong to the app.** Every column the app reads or writes in `Tracking Data`, `History` and `Invoices` starts with `App_`. It ignores all other columns, except the copied Timestamp.
+  - `Tracking Data`: `App_Timestamp`, `App_Status`, `App_PaymentStatus`, `App_InvoiceNumber`, `App_DamageDeposit`, `App_DamageKeptBack`, `App_DamageNote`, `App_DeclineReason`, `App_UpdatedBy`, `App_UpdatedAt`
   - `History`: `App_Id`, `App_Timestamp`, `App_At`, `App_By`, `App_Type` (`note` or `change`), `App_Text`, `App_EditedAt`
+  - `Invoices`: `App_InvoiceNumber`, `App_Timestamp`, `App_IssuedOn` (format as **Date**), `App_Status` (`Draft`, `Sent` or `Replaced`), `App_Customer`, `App_Address`, `App_RegNumber`, `App_Phone`, `App_Email`, `App_Lines` (the invoice's lines as JSON), `App_Total` (only for reading in the sheet)
 - **`Tracking Data` copies the form tab row by row** with `=ARRAYFORMULA('Form responses 1'!A:Z)`, to the right of the `App_` columns. Row 5's `App_` values belong to the booking copied into row 5. The club chose this so the tab can be read on its own.
 - **The safeguard.** The rows only stay lined up while nobody sorts or deletes rows in `Form responses 1`. So when the app saves a row, it also writes the booking's timestamp into `App_Timestamp`. If that stops matching the copied Timestamp beside it, every page shows a warning and the app won't save until the rows are lined up again. Bookings still show correctly, because the app matches values by `App_Timestamp`. Values typed by hand without an `App_Timestamp` belong to the booking in the same row.
 - **A booking is identified by its submission timestamp.** The form doesn't allow response editing, so it never changes. Links use a short code made from the timestamp and email (`/bookings/3a3311903f33`), which doesn't reveal the email.
@@ -71,23 +75,41 @@ Each dependency is added in the phase that first uses it.
 
 ## Statuses
 
-| Field          | Values                                                                                                                                                                           |
-| -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Booking status | **New** (the default: nobody has contacted the client yet), **Client Contacted**, **Cancelled**. There's no "Closed": the app knows a function is over once its date has passed. |
-| Payment status | **None** (the default), **Invoice Sent**, **Deposit Paid** (usually 50% of the fee), **Full Payment Received**, **Refunded** (rare: money paid back after a cancellation)        |
-| Damage deposit | **Outstanding** (the default), **Paid**, **Refunded** (records the amount kept back and what was damaged), **Not required** (set this when a booking doesn't need one)           |
+| Field          | Values                                                                                                                                                                                                                                                                    |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Booking status | **New** (the default: nobody has contacted the client yet), **Client Contacted**, **Cancelled** (the client called it off), **Declined** (the club can't take it, with the reason saved). There's no "Closed": the app knows a function is over once its date has passed. |
+| Payment status | **None** (the default), **Invoice Sent**, **Deposit Paid** (usually 50% of the fee), **Full Payment Received**, **Refunded** (rare: money paid back after a cancellation)                                                                                                 |
+| Damage deposit | **Outstanding** (the default), **Paid**, **Refunded** (records the amount kept back and what was damaged), **Not required** (set this when a booking doesn't need one)                                                                                                    |
 
-- **A booking is confirmed**, and holds its date, once its payment status is Deposit Paid or Full Payment Received, unless it's Cancelled. Confirmed bookings get a green "Confirmed" badge, and a booking's page warns when another confirmed booking is on the same date.
+- **A booking is confirmed**, and holds its date, once its payment status is Deposit Paid or Full Payment Received, unless it's Cancelled or Declined. Confirmed bookings get a green "Confirmed" badge, and a booking's page warns when another confirmed booking is on the same date.
 - **Two kinds of deposit.** "Deposit Paid" is part of the hire fee. The damage deposit is always labelled "Damage deposit", so the two can't be confused.
+
+## Invoices
+
+- **Who:** people with the Payments permission. A booking's page has an Invoice panel with **Create invoice** or **Open invoice**.
+- **Prices:** R3,500 plus a R500 damage deposit (refundable). The member rate is a flat R1,500 with no damage deposit: a tickbox fills in those amounts, and whoever makes the invoice checks the client really is a member first. Both amounts can be changed, and a damage deposit of 0 leaves it off the invoice. Extra lines can be added (up to 12).
+- **Customer:** name, phone and email start from the booking. Address and company registration number are optional and only printed when filled in.
+- **Numbers:** `INV-<date issued>-<count>`, like `INV-20261013-001`. The count starts at 001 each day and runs across all bookings. Two people saving a new invoice in the same second could get the same number; with a handful of users that's accepted rather than locking the sheet.
+- **The PDF** follows the club's spreadsheet invoice: logo, club address, customer, date and reference, the lines, the total, bank details, and 50% of the total to confirm the booking. It's headed "INVOICE", not "TAX INVOICE": the club isn't VAT-registered, and a tax invoice would need the club's VAT number and a VAT amount. The app stores the invoice's details, not the PDF, and draws the PDF fresh each time it's opened.
+- **Sending:** the app can't attach a file to an email link, so the invoice page offers **Share PDF** (phones: the share sheet attaches it to a new email), **Download PDF**, **Open in email app** (fills in the address, subject and message), and **Copy subject** / **Copy message**. Subject: "Pirates Club Rental".
+- **Sent:** the app can't tell when an email goes, so **Mark as sent** is pressed by hand. It moves the payment status from None to Invoice Sent. It never moves it back from a payment.
+- **Changing an invoice:** a draft changes in place. A sent invoice is replaced: it's marked Replaced, and the changes become a new invoice with a new number, so the client never has two versions of one number. Replaced invoices stay listed, with their PDFs.
+- **The tracking follows the invoice:** saving one writes its number to the booking's invoice number, and sets the damage deposit to Not required when there isn't one (or back to Outstanding when one is added). A damage deposit that's Paid or Refunded is left alone. Every invoice change goes in the booking's history.
+
+## Declining a booking
+
+- **Who:** people with the Notes and status permission, from the **Decline** button on a booking's page.
+- **Reasons:** another booking at that time, a match on that day, or something else (typed as the end of "Unfortunately …").
+- Declining sets the status to Declined, saves the reason in `App_DeclineReason` and records it in the history. The booking's page then shows a **Let them know** panel with the email: open it in an email app, or copy the subject and message.
 
 ## Permissions
 
-| Permission           | Allows                                                                          |
-| -------------------- | ------------------------------------------------------------------------------- |
-| View bookings        | The list and detail pages                                                       |
-| Edit booking details | Changing the form's answers (date, times, contact details); deleting ID numbers |
-| Notes and status     | Adding notes and changing the booking status                                    |
-| Payments             | Changing the payment status, the invoice number and the damage deposit          |
+| Permission           | Allows                                                                           |
+| -------------------- | -------------------------------------------------------------------------------- |
+| View bookings        | The list and detail pages                                                        |
+| Edit booking details | Changing the form's answers (date, times, contact details); deleting ID numbers  |
+| Notes and status     | Adding notes, changing the booking status, and declining bookings                |
+| Payments             | Changing the payment status, the invoice number and the damage deposit; invoices |
 
 - **The `Users` tab** has a header row, then one row per person: `Email | VIEW_BOOKINGS | EDIT_BOOKING_DETAILS | NOTES_AND_STATUS | PAYMENTS`, with a ticked checkbox or "Yes" in each permission column the person has. Anything else, including "No" or a blank cell, means no. The permission headers are in capitals to show they're fixed names the app looks for, not labels to reword. The app needs those exact headers (upper or lower case), in any order. The app's pages show friendlier names, such as "View bookings".
 - Every permission includes viewing.
@@ -172,40 +194,53 @@ _Built. Saving still has to be tested against the test spreadsheet by someone si
 
 - Changing the form's answers from the app, for people with the "Edit booking details" permission.
 
-### 6. Go live
+### 6. Invoices and declining
+
+_Built. Needs the sheet changes below in the test copy before the app will load, then testing by someone signed in, including Share PDF on an Android phone and an iPhone._
+
+See [Invoices](#invoices) and [Declining a booking](#declining-a-booking). A new booking's Contact panel also has **Mark as client contacted**, for people with Notes and status: a shortcut from New to Client Contacted without opening Edit. The sheet needs, **before this is deployed** (the app stops loading without them):
+
+1. In `Tracking Data`, an `App_DeclineReason` column among the `App_` columns.
+2. A new `Invoices` tab with the headers in row 1: `App_InvoiceNumber`, `App_Timestamp`, `App_IssuedOn`, `App_Status`, `App_Customer`, `App_Address`, `App_RegNumber`, `App_Phone`, `App_Email`, `App_Lines`, `App_Total`. Format `App_IssuedOn` as Date and `App_Total` as currency.
+
+### 7. Go live
 
 On the real spreadsheet:
 
 1. Remove the three hand-typed columns (State, Damage Deposit Paid/Refunded, Invoice Number) from `Form responses 1`. Then send one test response through the form and check it lands in the right columns.
-2. Add the `Tracking Data` and `History` tabs exactly as in the test copy: the `App_` headers, the copy formula, the Date time formats and the dropdowns.
+2. Add the `Tracking Data`, `History` and `Invoices` tabs exactly as in the test copy: the `App_` headers, the copy formula, the Date time formats and the dropdowns.
 3. Share the spreadsheet with the service account as Editor.
 4. Fill in the `Users` tab.
 5. Change `SPREADSHEET_ID` in Netlify to the real sheet.
 
 ## Decided
 
-| Decision                          | Answer                                                                                                                                                                                              |
-| --------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Hosting                           | Netlify. The cPanel plan has no Node.js support.                                                                                                                                                    |
-| Who can sign in                   | Personal Gmail accounts that are test users in Google Cloud and listed in `Users` ("External" consent screen, in Testing)                                                                           |
-| Google Cloud project owner        | `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as second owner                                                                                                              |
-| Booking key                       | The submission timestamp                                                                                                                                                                            |
-| "Allow response editing"          | Off                                                                                                                                                                                                 |
-| Statuses                          | See [Statuses](#statuses)                                                                                                                                                                           |
-| When a booking holds its date     | Deposit Paid or Full Payment Received, unless Cancelled                                                                                                                                             |
-| ID numbers                        | The form keeps asking, to identify who's legally responsible for the hire. The app never shows them: they're in the sheet if needed.                                                                |
-| Invoice number and damage deposit | Part of the payments permission                                                                                                                                                                     |
-| Refunds after a cancellation      | Usually not, but the payment status has a Refunded option for when it happens                                                                                                                       |
-| App name and colour on phones     | "Bookings" under the icon, and the website's orange in Android's title bar                                                                                                                          |
-| How long records are kept         | Bookings and payments: 5 years, the usual period for financial records. ID numbers: deleted once the damage deposit is settled.                                                                     |
-| Privacy policy                    | A public page at `/privacy`, covering committee members who sign in, not the booking form. Requests go to info@helderbergpirates.co.za, and the Information Officer is the Chairperson.             |
-| Editing                           | An Edit button opens an edit page with Save and Cancel. Notes are added straight on the booking's page.                                                                                             |
-| Tracking Data layout              | The form responses copied row by row, beside `App_` columns, with the `App_Timestamp` safeguard                                                                                                     |
-| Old hand-typed columns            | Dropped. Tracking starts fresh.                                                                                                                                                                     |
-| Notes                             | Authors can edit or delete their own note for 10 minutes                                                                                                                                            |
-| Change history                    | Every save is recorded in the booking's history                                                                                                                                                     |
-| Taken dates                       | A Confirmed badge, plus a warning on clashing dates                                                                                                                                                 |
-| Deleting ID numbers               | A button for people who can edit booking details, once the function is over and the damage deposit is settled (or the booking is cancelled). It clears the sheet only; Google Forms keeps its copy. |
+| Decision                          | Answer                                                                                                                                                                                                            |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Hosting                           | Netlify. The cPanel plan has no Node.js support.                                                                                                                                                                  |
+| Who can sign in                   | Personal Gmail accounts that are test users in Google Cloud and listed in `Users` ("External" consent screen, in Testing)                                                                                         |
+| Google Cloud project owner        | `helderbergpirates@gmail.com`, with `treasury@helderbergpirates.co.za` as second owner                                                                                                                            |
+| Booking key                       | The submission timestamp                                                                                                                                                                                          |
+| "Allow response editing"          | Off                                                                                                                                                                                                               |
+| Statuses                          | See [Statuses](#statuses)                                                                                                                                                                                         |
+| When a booking holds its date     | Deposit Paid or Full Payment Received, unless Cancelled                                                                                                                                                           |
+| ID numbers                        | The form keeps asking, to identify who's legally responsible for the hire. The app never shows them: they're in the sheet if needed.                                                                              |
+| Invoice number and damage deposit | Part of the payments permission                                                                                                                                                                                   |
+| Refunds after a cancellation      | Usually not, but the payment status has a Refunded option for when it happens                                                                                                                                     |
+| App name and colour on phones     | "Bookings" under the icon, and the website's orange in Android's title bar                                                                                                                                        |
+| How long records are kept         | Bookings and payments: 5 years, the usual period for financial records. ID numbers: deleted once the damage deposit is settled.                                                                                   |
+| Privacy policy                    | A public page at `/privacy`, covering committee members who sign in, not the booking form. Requests go to info@helderbergpirates.co.za, and the Information Officer is the Chairperson.                           |
+| Editing                           | An Edit button opens an edit page with Save and Cancel. Notes are added straight on the booking's page.                                                                                                           |
+| Tracking Data layout              | The form responses copied row by row, beside `App_` columns, with the `App_Timestamp` safeguard                                                                                                                   |
+| Old hand-typed columns            | Dropped. Tracking starts fresh.                                                                                                                                                                                   |
+| Notes                             | Authors can edit or delete their own note for 10 minutes                                                                                                                                                          |
+| Change history                    | Every save is recorded in the booking's history                                                                                                                                                                   |
+| Taken dates                       | A Confirmed badge, plus a warning on clashing dates                                                                                                                                                               |
+| Invoices                          | Payments permission. R3,500 + R500 damage deposit, or R1,500 and no deposit for members (confirmed by hand). Headed "INVOICE" (the club isn't VAT-registered). Details stored in `Invoices`, PDF drawn on demand. |
+| Sending invoices                  | From the person's own email app: Share PDF on phones, Download PDF, an email link, and copy buttons. Marked as sent by hand.                                                                                      |
+| Changing a sent invoice           | Replaces it with a new number; the old one is marked Replaced                                                                                                                                                     |
+| Declining bookings                | A Declined status with a saved reason (another booking, a match, or typed), and an email to send. Notes and status permission.                                                                                    |
+| Deleting ID numbers               | A button for people who can edit booking details, once the function is over and the damage deposit is settled (or the booking is cancelled). It clears the sheet only; Google Forms keeps its copy.               |
 
 ## Still open
 

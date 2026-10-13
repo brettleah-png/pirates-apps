@@ -31,7 +31,7 @@ function optionsFor(list: readonly string[], current: string): string[] {
 }
 ---
 
-<form class="edit-form" method="POST" action={actions.saveTracking}>
+<form class="form" method="POST" action={actions.saveTracking}>
   <input type="hidden" name="bookingId" value={booking.id} />
   <input type="hidden" name="shown" value={JSON.stringify(tracking)} />
 
@@ -132,7 +132,7 @@ function optionsFor(list: readonly string[], current: string): string[] {
     </section>
   )}
 
-  <div class="actions">
+  <div class="form-actions">
     <a class="button" href={`/bookings/${booking.id}`}>
       Cancel
     </a>
@@ -143,91 +143,12 @@ function optionsFor(list: readonly string[], current: string): string[] {
 </form>
 
 <style>
-  .edit-form {
-    display: grid;
-    gap: 1rem;
-    max-width: 40rem;
-  }
-  .panel {
-    display: grid;
-    gap: 1rem;
-    padding: 1rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius);
-    background: var(--color-surface);
-    box-shadow: var(--shadow-card);
-  }
-  .panel h2 {
-    margin: 0;
-    color: var(--color-muted);
-    font-size: 0.8125rem;
-    font-weight: 700;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-  }
-  .field {
-    display: grid;
-    gap: 0.375rem;
-  }
-  label {
-    font-weight: 600;
-  }
-  select,
-  input,
-  textarea {
-    width: 100%;
-    padding: 0 0.75rem;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-small);
-    background: var(--color-surface);
-  }
-  textarea {
-    padding: 0.625rem 0.75rem;
-    resize: vertical;
-  }
-  select:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible {
-    outline: 2px solid var(--color-primary);
-    outline-offset: 0;
-    border-color: var(--color-primary);
-  }
-  .hint {
-    margin: 0;
-    color: var(--color-muted);
-    font-size: 0.875rem;
-  }
-
   /* The amount kept back and the damage only matter once it's refunded */
   .refund-fields {
     display: none;
     gap: 1rem;
   }
-  .edit-form:has(#damageDeposit option[value="Refunded"]:checked)
-    .refund-fields {
+  .form:has(#damageDeposit option[value="Refunded"]:checked) .refund-fields {
     display: grid;
-  }
-
-  /* The buttons stay at the bottom of the screen on phones */
-  .actions {
-    position: sticky;
-    bottom: 0;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom, 0px));
-    background: var(--color-background);
-  }
-  .actions .button:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  @media (min-width: 48rem) {
-    .actions {
-      position: static;
-      display: flex;
-      justify-content: flex-end;
-    }
   }
 </style>

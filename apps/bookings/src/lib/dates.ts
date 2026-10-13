@@ -134,6 +134,21 @@ export function longDate(date: string): string {
   return `${weekday} ${dayOfMonth(date)} ${formatDate(date, { month: "long" })} ${date.slice(0, 4)}`;
 }
 
+/** "31 October 2026" */
+export function dayMonthYear(date: string): string {
+  return `${dayOfMonth(date)} ${formatDate(date, { month: "long" })} ${date.slice(0, 4)}`;
+}
+
+/** The Sheets day number for "2026-10-31", for saving a date in the sheet */
+export function serialFromDate(date: string): number {
+  const utc = Date.UTC(
+    Number(date.slice(0, 4)),
+    Number(date.slice(5, 7)) - 1,
+    Number(date.slice(8, 10))
+  );
+  return Math.round((utc - SHEETS_FIRST_DAY_MS) / MS_PER_DAY);
+}
+
 /** "11 Sep 2026" */
 export function shortDate(date: string): string {
   return `${dayOfMonth(date)} ${monthShort(date)} ${date.slice(0, 4)}`;

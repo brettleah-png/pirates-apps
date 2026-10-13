@@ -10,6 +10,7 @@ import { z } from "astro/zod";
 import { idNumberCell, RESPONSES_TAB } from "../lib/bookings";
 import { loadBookingData, type BookingData } from "../lib/data";
 import { sheetsNowInSouthAfrica, todayInSouthAfrica } from "../lib/dates";
+import { DECLINE_REASONS } from "../lib/emails";
 import {
   canChangeNote,
   HISTORY_TAB,
@@ -17,6 +18,20 @@ import {
   newEntryId,
   type HistoryEntry,
 } from "../lib/history";
+import {
+  currentInvoice,
+  damageDepositStatusFor,
+  formatRand,
+  invoiceRow,
+  invoiceTotal,
+  invoiceValues,
+  INVOICES_TAB,
+  linesFromForm,
+  nextInvoiceNumber,
+  paymentStatusWhenSent,
+  type Invoice,
+  type InvoiceColumn,
+} from "../lib/invoices";
 import {
   appendRow,
   deleteRow,
@@ -36,6 +51,7 @@ import {
   type EditableField,
   type TrackedBooking,
   type Tracking,
+  type TrackingColumn,
 } from "../lib/tracking";
 import type { SignedInUser } from "../lib/users";
 
@@ -88,6 +104,91 @@ function findNote(
 function timestampCell(booking: TrackedBooking): unknown {
   const asNumber = Number(booking.timestampKey);
   return Number.isNaN(asNumber) ? booking.timestampKey : asNumber;
+}
+
+/**
+ * The booking's row in "Tracking Data". Throws when saving is paused because
+ * the tab is out of line, so check this before writing anything else.
+ */
+function trackingRow(data: BookingData, booking: TrackedBooking): number {
+  const { outOfLineRows, rowByTimestamp } = data.tracking;
+  if (outOfLineRows.length > 0) {
+    throw new ActionError({
+      code: "CONFLICT",
+      message: `"Tracking Data" no longer lines up with "Form responses 1" (row ${outOfLineRows.join(", ")}), so saving is paused. Ask an admin to fix the tab.`,
+    });
+  }
+  const row = rowByTimestamp.get(booking.timestampKey);
+  if (!row) {
+    throw new ActionError({
+      code: "CONFLICT",
+      message: `This booking has no row in "Tracking Data". Check the tab's copy formula reaches it.`,
+    });
+  }
+  return row;
+}
+
+/** Writes tracking values to the booking's row, with who saved them and when */
+async function writeTracking(
+  data: BookingData,
+  booking: TrackedBooking,
+  row: number,
+  user: SignedInUser,
+  values: Partial<Record<TrackingColumn, unknown>>
+): Promise<void> {
+  const { columns } = data.tracking;
+  const cells: CellValue[] = [
+    { row, column: columns.timestamp, value: timestampCell(booking) },
+    ...(Object.keys(values) as TrackingColumn[]).map((column) => ({
+      row,
+      column: columns[column],
+      value: values[column],
+    })),
+    { row, column: columns.updatedBy, value: user.email },
+    { row, column: columns.updatedAt, value: sheetsNowInSouthAfrica() },
+  ];
+  await writeCells(TRACKING_TAB, cells);
+}
+
+/** Only the tracking values that differ from what's saved */
+function trackingChanges(
+  booking: TrackedBooking,
+  wanted: Partial<Record<EditableField, string>>
+): Partial<Record<EditableField, string>> {
+  const changes: Partial<Record<EditableField, string>> = {};
+  for (const field of Object.keys(wanted) as EditableField[]) {
+    if (wanted[field] !== booking.tracking[field]) {
+      changes[field] = wanted[field];
+    }
+  }
+  return changes;
+}
+
+function requirePayments(user: SignedInUser): void {
+  if (!user.permissions.payments) {
+    throw new ActionError({
+      code: "FORBIDDEN",
+      message: "You can't work with invoices.",
+    });
+  }
+}
+
+/** Writes a whole invoice over its row */
+async function writeInvoice(
+  data: BookingData,
+  booking: TrackedBooking,
+  invoice: Invoice
+): Promise<void> {
+  const { columns } = data.invoices;
+  const values = invoiceValues(invoice, timestampCell(booking));
+  await writeCells(
+    INVOICES_TAB,
+    (Object.keys(columns) as InvoiceColumn[]).map((column) => ({
+      row: invoice.row,
+      column: columns[column],
+      value: values[column],
+    }))
+  );
 }
 
 async function addHistory(
@@ -154,39 +255,15 @@ export const server = {
 
       const data = await loadBookingData();
       const booking = findBooking(data, input.bookingId);
-      const { outOfLineRows, rowByTimestamp, columns } = data.tracking;
-      if (outOfLineRows.length > 0) {
-        throw new ActionError({
-          code: "CONFLICT",
-          message: `"Tracking Data" no longer lines up with "Form responses 1" (row ${outOfLineRows.join(", ")}), so saving is paused. Ask an admin to fix the tab.`,
-        });
-      }
-      const row = rowByTimestamp.get(booking.timestampKey);
-      if (!row) {
-        throw new ActionError({
-          code: "CONFLICT",
-          message: `This booking has no row in "Tracking Data". Check the tab's copy formula reaches it.`,
-        });
-      }
+      const row = trackingRow(data, booking);
 
       const shown = parseShown(input.shown);
       const changes = changesToSave(shown, input, user.permissions);
-      const changedFields = Object.keys(changes) as EditableField[];
-      if (changedFields.length === 0) {
+      if (Object.keys(changes).length === 0) {
         return { changed: false };
       }
 
-      const cells: CellValue[] = [
-        { row, column: columns.timestamp, value: timestampCell(booking) },
-        ...changedFields.map((field) => ({
-          row,
-          column: columns[field],
-          value: changes[field],
-        })),
-        { row, column: columns.updatedBy, value: user.email },
-        { row, column: columns.updatedAt, value: sheetsNowInSouthAfrica() },
-      ];
-      await writeCells(TRACKING_TAB, cells);
+      await writeTracking(data, booking, row, user, changes);
       await addHistory(
         data,
         booking,
@@ -284,6 +361,255 @@ export const server = {
       await writeCells(RESPONSES_TAB, [{ ...cell, value: "" }]);
       await addHistory(data, booking, user, "change", "ID number deleted.");
       return { deleted: true };
+    },
+  }),
+
+  /**
+   * Creates the booking's invoice, or saves changes to it. A draft is
+   * changed in place. A sent invoice is replaced by a new one with a new
+   * number, so the client never has two versions of one number.
+   */
+  saveInvoice: defineAction({
+    accept: "form",
+    input: z.object({
+      bookingId: z.string(),
+      // The invoice number the form was opened on, or empty for a new one
+      shownNumber: z.string().optional(),
+      customer: z
+        .string()
+        .trim()
+        .min(1, "Fill in who the invoice is for.")
+        .max(200),
+      address: z.string().max(500).optional(),
+      regNumber: z.string().max(100).optional(),
+      phone: z.string().max(50).optional(),
+      email: z.string().max(200).optional(),
+      rentalDescription: z.string().max(300).optional(),
+      rentalAmount: z.string().max(20).optional(),
+      depositAmount: z.string().max(20).optional(),
+      extraDescription: z.array(z.string().max(300)).max(12),
+      extraAmount: z.array(z.string().max(20)).max(12),
+    }),
+    handler: async (input, context) => {
+      const user = signedInUser(context);
+      requirePayments(user);
+      const data = await loadBookingData();
+      const booking = findBooking(data, input.bookingId);
+      const row = trackingRow(data, booking);
+
+      const parsed = linesFromForm({
+        rentalDescription: input.rentalDescription ?? "",
+        rentalAmount: input.rentalAmount ?? "",
+        depositAmount: input.depositAmount ?? "",
+        extraDescription: input.extraDescription,
+        extraAmount: input.extraAmount,
+      });
+      if ("error" in parsed) {
+        throw new ActionError({ code: "BAD_REQUEST", message: parsed.error });
+      }
+
+      const all = data.invoices.invoices;
+      const current = currentInvoice(all, booking.timestampKey);
+      if ((current?.number ?? "") !== (input.shownNumber ?? "")) {
+        throw new ActionError({
+          code: "CONFLICT",
+          message:
+            "Someone else changed this invoice since you opened it. Reload the page and try again.",
+        });
+      }
+
+      const details = {
+        customer: input.customer,
+        // Browsers send a text box's line breaks as \r\n; keep plain \n
+        address: input.address?.replace(/\r\n?/g, "\n").trim() ?? "",
+        regNumber: input.regNumber?.trim() ?? "",
+        phone: input.phone?.trim() ?? "",
+        email: input.email?.trim() ?? "",
+        lines: parsed.lines,
+      };
+      const total = formatRand(invoiceTotal(parsed.lines));
+      let number: string;
+      let historyText: string;
+
+      if (current?.status === "Draft") {
+        number = current.number;
+        await writeInvoice(data, booking, { ...current, ...details });
+        historyText = `Invoice ${number} changed (total ${total}).`;
+      } else {
+        number = nextInvoiceNumber(all, todayInSouthAfrica());
+        const values = invoiceValues(
+          {
+            ...details,
+            number,
+            bookingKey: booking.timestampKey,
+            issuedOn: todayInSouthAfrica(),
+            status: "Draft",
+          },
+          timestampCell(booking)
+        );
+        await appendRow(
+          INVOICES_TAB,
+          invoiceRow(data.invoices.columns, values)
+        );
+        if (current) {
+          await writeCells(INVOICES_TAB, [
+            {
+              row: current.row,
+              column: data.invoices.columns.status,
+              value: "Replaced",
+            },
+          ]);
+          historyText = `Invoice ${current.number} replaced by ${number} (total ${total}).`;
+        } else {
+          historyText = `Invoice ${number} created (total ${total}).`;
+        }
+      }
+
+      const changes = trackingChanges(booking, {
+        invoiceNumber: number,
+        damageDeposit: damageDepositStatusFor(
+          parsed.lines,
+          booking.tracking.damageDeposit
+        ),
+      });
+      if (Object.keys(changes).length > 0) {
+        await writeTracking(data, booking, row, user, changes);
+        historyText += ` ${describeChanges(booking.tracking, changes)}`;
+      }
+      await addHistory(data, booking, user, "change", historyText);
+      return { number };
+    },
+  }),
+
+  /** Marks the invoice as sent, once someone has emailed it to the client */
+  markInvoiceSent: defineAction({
+    accept: "form",
+    input: z.object({ bookingId: z.string(), number: z.string() }),
+    handler: async (input, context) => {
+      const user = signedInUser(context);
+      requirePayments(user);
+      const data = await loadBookingData();
+      const booking = findBooking(data, input.bookingId);
+      const row = trackingRow(data, booking);
+      const invoice = currentInvoice(
+        data.invoices.invoices,
+        booking.timestampKey
+      );
+      if (invoice?.number !== input.number) {
+        throw new ActionError({
+          code: "CONFLICT",
+          message:
+            "This invoice has been replaced since you opened it. Reload the page and try again.",
+        });
+      }
+      if (invoice.status === "Sent") {
+        return { changed: false };
+      }
+
+      await writeCells(INVOICES_TAB, [
+        {
+          row: invoice.row,
+          column: data.invoices.columns.status,
+          value: "Sent",
+        },
+      ]);
+      let historyText = `Invoice ${invoice.number} sent.`;
+      const changes = trackingChanges(booking, {
+        invoiceNumber: invoice.number,
+        paymentStatus: paymentStatusWhenSent(booking.tracking.paymentStatus),
+      });
+      if (Object.keys(changes).length > 0) {
+        await writeTracking(data, booking, row, user, changes);
+        historyText += ` ${describeChanges(booking.tracking, changes)}`;
+      }
+      await addHistory(data, booking, user, "change", historyText);
+      return { changed: true };
+    },
+  }),
+
+  /** A shortcut from New to Client Contacted, without opening the edit form */
+  markClientContacted: defineAction({
+    accept: "form",
+    input: z.object({ bookingId: z.string() }),
+    handler: async (input, context) => {
+      const user = signedInUser(context);
+      if (!user.permissions.notesAndStatus) {
+        throw new ActionError({
+          code: "FORBIDDEN",
+          message: "You can't change a booking's status.",
+        });
+      }
+      const data = await loadBookingData();
+      const booking = findBooking(data, input.bookingId);
+      // Someone may have changed the status since the page was loaded
+      if (booking.tracking.status !== "New") {
+        throw new ActionError({
+          code: "CONFLICT",
+          message: `The status is already ${booking.tracking.status}. Use Edit to change it.`,
+        });
+      }
+      const row = trackingRow(data, booking);
+      const changes = { status: "Client Contacted" };
+      await writeTracking(data, booking, row, user, changes);
+      await addHistory(
+        data,
+        booking,
+        user,
+        "change",
+        describeChanges(booking.tracking, changes)
+      );
+      return { changed: true };
+    },
+  }),
+
+  /** Declines a booking the club can't take, and saves why */
+  declineBooking: defineAction({
+    accept: "form",
+    input: z.object({
+      bookingId: z.string(),
+      reason: z.enum(["booked", "match", "other"], {
+        error: "Choose why the club can't take the booking.",
+      }),
+      otherReason: z.string().max(300).optional(),
+    }),
+    handler: async (input, context) => {
+      const user = signedInUser(context);
+      if (!user.permissions.notesAndStatus) {
+        throw new ActionError({
+          code: "FORBIDDEN",
+          message: "You can't change a booking's status.",
+        });
+      }
+      // The reason finishes the sentence "Unfortunately …", so drop a full stop
+      const reason =
+        input.reason === "other"
+          ? (input.otherReason ?? "").trim().replace(/\.+$/, "")
+          : DECLINE_REASONS[input.reason];
+      if (!reason) {
+        throw new ActionError({
+          code: "BAD_REQUEST",
+          message: "Write why the club can't take the booking.",
+        });
+      }
+
+      const data = await loadBookingData();
+      const booking = findBooking(data, input.bookingId);
+      const row = trackingRow(data, booking);
+      await writeTracking(data, booking, row, user, {
+        status: "Declined",
+        declineReason: reason,
+      });
+      const statusChange = describeChanges(booking.tracking, {
+        status: "Declined",
+      });
+      await addHistory(
+        data,
+        booking,
+        user,
+        "change",
+        `${statusChange} Reason: ${reason}.`
+      );
+      return { declined: true };
     },
   }),
 };

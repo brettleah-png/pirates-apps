@@ -1,0 +1,95 @@
+---
+import { actions, isInputError } from "astro:actions";
+import Alert from "../../../../components/Alert.astro";
+import BackBar from "../../../../components/BackBar.astro";
+import InvoiceForm from "../../../../components/InvoiceForm.astro";
+import AppLayout from "../../../../layouts/AppLayout.astro";
+import { loadBookingData } from "../../../../lib/data";
+import { currentInvoice, newInvoiceDetails } from "../../../../lib/invoices";
+
+const { user } = Astro.locals;
+const id = Astro.params.id ?? "";
+
+// After saving, show the invoice, so reloading can't save twice
+const result = Astro.getActionResult(actions.saveInvoice);
+if (result && !result.error) {
+  return Astro.redirect(`/bookings/${id}/invoice?done=saved`);
+}
+const saveError = result?.error
+  ? isInputError(result.error)
+    ? (result.error.issues[0]?.message ?? "Check the form and try again.")
+    : result.error.message
+  : undefined;
+
+if (!user.permissions.payments) {
+  return Astro.redirect(`/bookings/${id}`);
+}
+
+const data = await loadBookingData();
+const booking = data.bookings.find((b) => b.id === id);
+if (!booking) {
+  return Astro.redirect(`/bookings/${id}`);
+}
+const invoice = currentInvoice(data.invoices.invoices, booking.timestampKey);
+const { outOfLineRows } = data.tracking;
+---
+
+<AppLayout
+  title={invoice ? `Edit ${invoice.number}` : "New invoice"}
+  user={user}
+>
+  <BackBar
+    href={
+      invoice ? `/bookings/${booking.id}/invoice` : `/bookings/${booking.id}`
+    }
+    label={invoice ? invoice.number : booking.name || "Booking"}
+  />
+
+  <h1>{invoice ? `Edit ${invoice.number}` : "New invoice"}</h1>
+  <p class="lede">
+    {booking.name} · {booking.functionType}
+  </p>
+
+  {invoice?.status === "Sent" && (
+    <Alert tone="warning" title="This invoice has been sent">
+      <p>
+        Saving makes a new invoice with a new number, and marks {invoice.number}{" "}
+        as replaced. Send the new one to the client.
+      </p>
+    </Alert>
+  )}
+  {outOfLineRows.length > 0 && (
+    <Alert tone="warning" title="Saving is paused">
+      <p>
+        "Tracking Data" no longer lines up with "Form responses 1" (row{" "}
+        {outOfLineRows.join(", ")}). Ask an admin to line the rows up again.
+      </p>
+    </Alert>
+  )}
+  {saveError && (
+    <Alert tone="danger" title="Not saved">
+      {saveError}
+    </Alert>
+  )}
+
+  <InvoiceForm
+    booking={booking}
+    invoice={invoice}
+    details={invoice ?? newInvoiceDetails(booking)}
+    canSave={outOfLineRows.length === 0}
+  />
+</AppLayout>
+
+<style>
+  h1 {
+    margin: 0;
+    font-size: 1.625rem;
+  }
+  .lede {
+    margin: 0.25rem 0 1rem;
+    color: var(--color-muted);
+  }
+  :global(.alert) {
+    margin-bottom: 1rem;
+  }
+</style>

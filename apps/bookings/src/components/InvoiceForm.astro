@@ -1,0 +1,398 @@
+---
+// The invoice form: who it's for, the rental and damage deposit, and any
+// extra lines. Opens with the booking's details and the full price, or with
+// the saved invoice when there is one.
+import { actions } from "astro:actions";
+import {
+  DAMAGE_DEPOSIT,
+  depositAmount,
+  MEMBER_RENTAL_PRICE,
+  RENTAL_PRICE,
+  type Invoice,
+  type InvoiceDetails,
+} from "../lib/invoices";
+import type { TrackedBooking } from "../lib/tracking";
+import Icon from "./Icon.astro";
+
+interface Props {
+  booking: TrackedBooking;
+  /** The invoice being changed, or undefined for a new one */
+  invoice: Invoice | undefined;
+  /** What the form opens with */
+  details: InvoiceDetails;
+  /** False when "Tracking Data" is out of line and saving is paused */
+  canSave: boolean;
+}
+
+const { booking, invoice, details, canSave } = Astro.props;
+const rental = details.lines.find((line) => line.kind === "rental");
+const extras = details.lines.filter((line) => line.kind === "extra");
+const deposit = depositAmount(details.lines);
+const usesMemberRate = rental?.amount === MEMBER_RENTAL_PRICE && deposit === 0;
+
+// Amounts as typed: "3500", "3 500", "R3500" or "3500,50"
+const AMOUNT_PATTERN = "\\s*[Rr]?[\\d\\s]*([.,]\\d{1,2})?\\s*";
+
+// Shown as plain numbers in the fields
+function amountText(amount: number): string {
+  return Number.isInteger(amount) ? String(amount) : amount.toFixed(2);
+}
+---
+
+<form class="form invoice-form" method="POST" action={actions.saveInvoice}>
+  <input type="hidden" name="bookingId" value={booking.id} />
+  <input type="hidden" name="shownNumber" value={invoice?.number ?? ""} />
+
+  <section class="panel">
+    <h2>Customer</h2>
+    <div class="field">
+      <label for="customer">Name</label>
+      <input
+        id="customer"
+        name="customer"
+        type="text"
+        value={details.customer}
+        required
+        maxlength="200"
+        autocomplete="off"
+      />
+      <p class="hint">A person or a company.</p>
+    </div>
+    <div class="field">
+      <label for="address">Address (optional)</label>
+      <textarea
+        id="address"
+        name="address"
+        rows="3"
+        maxlength="500"
+        set:text={details.address}
+      />
+    </div>
+    <div class="field">
+      <label for="regNumber">Company registration number (optional)</label>
+      <input
+        id="regNumber"
+        name="regNumber"
+        type="text"
+        value={details.regNumber}
+        maxlength="100"
+        autocomplete="off"
+      />
+    </div>
+    <div class="field">
+      <label for="phone">Phone</label>
+      <input
+        id="phone"
+        name="phone"
+        type="tel"
+        value={details.phone}
+        maxlength="50"
+        autocomplete="off"
+      />
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input
+        id="email"
+        name="email"
+        type="email"
+        value={details.email}
+        maxlength="200"
+        autocomplete="off"
+      />
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Price</h2>
+    {/* Only changes the two amounts below, so it needs JavaScript */}
+    <div class="member-rate" data-member-rate hidden>
+      <label class="checkbox">
+        <input
+          type="checkbox"
+          data-member-checkbox
+          data-member-rental={MEMBER_RENTAL_PRICE}
+          data-rental={RENTAL_PRICE}
+          data-deposit={DAMAGE_DEPOSIT}
+          checked={usesMemberRate}
+        />
+        Member rate: R{MEMBER_RENTAL_PRICE.toLocaleString("en-US")}
+      </label>
+      <p class="hint">
+        {booking.isMember
+          ? "They said on the booking form that they're a member. Check that they are before using the member rate."
+          : "They said on the booking form that they're not a member."}
+      </p>
+    </div>
+    <div class="field">
+      <label for="rentalDescription">Rental</label>
+      <input
+        id="rentalDescription"
+        name="rentalDescription"
+        type="text"
+        value={rental?.description ?? ""}
+        required
+        maxlength="300"
+        autocomplete="off"
+      />
+    </div>
+    <div class="field">
+      <label for="rentalAmount">Rental amount (R)</label>
+      <input
+        id="rentalAmount"
+        name="rentalAmount"
+        type="text"
+        inputmode="decimal"
+        pattern={AMOUNT_PATTERN}
+        value={amountText(rental?.amount ?? RENTAL_PRICE)}
+        required
+        maxlength="20"
+        autocomplete="off"
+        data-amount
+      />
+    </div>
+    <div class="field">
+      <label for="depositAmount">Damage deposit (R)</label>
+      <input
+        id="depositAmount"
+        name="depositAmount"
+        type="text"
+        inputmode="decimal"
+        pattern={AMOUNT_PATTERN}
+        value={amountText(deposit)}
+        maxlength="20"
+        autocomplete="off"
+        data-amount
+      />
+      <p class="hint">Set it to 0 to leave the deposit off the invoice.</p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>Extra lines</h2>
+    <div class="extra-lines" data-extra-lines>
+      {[...extras, { description: "", amount: 0 }].map((line) => (
+        <div class="extra-line" data-extra-line>
+          <div class="field">
+            <label>
+              Description
+              <input
+                name="extraDescription"
+                type="text"
+                value={line.description}
+                maxlength="300"
+                autocomplete="off"
+              />
+            </label>
+          </div>
+          <div class="field amount">
+            <label>
+              Amount (R)
+              <input
+                name="extraAmount"
+                type="text"
+                inputmode="decimal"
+                pattern={AMOUNT_PATTERN}
+                value={line.description ? amountText(line.amount) : ""}
+                maxlength="20"
+                autocomplete="off"
+                data-amount
+              />
+            </label>
+          </div>
+          <button
+            class="remove"
+            type="button"
+            aria-label="Remove this line"
+            data-remove-line
+            hidden
+          >
+            <Icon name="trash" size={18} />
+          </button>
+        </div>
+      ))}
+    </div>
+    <button class="button" type="button" data-add-line hidden>
+      Add a line
+    </button>
+    <p class="hint">Leave a line empty to skip it.</p>
+  </section>
+
+  <p class="total" data-total-row hidden>
+    Total <strong data-total></strong>
+  </p>
+
+  <div class="form-actions">
+    <a
+      class="button"
+      href={`/bookings/${booking.id}${invoice ? "/invoice" : ""}`}
+    >
+      Cancel
+    </a>
+    <button class="button button-primary" type="submit" disabled={!canSave}>
+      {invoice ? "Save" : "Create invoice"}
+    </button>
+  </div>
+</form>
+
+<script>
+  // The member rate, adding and removing extra lines, and a running total.
+  // Without JavaScript the form still works: amounts are typed by hand and
+  // there's one blank extra line per save.
+  const form = document.querySelector<HTMLFormElement>(".invoice-form");
+  const MAX_EXTRA_LINES = 12;
+
+  function amountOf(typed: string): number {
+    const cleaned = typed.replace(/[R\s]/gi, "").replace(",", ".");
+    const amount = Number(cleaned);
+    return Number.isFinite(amount) ? amount : 0;
+  }
+
+  if (form) {
+    const rentalAmount = form.querySelector<HTMLInputElement>("#rentalAmount")!;
+    const depositAmount =
+      form.querySelector<HTMLInputElement>("#depositAmount")!;
+    const lines = form.querySelector<HTMLElement>("[data-extra-lines]")!;
+    const addLine = form.querySelector<HTMLButtonElement>("[data-add-line]")!;
+    const totalRow = form.querySelector<HTMLElement>("[data-total-row]")!;
+    const total = form.querySelector<HTMLElement>("[data-total]")!;
+
+    const updateTotal = () => {
+      const sum = [...form.querySelectorAll<HTMLInputElement>("[data-amount]")]
+        .map((input) => amountOf(input.value))
+        .reduce((a, b) => a + b, 0);
+      total.textContent = `R ${sum.toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`;
+    };
+
+    const updateLineButtons = () => {
+      const all = lines.querySelectorAll("[data-extra-line]");
+      for (const remove of lines.querySelectorAll<HTMLButtonElement>(
+        "[data-remove-line]"
+      )) {
+        remove.hidden = false;
+      }
+      addLine.hidden = all.length >= MAX_EXTRA_LINES;
+    };
+
+    // The member rate fills in its amounts; unticking puts the full price back
+    const memberRate = form.querySelector<HTMLElement>("[data-member-rate]")!;
+    const member = form.querySelector<HTMLInputElement>(
+      "[data-member-checkbox]"
+    )!;
+    memberRate.hidden = false;
+    member.addEventListener("change", () => {
+      rentalAmount.value = member.checked
+        ? member.dataset.memberRental!
+        : member.dataset.rental!;
+      depositAmount.value = member.checked ? "0" : member.dataset.deposit!;
+      updateTotal();
+    });
+
+    addLine.addEventListener("click", () => {
+      const template = lines.querySelector<HTMLElement>("[data-extra-line]")!;
+      const line = template.cloneNode(true) as HTMLElement;
+      for (const input of line.querySelectorAll("input")) {
+        input.value = "";
+      }
+      lines.append(line);
+      updateLineButtons();
+      line.querySelector("input")?.focus();
+    });
+
+    lines.addEventListener("click", (event) => {
+      const remove = (event.target as Element).closest("[data-remove-line]");
+      if (!remove) return;
+      const line = remove.closest<HTMLElement>("[data-extra-line]")!;
+      // Keep one line to type into, emptied
+      if (lines.querySelectorAll("[data-extra-line]").length === 1) {
+        for (const input of line.querySelectorAll("input")) {
+          input.value = "";
+        }
+      } else {
+        line.remove();
+      }
+      updateLineButtons();
+      updateTotal();
+    });
+
+    form.addEventListener("input", updateTotal);
+    updateLineButtons();
+    updateTotal();
+    totalRow.hidden = false;
+  }
+</script>
+
+<style>
+  .checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    min-height: var(--tap-size);
+    font-weight: 600;
+  }
+  .checkbox input {
+    flex: none;
+    width: 1.25rem;
+    height: 1.25rem;
+    min-height: 0;
+    accent-color: var(--color-primary);
+  }
+  .member-rate {
+    display: grid;
+    gap: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+  .member-rate[hidden] {
+    display: none;
+  }
+
+  .extra-lines {
+    display: grid;
+    gap: 1rem;
+  }
+  .extra-line {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 7rem auto;
+    align-items: end;
+    gap: 0.5rem;
+  }
+  /* The label wraps its field, so a copied line needs no new IDs */
+  .extra-line label {
+    display: grid;
+    gap: 0.375rem;
+  }
+  .remove {
+    display: grid;
+    place-items: center;
+    width: var(--tap-size);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    background: var(--color-surface);
+    color: var(--color-danger);
+    cursor: pointer;
+  }
+  .remove[hidden] {
+    display: none;
+  }
+  .invoice-form [data-add-line] {
+    justify-self: start;
+  }
+  .invoice-form [data-add-line][hidden] {
+    display: none;
+  }
+
+  .total {
+    display: flex;
+    justify-content: space-between;
+    margin: 0;
+    padding: 0 1rem;
+    font-size: 1.125rem;
+  }
+  .total[hidden] {
+    display: none;
+  }
+</style>

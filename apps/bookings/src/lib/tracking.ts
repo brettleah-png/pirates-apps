@@ -19,6 +19,7 @@ export const BOOKING_STATUSES = [
   "New",
   "Client Contacted",
   "Cancelled",
+  "Declined",
 ] as const;
 export const PAYMENT_STATUSES = [
   "None",
@@ -43,6 +44,8 @@ export interface Tracking {
   damageKeptBack: string;
   /** What was damaged */
   damageNote: string;
+  /** Why the club declined the booking, as the end of a sentence: "there is a match at the club on that day" */
+  declineReason: string;
   /** Who last saved it, and when (a Sheets date-and-time number). Empty until saved. */
   updatedBy: string;
   updatedAt: number | null;
@@ -56,6 +59,7 @@ export const DEFAULT_TRACKING: Tracking = {
   damageDeposit: "Outstanding",
   damageKeptBack: "",
   damageNote: "",
+  declineReason: "",
   updatedBy: "",
   updatedAt: null,
 };
@@ -69,6 +73,7 @@ export const TRACKING_COLUMNS = {
   damageDeposit: "App_DamageDeposit",
   damageKeptBack: "App_DamageKeptBack",
   damageNote: "App_DamageNote",
+  declineReason: "App_DeclineReason",
   updatedBy: "App_UpdatedBy",
   updatedAt: "App_UpdatedAt",
 } as const;
@@ -102,6 +107,7 @@ function readTracking(
     damageDeposit: value("damageDeposit") || DEFAULT_TRACKING.damageDeposit,
     damageKeptBack: value("damageKeptBack"),
     damageNote: value("damageNote"),
+    declineReason: value("declineReason"),
     updatedBy: value("updatedBy"),
     updatedAt:
       typeof row[columns.updatedAt] === "number"
@@ -187,10 +193,15 @@ export function withTracking(
   }));
 }
 
-/** A booking holds its date once the deposit or full payment is in, unless it's cancelled */
+/** The function isn't happening: the client cancelled it, or the club declined it */
+export function isCalledOff(tracking: Tracking): boolean {
+  return tracking.status === "Cancelled" || tracking.status === "Declined";
+}
+
+/** A booking holds its date once the deposit or full payment is in, unless it's called off */
 export function isConfirmed(tracking: Tracking): boolean {
   return (
-    tracking.status !== "Cancelled" &&
+    !isCalledOff(tracking) &&
     (tracking.paymentStatus === "Deposit Paid" ||
       tracking.paymentStatus === "Full Payment Received")
   );
@@ -276,7 +287,7 @@ export function describeChanges(
 /**
  * The club keeps ID numbers until the damage deposit is settled: the
  * function is over and the deposit is refunded or wasn't needed. A cancelled
- * booking doesn't need it either.
+ * or declined booking doesn't need it either.
  */
 export function canDeleteIdNumber(
   booking: TrackedBooking,
@@ -285,7 +296,7 @@ export function canDeleteIdNumber(
   if (!booking.idNumber) {
     return false;
   }
-  if (booking.tracking.status === "Cancelled") {
+  if (isCalledOff(booking.tracking)) {
     return true;
   }
   const isOver = booking.date !== null && booking.date < today;

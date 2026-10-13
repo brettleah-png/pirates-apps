@@ -41,6 +41,7 @@ describe("parseTrackingTab", () => {
       damageDeposit: "Paid",
       damageKeptBack: "",
       damageNote: "",
+      declineReason: "",
       updatedBy: "committee@example.com",
       updatedAt: 46297.5, // 2 October 2026, 12:00
     });
@@ -93,6 +94,7 @@ describe("parseTrackingTab", () => {
       "",
       "",
       "",
+      "",
       46227.39008162037,
     ];
 
@@ -122,9 +124,11 @@ describe("isConfirmed", () => {
     expect(isConfirmed(byName("Mary Anyone").tracking)).toBe(true);
   });
 
-  it("is false before payment, or once cancelled", () => {
+  it("is false before payment, or once cancelled or declined", () => {
     expect(isConfirmed(byName("Jane Someone").tracking)).toBe(false);
     expect(isConfirmed(byName("Berry Allen").tracking)).toBe(false);
+    const declined = { ...byName("John Doe").tracking, status: "Declined" };
+    expect(isConfirmed(declined)).toBe(false);
   });
 });
 
@@ -211,8 +215,14 @@ describe("canDeleteIdNumber", () => {
     expect(canDeleteIdNumber(byName("Sam Past"), TODAY)).toBe(true);
   });
 
-  it("allows it for a cancelled booking", () => {
+  it("allows it for a cancelled or declined booking", () => {
     expect(canDeleteIdNumber(byName("Berry Allen"), "2026-10-01")).toBe(true);
+    const johnDoe = byName("John Doe");
+    const declined = {
+      ...johnDoe,
+      tracking: { ...johnDoe.tracking, status: "Declined" },
+    };
+    expect(canDeleteIdNumber(declined, "2026-10-01")).toBe(true);
   });
 
   it("refuses while the deposit is outstanding or paid, or before the function", () => {

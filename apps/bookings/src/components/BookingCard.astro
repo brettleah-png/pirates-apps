@@ -3,7 +3,7 @@
 // and where it stands
 import { timeRange } from "../lib/bookings";
 import { dayOfMonth, monthShort, weekdayShort } from "../lib/dates";
-import { isConfirmed, type TrackedBooking } from "../lib/tracking";
+import { isCalledOff, isConfirmed, type TrackedBooking } from "../lib/tracking";
 import Icon from "./Icon.astro";
 import StatusTag from "./StatusTag.astro";
 
@@ -15,7 +15,7 @@ interface Props {
 const { booking, today } = Astro.props;
 const isToday = booking.date === today;
 const isPast = booking.date !== null && booking.date < today;
-const isCancelled = booking.tracking.status === "Cancelled";
+const isCancelled = isCalledOff(booking.tracking);
 const time = timeRange(booking);
 ---
 

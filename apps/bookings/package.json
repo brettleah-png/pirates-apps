@@ -17,7 +17,8 @@
     "@astrojs/netlify": "^8.2.6",
     "@googleapis/sheets": "^18.1.0",
     "arctic": "^3.7.0",
-    "astro": "^7.3.5"
+    "astro": "^7.3.5",
+    "pdf-lib": "^1.17.1"
   },
   "devDependencies": {
     "typescript": "^6.0.3",

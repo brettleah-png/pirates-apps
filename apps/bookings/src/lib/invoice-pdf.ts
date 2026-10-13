@@ -1,0 +1,327 @@
+// Draws an invoice as an A4 PDF, laid out like the club's spreadsheet invoice
+import {
+  PDFDocument,
+  rgb,
+  StandardFonts,
+  type PDFFont,
+  type PDFPage,
+} from "pdf-lib";
+import logoDataUrl from "../assets/invoice-logo.jpg?inline";
+import { dayMonthYear } from "./dates";
+import { formatRand, invoiceTotal, type Invoice } from "./invoices";
+
+const CLUB_NAME = "Helderberg Pirates Baseball Club";
+const CLUB_ADDRESS = [
+  "Lourensford Road",
+  "Somerset West",
+  "7130",
+  "email: helderbergpirates@gmail.com",
+];
+const BANK_DETAILS = [
+  CLUB_NAME,
+  "Nedbank, Somerset West",
+  "Branch Code: 106012",
+  "Acc No: 1071 303 511",
+];
+const DEPOSIT_NOTE =
+  "Please note that this booking will only be confirmed once we receive at least 50% of the total amount due:";
+
+// A4, in points (1/72 inch)
+const PAGE_WIDTH = 595.28;
+const PAGE_HEIGHT = 841.89;
+const LEFT = 50;
+const RIGHT = PAGE_WIDTH - 50;
+
+// The table's columns: where descriptions start, and where amounts end
+const DESCRIPTION_X = LEFT + 8;
+const DESCRIPTION_WIDTH = 310;
+const UNIT_PRICE_RIGHT = 450;
+const TOTAL_RIGHT = RIGHT - 8;
+
+const BLACK = rgb(0.1, 0.1, 0.1);
+const GREY = rgb(0.4, 0.4, 0.4);
+const LINE_GREY = rgb(0.8, 0.8, 0.8);
+const HEADER_FILL = rgb(0.93, 0.93, 0.93);
+
+interface Fonts {
+  regular: PDFFont;
+  bold: PDFFont;
+}
+
+/**
+ * The built-in PDF fonts only have Western European letters (é, ê and ë are
+ * fine). Anything else, like an emoji in a name, becomes "?" instead of
+ * failing the whole invoice. Line breaks are kept for wrap() to split on.
+ */
+function printable(font: PDFFont, text: string): string {
+  const supported = new Set(font.getCharacterSet());
+  return Array.from(text)
+    .map((char) =>
+      char === "\n" || supported.has(char.codePointAt(0)!) ? char : "?"
+    )
+    .join("");
+}
+
+/** Splits text into lines that fit the width. Line breaks in the text are kept. */
+function wrap(
+  text: string,
+  font: PDFFont,
+  size: number,
+  width: number
+): string[] {
+  const lines: string[] = [];
+  // Measuring a letter the font doesn't have fails, so replace those first
+  for (const paragraph of printable(font, text).split("\n")) {
+    let line = "";
+    for (const word of paragraph.split(/\s+/).filter(Boolean)) {
+      const candidate = line ? `${line} ${word}` : word;
+      if (line && font.widthOfTextAtSize(candidate, size) > width) {
+        lines.push(line);
+        line = word;
+      } else {
+        line = candidate;
+      }
+    }
+    lines.push(line);
+  }
+  return lines;
+}
+
+/** Writes text with its top at y (measured down from the top of the page) */
+function write(
+  page: PDFPage,
+  text: string,
+  x: number,
+  y: number,
+  font: PDFFont,
+  size: number,
+  color = BLACK
+) {
+  page.drawText(printable(font, text), {
+    x,
+    y: PAGE_HEIGHT - y - size,
+    size,
+    font,
+    color,
+  });
+}
+
+/** Writes text so it ends at x */
+function writeRight(
+  page: PDFPage,
+  text: string,
+  right: number,
+  y: number,
+  font: PDFFont,
+  size: number,
+  color = BLACK
+) {
+  const safe = printable(font, text);
+  write(
+    page,
+    safe,
+    right - font.widthOfTextAtSize(safe, size),
+    y,
+    font,
+    size,
+    color
+  );
+}
+
+function horizontalLine(page: PDFPage, y: number, color = LINE_GREY) {
+  page.drawLine({
+    start: { x: LEFT, y: PAGE_HEIGHT - y },
+    end: { x: RIGHT, y: PAGE_HEIGHT - y },
+    thickness: 0.75,
+    color,
+  });
+}
+
+function drawHeader(
+  page: PDFPage,
+  fonts: Fonts,
+  logo: Awaited<ReturnType<PDFDocument["embedJpg"]>>
+) {
+  page.drawImage(logo, {
+    x: LEFT,
+    y: PAGE_HEIGHT - 40 - 80,
+    width: 80,
+    height: 80,
+  });
+
+  writeRight(page, CLUB_NAME, RIGHT, 45, fonts.bold, 12);
+  CLUB_ADDRESS.forEach((line, index) => {
+    writeRight(page, line, RIGHT, 64 + index * 14, fonts.regular, 10, GREY);
+  });
+
+  write(page, "INVOICE", LEFT, 150, fonts.bold, 24);
+  horizontalLine(page, 185, BLACK);
+}
+
+/** The customer on the left, the date and number on the right. Returns where it ends. */
+function drawCustomer(page: PDFPage, fonts: Fonts, invoice: Invoice): number {
+  const labelX = LEFT;
+  const valueX = LEFT + 70;
+  const valueWidth = 250;
+  let y = 200;
+
+  // Optional fields are left off when they're empty
+  const rows: [string, string][] = [
+    ["Customer", invoice.customer],
+    ["Address", invoice.address],
+    ["Reg No.", invoice.regNumber],
+    ["Phone", invoice.phone],
+    ["Email", invoice.email],
+  ];
+  for (const [label, value] of rows) {
+    if (!value) continue;
+    write(page, label, labelX, y, fonts.bold, 10, GREY);
+    for (const line of wrap(value, fonts.regular, 10, valueWidth)) {
+      write(page, line, valueX, y, fonts.regular, 10);
+      y += 14;
+    }
+    y += 4;
+  }
+
+  const rightLabelX = 380;
+  const rightValueX = 420;
+  write(page, "Date:", rightLabelX, 200, fonts.bold, 10, GREY);
+  write(
+    page,
+    dayMonthYear(invoice.issuedOn),
+    rightValueX,
+    200,
+    fonts.regular,
+    10
+  );
+  write(page, "Ref:", rightLabelX, 218, fonts.bold, 10, GREY);
+  write(page, invoice.number, rightValueX, 218, fonts.regular, 10);
+
+  return Math.max(y, 236);
+}
+
+/** The lines and the total. Returns where it ends. */
+function drawLines(
+  page: PDFPage,
+  fonts: Fonts,
+  invoice: Invoice,
+  top: number
+): number {
+  let y = top;
+  page.drawRectangle({
+    x: LEFT,
+    y: PAGE_HEIGHT - y - 22,
+    width: RIGHT - LEFT,
+    height: 22,
+    color: HEADER_FILL,
+  });
+  write(page, "Description", DESCRIPTION_X, y + 6, fonts.bold, 10);
+  writeRight(page, "Unit Price", UNIT_PRICE_RIGHT, y + 6, fonts.bold, 10);
+  writeRight(page, "Total", TOTAL_RIGHT, y + 6, fonts.bold, 10);
+  y += 22;
+
+  for (const line of invoice.lines) {
+    const descriptionLines = wrap(
+      line.description,
+      fonts.regular,
+      10,
+      DESCRIPTION_WIDTH
+    );
+    const rowTop = y + 7;
+    descriptionLines.forEach((text, index) => {
+      write(page, text, DESCRIPTION_X, rowTop + index * 13, fonts.regular, 10);
+    });
+    // There's no quantity, so the unit price and the total are the same
+    writeRight(
+      page,
+      formatRand(line.amount),
+      UNIT_PRICE_RIGHT,
+      rowTop,
+      fonts.regular,
+      10
+    );
+    writeRight(
+      page,
+      formatRand(line.amount),
+      TOTAL_RIGHT,
+      rowTop,
+      fonts.regular,
+      10
+    );
+    y = rowTop + descriptionLines.length * 13 + 4;
+    horizontalLine(page, y);
+  }
+
+  y += 8;
+  writeRight(page, "TOTAL", UNIT_PRICE_RIGHT, y, fonts.bold, 11);
+  writeRight(
+    page,
+    formatRand(invoiceTotal(invoice.lines)),
+    TOTAL_RIGHT,
+    y,
+    fonts.bold,
+    11
+  );
+  y += 20;
+  horizontalLine(page, y, BLACK);
+  return y;
+}
+
+/** The bank details on the left, the 50% to confirm on the right, then thanks */
+function drawFooter(
+  page: PDFPage,
+  fonts: Fonts,
+  invoice: Invoice,
+  top: number
+) {
+  let y = top + 20;
+  write(page, "Bank Details:", LEFT, y, fonts.bold, 10);
+  BANK_DETAILS.forEach((line, index) => {
+    write(page, line, LEFT, y + 16 + index * 14, fonts.regular, 10);
+  });
+
+  const noteX = 320;
+  const noteLines = wrap(DEPOSIT_NOTE, fonts.regular, 9.5, RIGHT - noteX);
+  noteLines.forEach((line, index) => {
+    write(page, line, noteX, y + index * 13, fonts.regular, 9.5, GREY);
+  });
+  const halfY = y + noteLines.length * 13 + 8;
+  write(page, "50% of Total", noteX, halfY, fonts.bold, 10);
+  writeRight(
+    page,
+    formatRand(invoiceTotal(invoice.lines) / 2),
+    TOTAL_RIGHT,
+    halfY,
+    fonts.bold,
+    10
+  );
+
+  y = Math.max(y + 16 + BANK_DETAILS.length * 14, halfY + 14) + 30;
+  write(page, "Thank you", LEFT, y, fonts.bold, 11);
+  write(page, CLUB_NAME, LEFT, y + 16, fonts.regular, 10, GREY);
+}
+
+function logoBytes(): Uint8Array {
+  const base64 = logoDataUrl.slice(logoDataUrl.indexOf(",") + 1);
+  return Uint8Array.from(Buffer.from(base64, "base64"));
+}
+
+export async function invoicePdf(invoice: Invoice): Promise<Uint8Array> {
+  const pdf = await PDFDocument.create();
+  pdf.setTitle(`Invoice ${invoice.number}`);
+  pdf.setAuthor(CLUB_NAME);
+
+  const fonts: Fonts = {
+    regular: await pdf.embedFont(StandardFonts.Helvetica),
+    bold: await pdf.embedFont(StandardFonts.HelveticaBold),
+  };
+  const logo = await pdf.embedJpg(logoBytes());
+
+  const page = pdf.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+  drawHeader(page, fonts, logo);
+  const customerEnd = drawCustomer(page, fonts, invoice);
+  const linesEnd = drawLines(page, fonts, invoice, customerEnd + 20);
+  drawFooter(page, fonts, invoice, linesEnd);
+
+  return pdf.save();
+}

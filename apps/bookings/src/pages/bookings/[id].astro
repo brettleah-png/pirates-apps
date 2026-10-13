@@ -7,6 +7,7 @@ import AppLayout from "../../layouts/AppLayout.astro";
 import { loadBookingData } from "../../lib/data";
 import { sheetsNowInSouthAfrica, todayInSouthAfrica } from "../../lib/dates";
 import { historyFor } from "../../lib/history";
+import { currentInvoice } from "../../lib/invoices";
 import { clashesWith } from "../../lib/tracking";
 
 const { user } = Astro.locals;
@@ -19,6 +20,7 @@ const ACTIONS_ON_THIS_PAGE = [
   [actions.editNote, "note-edited"],
   [actions.deleteNote, "note-deleted"],
   [actions.deleteIdNumber, "id-deleted"],
+  [actions.markClientContacted, "contacted"],
 ] as const;
 let actionError: string | undefined;
 for (const [action, done] of ACTIONS_ON_THIS_PAGE) {
@@ -41,6 +43,8 @@ const DONE_MESSAGES: Record<string, string> = {
   "note-edited": "Note updated.",
   "note-deleted": "Note deleted.",
   "id-deleted": "ID number deleted.",
+  declined: "Booking declined. Let them know below.",
+  contacted: "Status set to Client Contacted.",
 };
 const doneMessage = DONE_MESSAGES[Astro.url.searchParams.get("done") ?? ""];
 
@@ -64,6 +68,7 @@ if (!booking) {
       user={user}
       clashes={clashesWith(booking, data.bookings)}
       history={historyFor(data.history.entries, booking.timestampKey)}
+      invoice={currentInvoice(data.invoices.invoices, booking.timestampKey)}
       now={sheetsNowInSouthAfrica()}
       noteError={actionError}
     />

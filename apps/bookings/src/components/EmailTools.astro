@@ -1,0 +1,69 @@
+---
+// Ways to send an email from the person's own email app: open it filled in,
+// or copy the subject and message to paste. Shows the text that will be sent.
+import type { Email } from "../lib/emails";
+import { mailtoLink } from "../lib/emails";
+import CopyButton from "./CopyButton.astro";
+import Icon from "./Icon.astro";
+
+interface Props {
+  email: Email;
+}
+
+const { email } = Astro.props;
+---
+
+<div class="email-tools">
+  <div class="preview">
+    <p class="to">
+      To <strong>{email.to || "no email address given"}</strong>
+    </p>
+    <p class="subject">{email.subject}</p>
+    <p class="body">{email.body}</p>
+  </div>
+  <a class="button" href={mailtoLink(email)}>
+    <Icon name="mail" size={18} />
+    Open in email app
+  </a>
+  <div class="copy-buttons">
+    <CopyButton value={email.subject} label="subject" text="Copy subject" />
+    <CopyButton value={email.body} label="message" text="Copy message" />
+  </div>
+  <p class="visually-hidden" aria-live="polite" data-copy-status></p>
+</div>
+
+<style>
+  .email-tools {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .preview {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: var(--radius-small);
+    background: var(--color-surface-sunken);
+    font-size: 0.9375rem;
+  }
+  .preview p {
+    margin: 0;
+  }
+  .to {
+    color: var(--color-muted);
+    overflow-wrap: anywhere;
+  }
+  .to strong {
+    color: var(--color-text);
+  }
+  .subject {
+    font-weight: 700;
+  }
+  .body {
+    white-space: pre-line;
+  }
+  .copy-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+  }
+</style>

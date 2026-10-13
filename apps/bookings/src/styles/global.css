@@ -178,6 +178,96 @@ button {
   background: var(--color-primary-strong);
 }
 
+/* A card that groups part of a page, with a small heading */
+.panel {
+  display: grid;
+  gap: 0.75rem;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.panel h2 {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* A form made of panels, with Cancel and Save at the bottom */
+.form {
+  display: grid;
+  gap: 1rem;
+  max-width: 40rem;
+}
+
+.form .panel {
+  gap: 1rem;
+}
+
+/* A label, its field, and an optional hint below */
+.field {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.field label {
+  font-weight: 600;
+}
+
+.field :is(select, input, textarea) {
+  width: 100%;
+  padding: 0 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-small);
+  background: var(--color-surface);
+}
+
+.field textarea {
+  padding: 0.625rem 0.75rem;
+  resize: vertical;
+}
+
+.field :is(select, input, textarea):focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 0;
+  border-color: var(--color-primary);
+}
+
+.hint {
+  margin: 0;
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+/* Cancel and Save stay at the bottom of the screen on phones */
+.form-actions {
+  position: sticky;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  background: var(--color-background);
+}
+
+.form-actions .button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (min-width: 48rem) {
+  .form-actions {
+    position: static;
+    display: flex;
+    justify-content: flex-end;
+  }
+}
+
 /* A small rounded label, e.g. a booking's status */
 .tag {
   display: inline-flex;
