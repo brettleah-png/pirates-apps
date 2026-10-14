@@ -1,6 +1,6 @@
 // Searching, filtering, sorting and grouping the bookings list
 import { formatPhone, type Booking } from "./bookings";
-import type { Tracking } from "./tracking";
+import { isCalledOff, type Tracking } from "./tracking";
 import { longDate, monthAndYear } from "./dates";
 
 /** Which bookings to show, by date. Upcoming includes today. */
@@ -30,6 +30,20 @@ function isWhen(booking: Booking, when: When, today: string): boolean {
 
 // The list works with or without what's tracked for each booking
 type ListedBooking = Booking & { tracking?: Tracking };
+
+/** The address bar asks to show cancelled and declined bookings too */
+export function parseShowCalledOff(value: string | null | undefined): boolean {
+  return value === "show";
+}
+
+// Cancelled and declined bookings are hidden unless asked for
+function isHidden(booking: ListedBooking, showCalledOff: boolean): boolean {
+  return (
+    !showCalledOff &&
+    booking.tracking !== undefined &&
+    isCalledOff(booking.tracking)
+  );
+}
 
 // Everything a search can match, in lower case
 function searchableText(booking: ListedBooking): string {
@@ -63,16 +77,27 @@ function compareStart(a: Booking, b: Booking): number {
   return aStart.localeCompare(bStart);
 }
 
+export interface ListFilters {
+  when: When;
+  search: string;
+  /** Show cancelled and declined bookings too */
+  showCalledOff: boolean;
+  today: string;
+}
+
 /**
  * The bookings to show. Upcoming bookings are soonest first; past and all are
  * most recent first.
  */
 export function bookingsToShow<T extends ListedBooking>(
   bookings: T[],
-  { when, search, today }: { when: When; search: string; today: string }
+  { when, search, showCalledOff, today }: ListFilters
 ): T[] {
   const shown = bookings.filter(
-    (booking) => isWhen(booking, when, today) && matchesSearch(booking, search)
+    (booking) =>
+      !isHidden(booking, showCalledOff) &&
+      isWhen(booking, when, today) &&
+      matchesSearch(booking, search)
   );
   shown.sort(compareStart);
   if (when !== "upcoming") {
@@ -84,16 +109,31 @@ export function bookingsToShow<T extends ListedBooking>(
 /** How many bookings each "when" would show for this search */
 export function countsByWhen(
   bookings: ListedBooking[],
-  search: string,
-  today: string
+  { search, showCalledOff, today }: Omit<ListFilters, "when">
 ): Record<When, number> {
-  const matching = bookings.filter((booking) => matchesSearch(booking, search));
+  const matching = bookings.filter(
+    (booking) =>
+      !isHidden(booking, showCalledOff) && matchesSearch(booking, search)
+  );
   return {
     upcoming: matching.filter((booking) => isWhen(booking, "upcoming", today))
       .length,
     past: matching.filter((booking) => isWhen(booking, "past", today)).length,
     all: matching.length,
   };
+}
+
+/** How many cancelled and declined bookings are hidden from this tab and search */
+export function countHidden(
+  bookings: ListedBooking[],
+  { when, search, today }: Omit<ListFilters, "showCalledOff">
+): number {
+  return bookings.filter(
+    (booking) =>
+      isHidden(booking, false) &&
+      isWhen(booking, when, today) &&
+      matchesSearch(booking, search)
+  ).length;
 }
 
 export interface MonthGroup<T extends Booking = Booking> {

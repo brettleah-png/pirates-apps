@@ -21,6 +21,7 @@ import {
 import {
   currentInvoice,
   damageDepositStatusFor,
+  depositAmount,
   formatRand,
   invoiceRow,
   invoiceTotal,
@@ -28,10 +29,22 @@ import {
   INVOICES_TAB,
   linesFromForm,
   nextInvoiceNumber,
+  parseAmount,
   paymentStatusWhenSent,
   type Invoice,
   type InvoiceColumn,
 } from "../lib/invoices";
+import {
+  amountReceived,
+  damageDepositAfterPayment,
+  damageKeptBack,
+  describePayment,
+  PAYMENT_KINDS,
+  paymentRow,
+  PAYMENTS_TAB,
+  paymentsFor,
+  paymentStatusAfterPayment,
+} from "../lib/payments";
 import {
   appendRow,
   deleteRow,
@@ -168,7 +181,7 @@ function requirePayments(user: SignedInUser): void {
   if (!user.permissions.payments) {
     throw new ActionError({
       code: "FORBIDDEN",
-      message: "You can't work with invoices.",
+      message: "You can't work with invoices or payments.",
     });
   }
 }
@@ -610,6 +623,145 @@ export const server = {
         `${statusChange} Reason: ${reason}.`
       );
       return { declined: true };
+    },
+  }),
+
+  /**
+   * Records money received from the client, or paid back. A payment moves
+   * the payment status forward; paying back the damage deposit settles it;
+   * any other refund sets the payment status to Refunded.
+   */
+  recordPayment: defineAction({
+    accept: "form",
+    input: z.object({
+      bookingId: z.string(),
+      kind: z.enum(PAYMENT_KINDS, {
+        error: "Choose whether money came in or was paid back.",
+      }),
+      amount: z.string().max(20),
+      paidOn: z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Fill in the date of the payment."),
+      note: z.string().max(300).optional(),
+      damageNote: z.string().max(2000).optional(),
+    }),
+    handler: async (input, context) => {
+      const user = signedInUser(context);
+      requirePayments(user);
+      const amount = parseAmount(input.amount);
+      if (amount === null || amount === 0) {
+        throw new ActionError({
+          code: "BAD_REQUEST",
+          message: `"${input.amount}" isn't an amount in rand.`,
+        });
+      }
+
+      const data = await loadBookingData();
+      const booking = findBooking(data, input.bookingId);
+      const row = trackingRow(data, booking);
+      const invoice = currentInvoice(
+        data.invoices.invoices,
+        booking.timestampKey
+      );
+      const total = invoice ? invoiceTotal(invoice.lines) : 0;
+      const deposit = invoice ? depositAmount(invoice.lines) : 0;
+      if (
+        input.kind === "Damage deposit refund" &&
+        deposit > 0 &&
+        amount > deposit
+      ) {
+        throw new ActionError({
+          code: "BAD_REQUEST",
+          message: `That's more than the ${formatRand(deposit)} damage deposit on the invoice.`,
+        });
+      }
+
+      const payment = {
+        id: newEntryId(),
+        paidOn: input.paidOn,
+        kind: input.kind,
+        amount,
+        note: input.note?.trim() ?? "",
+        recordedBy: user.email,
+      };
+      await appendRow(
+        PAYMENTS_TAB,
+        paymentRow(data.payments.columns, {
+          ...payment,
+          bookingKey: timestampCell(booking),
+          recordedAt: sheetsNowInSouthAfrica(),
+        })
+      );
+
+      let wanted: Partial<Record<EditableField, string>>;
+      if (input.kind === "Payment") {
+        const received =
+          amountReceived(
+            paymentsFor(data.payments.payments, booking.timestampKey)
+          ) + amount;
+        wanted = {
+          paymentStatus: paymentStatusAfterPayment(
+            booking.tracking.paymentStatus,
+            received,
+            total
+          ),
+          damageDeposit: damageDepositAfterPayment(
+            booking.tracking.damageDeposit,
+            received,
+            total
+          ),
+        };
+      } else if (input.kind === "Damage deposit refund") {
+        wanted = {
+          damageDeposit: "Refunded",
+          damageKeptBack: damageKeptBack(deposit, amount),
+        };
+        const damageNote = input.damageNote?.trim();
+        if (damageNote) {
+          wanted.damageNote = damageNote;
+        }
+      } else {
+        wanted = { paymentStatus: "Refunded" };
+      }
+
+      let historyText = describePayment(payment);
+      const changes = trackingChanges(booking, wanted);
+      if (Object.keys(changes).length > 0) {
+        await writeTracking(data, booking, row, user, changes);
+        historyText += ` ${describeChanges(booking.tracking, changes)}`;
+      }
+      await addHistory(data, booking, user, "change", historyText);
+      return { recorded: true };
+    },
+  }),
+
+  /** Deletes a payment recorded by mistake. The tracking stays as it is. */
+  deletePayment: defineAction({
+    accept: "form",
+    input: z.object({ bookingId: z.string(), paymentId: z.string() }),
+    handler: async (input, context) => {
+      const user = signedInUser(context);
+      requirePayments(user);
+      const data = await loadBookingData();
+      const booking = findBooking(data, input.bookingId);
+      const payment = data.payments.payments.find(
+        (p) => p.id === input.paymentId && p.bookingKey === booking.timestampKey
+      );
+      if (!payment) {
+        throw new ActionError({
+          code: "NOT_FOUND",
+          message: "That payment isn't there any more.",
+        });
+      }
+      await deleteRow(PAYMENTS_TAB, payment.row);
+      await addHistory(
+        data,
+        booking,
+        user,
+        "change",
+        `Deleted: ${describePayment(payment)}`
+      );
+      return { deleted: true };
     },
   }),
 };

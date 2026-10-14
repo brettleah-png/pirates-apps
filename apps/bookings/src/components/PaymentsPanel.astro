@@ -1,0 +1,188 @@
+---
+// A booking's invoice and the money that has come in or gone out, for
+// people with the Payments permission
+import { actions } from "astro:actions";
+import { shortDate } from "../lib/dates";
+import { formatRand, invoiceTotal, type Invoice } from "../lib/invoices";
+import {
+  amountReceived,
+  PAYMENT_KIND_LABELS,
+  type Payment,
+} from "../lib/payments";
+import Icon from "./Icon.astro";
+
+interface Props {
+  bookingId: string;
+  /** The booking's current invoice, if it has one */
+  invoice: Invoice | undefined;
+  /** The booking's payments, oldest first */
+  payments: Payment[];
+}
+
+const { bookingId, invoice, payments } = Astro.props;
+const received = amountReceived(payments);
+const total = invoice ? invoiceTotal(invoice.lines) : 0;
+---
+
+<section class="panel" id="payments">
+  <h2>Invoice and payments</h2>
+  {invoice ? (
+    <p class="summary">
+      <strong>{invoice.number}</strong>
+      <span>
+        {formatRand(total)} ·{" "}
+        {invoice.status === "Draft" ? "Not sent yet" : "Sent"}
+      </span>
+      <span>
+        {formatRand(received)} received
+        {received < total && `, ${formatRand(total - received)} to come`}
+      </span>
+    </p>
+  ) : (
+    <p class="note">No invoice yet.</p>
+  )}
+
+  {payments.length > 0 && (
+    <ul class="payments">
+      {payments.map((payment) => (
+        <li>
+          <div class="payment">
+            <span>
+              <strong>{PAYMENT_KIND_LABELS[payment.kind]}</strong>
+              <small>
+                {payment.paidOn && shortDate(payment.paidOn)}
+                {payment.note && ` · ${payment.note}`}
+              </small>
+            </span>
+            <span
+              class:list={[
+                "amount",
+                { "paid-back": payment.kind !== "Payment" },
+              ]}
+            >
+              {payment.kind === "Payment" ? "" : "−"}
+              {formatRand(payment.amount)}
+            </span>
+          </div>
+          <details class="delete-payment">
+            <summary>Delete</summary>
+            <form method="POST" action={actions.deletePayment}>
+              <input type="hidden" name="bookingId" value={bookingId} />
+              <input type="hidden" name="paymentId" value={payment.id} />
+              <p>
+                Only for a payment recorded by mistake. The payment status and
+                damage deposit stay as they are: use Edit if they should change.
+              </p>
+              <button class="button button-danger" type="submit">
+                Delete this payment
+              </button>
+            </form>
+          </details>
+        </li>
+      ))}
+    </ul>
+  )}
+
+  <div class="buttons">
+    {invoice ? (
+      <a class="button" href={`/bookings/${bookingId}/invoice`}>
+        <Icon name="file" size={18} />
+        Open invoice
+      </a>
+    ) : (
+      <a class="button" href={`/bookings/${bookingId}/invoice/edit`}>
+        <Icon name="file" size={18} />
+        Create invoice
+      </a>
+    )}
+    <a class="button" href={`/bookings/${bookingId}/payment`}>
+      <Icon name="banknote" size={18} />
+      Record payment
+    </a>
+  </div>
+</section>
+
+<style>
+  .summary {
+    display: grid;
+    margin: 0;
+  }
+  .summary span,
+  .note {
+    color: var(--color-muted);
+  }
+  .note {
+    margin: 0;
+    font-size: 0.8125rem;
+  }
+
+  .payments {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .payments li {
+    padding: 0.625rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+  .payment {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .payment span:first-child {
+    display: grid;
+    min-width: 0;
+  }
+  .payment small {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+    overflow-wrap: anywhere;
+  }
+  .amount {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .paid-back {
+    color: var(--color-muted);
+  }
+
+  .delete-payment summary {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    color: var(--color-danger);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    list-style: none;
+  }
+  .delete-payment summary::-webkit-details-marker {
+    display: none;
+  }
+  .delete-payment form {
+    display: grid;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    border-radius: var(--radius-small);
+    background: var(--color-danger-soft);
+    color: var(--color-danger);
+    font-size: 0.9375rem;
+  }
+  .delete-payment p {
+    margin: 0;
+  }
+  .button-danger {
+    border-color: var(--color-danger);
+    background: var(--color-danger);
+    color: var(--color-surface);
+  }
+
+  .buttons {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.5rem;
+  }
+</style>

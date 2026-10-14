@@ -54,12 +54,14 @@ Each dependency is added in the phase that first uses it.
 | `Tracking Data`    | A formula copies the form tab; the app writes its `App_` columns | The form responses copied row by row, beside the app's `App_` columns |
 | `History`          | The app                                                          | One row per note or saved change                                      |
 | `Invoices`         | The app                                                          | One row per invoice                                                   |
+| `Payments`         | The app                                                          | One row per payment received or paid back                             |
 | `Users`            | The sheet's owners, by hand                                      | Email, plus one permission per column                                 |
 
-- **`App_` columns belong to the app.** Every column the app reads or writes in `Tracking Data`, `History` and `Invoices` starts with `App_`. It ignores all other columns, except the copied Timestamp.
+- **`App_` columns belong to the app.** Every column the app reads or writes in `Tracking Data`, `History`, `Invoices` and `Payments` starts with `App_`. It ignores all other columns, except the copied Timestamp.
   - `Tracking Data`: `App_Timestamp`, `App_Status`, `App_PaymentStatus`, `App_InvoiceNumber`, `App_DamageDeposit`, `App_DamageKeptBack`, `App_DamageNote`, `App_DeclineReason`, `App_UpdatedBy`, `App_UpdatedAt`
   - `History`: `App_Id`, `App_Timestamp`, `App_At`, `App_By`, `App_Type` (`note` or `change`), `App_Text`, `App_EditedAt`
   - `Invoices`: `App_InvoiceNumber`, `App_Timestamp`, `App_IssuedOn` (format as **Date**), `App_Status` (`Draft`, `Sent` or `Replaced`), `App_Customer`, `App_Address`, `App_RegNumber`, `App_Phone`, `App_Email`, `App_Lines` (the invoice's lines as JSON), `App_Total` (only for reading in the sheet)
+  - `Payments`: `App_Id`, `App_Timestamp`, `App_PaidOn` (format as **Date**), `App_Kind` (`Payment`, `Damage deposit refund` or `Refund`), `App_Amount` (always positive; the kind says which way the money went), `App_Note`, `App_RecordedBy`, `App_RecordedAt` (format as **Date time**)
 - **`Tracking Data` copies the form tab row by row** with `=ARRAYFORMULA('Form responses 1'!A:Z)`, to the right of the `App_` columns. Row 5's `App_` values belong to the booking copied into row 5. The club chose this so the tab can be read on its own.
 - **The safeguard.** The rows only stay lined up while nobody sorts or deletes rows in `Form responses 1`. So when the app saves a row, it also writes the booking's timestamp into `App_Timestamp`. If that stops matching the copied Timestamp beside it, every page shows a warning and the app won't save until the rows are lined up again. Bookings still show correctly, because the app matches values by `App_Timestamp`. Values typed by hand without an `App_Timestamp` belong to the booking in the same row.
 - **A booking is identified by its submission timestamp.** The form doesn't allow response editing, so it never changes. Links use a short code made from the timestamp and email (`/bookings/3a3311903f33`), which doesn't reveal the email.
@@ -96,6 +98,23 @@ Each dependency is added in the phase that first uses it.
 - **Changing an invoice:** a draft changes in place. A sent invoice is replaced: it's marked Replaced, and the changes become a new invoice with a new number, so the client never has two versions of one number. Replaced invoices stay listed, with their PDFs.
 - **The tracking follows the invoice:** saving one writes its number to the booking's invoice number, and sets the damage deposit to Not required when there isn't one (or back to Outstanding when one is added). A damage deposit that's Paid or Refunded is left alone. Every invoice change goes in the booking's history.
 
+## Payments
+
+- **Who:** people with the Payments permission. A booking's Invoice and payments panel lists what has come in and gone out, with **Record payment**.
+- **Recording** (`/bookings/<code>/payment`): what happened (a payment received, the damage deposit paid back, or money paid back after a cancellation), the amount, the date (today by default) and an optional reference.
+- **The tracking follows the payments**, never moving back:
+  - A payment makes the payment status Deposit Paid once the payments add up to half the invoice, and Full Payment Received once they cover all of it. The damage deposit is paid with the invoice, so it becomes Paid then too. Without an invoice, nothing moves.
+  - Paying back the damage deposit makes it Refunded. Anything less than the deposit on the invoice is saved as the amount kept back, with an optional note of what was damaged.
+  - Paying back money after a cancellation makes the payment status Refunded.
+- **Deleting a payment** is only for one recorded by mistake. The tracking stays as it is; Edit is there to fix it. Every payment, and every deletion, goes in the booking's history.
+- **The treasurer's list** (`/payments`, linked in the top bar for people with Payments): what still needs doing, soonest function first, with each booking linking straight to the next step. Cancelled and declined bookings are left out. Payment details stay off the main list, so it stays uncluttered for everyone else.
+  - **Needs an invoice:** today or later, no invoice, and not already paid in full or given an invoice number by hand. Past bookings are left out: they're from before the app made invoices.
+  - **Invoice not sent:** the current invoice is a draft.
+  - **Waiting for the deposit:** payment status Invoice Sent, with how much of the half is still due.
+  - **Balance owing:** payment status Deposit Paid, with what's still to come.
+  - **Damage deposit to pay back:** the function is over and the damage deposit is still Paid.
+  - Functions within a week, or already past, are flagged in the first four. The top of the page counts each section and adds up the money still to come.
+
 ## Add to calendar
 
 - A calendar-plus button beside a booking's date, for anyone who can see bookings. It opens an `.ics` file, which the phone or computer adds to its default calendar app. iPhones and Macs open it in Calendar straight away; on Android it may download first, and needs a calendar app that opens `.ics` files.
@@ -111,12 +130,12 @@ Each dependency is added in the phase that first uses it.
 
 ## Permissions
 
-| Permission           | Allows                                                                           |
-| -------------------- | -------------------------------------------------------------------------------- |
-| View bookings        | The list and detail pages                                                        |
-| Edit booking details | Changing the form's answers (date, times, contact details); deleting ID numbers  |
-| Notes and status     | Adding notes, changing the booking status, and declining bookings                |
-| Payments             | Changing the payment status, the invoice number and the damage deposit; invoices |
+| Permission           | Allows                                                                                                                     |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| View bookings        | The list and detail pages                                                                                                  |
+| Edit booking details | Changing the form's answers (date, times, contact details); deleting ID numbers                                            |
+| Notes and status     | Adding notes, changing the booking status, and declining bookings                                                          |
+| Payments             | Changing the payment status, the invoice number and the damage deposit; invoices; recording payments; the treasurer's list |
 
 - **The `Users` tab** has a header row, then one row per person: `Email | VIEW_BOOKINGS | EDIT_BOOKING_DETAILS | NOTES_AND_STATUS | PAYMENTS`, with a ticked checkbox or "Yes" in each permission column the person has. Anything else, including "No" or a blank cell, means no. The permission headers are in capitals to show they're fixed names the app looks for, not labels to reword. The app needs those exact headers (upper or lower case), in any order. The app's pages show friendlier names, such as "View bookings".
 - Every permission includes viewing.
@@ -179,7 +198,7 @@ Netlify deploys `master` to the live site and builds a preview for each pull req
 
 ### 3. Read bookings (built)
 
-- **The list** (`/`): a search box, Upcoming / Past / All tabs with counts, and cards grouped under month headings. Upcoming is the default and includes today; past and all are newest first. Search matches every word against the name, email, phone (with or without spaces), function, special considerations, status, invoice number and date ("october", "saturday"). Search and tab are in the address (`/?when=past&q=birthday`), so they work without JavaScript and can be shared.
+- **The list** (`/`): a search box, Upcoming / Past / All tabs with counts, and cards grouped under month headings. Upcoming is the default and includes today; past and all are newest first. Search matches every word against the name, email, phone (with or without spaces), function, special considerations, status, invoice number and date ("october", "saturday"). Search and tab are in the address (`/?when=past&q=birthday`), so they work without JavaScript and can be shared. Cancelled and declined bookings are hidden, and left out of the counts, until **Show cancelled or declined** adds `cancelled=show` to the address.
 - **A booking** (`/bookings/<code>`): the date and time with how long it runs, contact details with copy buttons (and one to copy them all), tap-to-call and tap-to-email links, the form's answers, and the hand-typed tracking columns, read-only. The app doesn't show ID numbers.
 - **Themes:** System, Light or Dark, chosen in the account menu and saved on the device. A script in `<head>` applies it before the page is drawn, so it never flashes the wrong theme.
 - The responses tab is called `Form responses 1` (lowercase r), in both the real sheet and the test copy.
@@ -210,12 +229,20 @@ See [Invoices](#invoices) and [Declining a booking](#declining-a-booking). A new
 1. In `Tracking Data`, an `App_DeclineReason` column among the `App_` columns.
 2. A new `Invoices` tab with the headers in row 1: `App_InvoiceNumber`, `App_Timestamp`, `App_IssuedOn`, `App_Status`, `App_Customer`, `App_Address`, `App_RegNumber`, `App_Phone`, `App_Email`, `App_Lines`, `App_Total`. Format `App_IssuedOn` as Date and `App_Total` as currency.
 
-### 7. Go live
+### 7. Payments and the treasurer's list
+
+_Built. Needs the sheet change below in the test copy before the app will load, then testing by someone signed in._
+
+See [Payments](#payments). The main list also hides cancelled and declined bookings until asked for. The sheet needs, **before this is deployed** (the app stops loading without it):
+
+1. A new `Payments` tab with the headers in row 1: `App_Id`, `App_Timestamp`, `App_PaidOn`, `App_Kind`, `App_Amount`, `App_Note`, `App_RecordedBy`, `App_RecordedAt`. Format `App_PaidOn` as Date, `App_Amount` as currency and `App_RecordedAt` as Date time.
+
+### 8. Go live
 
 On the real spreadsheet:
 
 1. Remove the three hand-typed columns (State, Damage Deposit Paid/Refunded, Invoice Number) from `Form responses 1`. Then send one test response through the form and check it lands in the right columns.
-2. Add the `Tracking Data`, `History` and `Invoices` tabs exactly as in the test copy: the `App_` headers, the copy formula, the Date time formats and the dropdowns.
+2. Add the `Tracking Data`, `History`, `Invoices` and `Payments` tabs exactly as in the test copy: the `App_` headers, the copy formula, the Date time formats and the dropdowns.
 3. Share the spreadsheet with the service account as Editor.
 4. Fill in the `Users` tab.
 5. Change `SPREADSHEET_ID` in Netlify to the real sheet.

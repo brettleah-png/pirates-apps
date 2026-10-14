@@ -8,6 +8,7 @@ import { loadBookingData } from "../../lib/data";
 import { sheetsNowInSouthAfrica, todayInSouthAfrica } from "../../lib/dates";
 import { historyFor } from "../../lib/history";
 import { currentInvoice } from "../../lib/invoices";
+import { paymentsFor } from "../../lib/payments";
 import { clashesWith } from "../../lib/tracking";
 
 const { user } = Astro.locals;
@@ -21,6 +22,7 @@ const ACTIONS_ON_THIS_PAGE = [
   [actions.deleteNote, "note-deleted"],
   [actions.deleteIdNumber, "id-deleted"],
   [actions.markClientContacted, "contacted"],
+  [actions.deletePayment, "payment-deleted"],
 ] as const;
 let actionError: string | undefined;
 for (const [action, done] of ACTIONS_ON_THIS_PAGE) {
@@ -45,6 +47,8 @@ const DONE_MESSAGES: Record<string, string> = {
   "id-deleted": "ID number deleted.",
   declined: "Booking declined. Let them know below.",
   contacted: "Status set to Client Contacted.",
+  "payment-recorded": "Payment recorded.",
+  "payment-deleted": "Payment deleted.",
 };
 const doneMessage = DONE_MESSAGES[Astro.url.searchParams.get("done") ?? ""];
 
@@ -69,6 +73,7 @@ if (!booking) {
       clashes={clashesWith(booking, data.bookings)}
       history={historyFor(data.history.entries, booking.timestampKey)}
       invoice={currentInvoice(data.invoices.invoices, booking.timestampKey)}
+      payments={paymentsFor(data.payments.payments, booking.timestampKey)}
       now={sheetsNowInSouthAfrica()}
       noteError={actionError}
     />

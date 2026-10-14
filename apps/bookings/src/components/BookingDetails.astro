@@ -11,7 +11,8 @@ import {
 import { longDate, relativeDay, shortDate, shortDateTime } from "../lib/dates";
 import { declineEmail } from "../lib/emails";
 import type { HistoryEntry } from "../lib/history";
-import { formatRand, invoiceTotal, type Invoice } from "../lib/invoices";
+import type { Invoice } from "../lib/invoices";
+import type { Payment } from "../lib/payments";
 import {
   canDeleteIdNumber,
   editableFields,
@@ -25,6 +26,7 @@ import BookingHistory from "./BookingHistory.astro";
 import CopyButton from "./CopyButton.astro";
 import EmailTools from "./EmailTools.astro";
 import Icon from "./Icon.astro";
+import PaymentsPanel from "./PaymentsPanel.astro";
 import StatusTag from "./StatusTag.astro";
 
 interface Props {
@@ -36,14 +38,25 @@ interface Props {
   history: HistoryEntry[];
   /** The booking's current invoice, if it has one */
   invoice: Invoice | undefined;
+  /** The booking's payments, oldest first */
+  payments: Payment[];
   /** Now, as a Sheets date-and-time number */
   now: number;
   /** A note that couldn't be saved */
   noteError?: string;
 }
 
-const { booking, today, user, clashes, history, invoice, now, noteError } =
-  Astro.props;
+const {
+  booking,
+  today,
+  user,
+  clashes,
+  history,
+  invoice,
+  payments,
+  now,
+  noteError,
+} = Astro.props;
 const { tracking } = booking;
 const time = timeRange(booking);
 const duration = durationInMinutes(booking);
@@ -303,32 +316,11 @@ const lastSavedBy =
       </section>
 
       {user.permissions.payments && (
-        <section class="panel">
-          <h2>Invoice</h2>
-          {invoice ? (
-            <>
-              <p class="invoice-summary">
-                <strong>{invoice.number}</strong>
-                <span>
-                  {formatRand(invoiceTotal(invoice.lines))} ·{" "}
-                  {invoice.status === "Draft" ? "Not sent yet" : "Sent"}
-                </span>
-              </p>
-              <a class="button" href={`/bookings/${booking.id}/invoice`}>
-                <Icon name="file" size={18} />
-                Open invoice
-              </a>
-            </>
-          ) : (
-            <>
-              <p class="note">No invoice yet.</p>
-              <a class="button" href={`/bookings/${booking.id}/invoice/edit`}>
-                <Icon name="file" size={18} />
-                Create invoice
-              </a>
-            </>
-          )}
-        </section>
+        <PaymentsPanel
+          bookingId={booking.id}
+          invoice={invoice}
+          payments={payments}
+        />
       )}
     </div>
 
@@ -467,13 +459,6 @@ const lastSavedBy =
   /* Full width, like "Copy all contact details" above it */
   .contacted-form .button {
     width: 100%;
-  }
-  .invoice-summary {
-    display: grid;
-    margin: 0;
-  }
-  .invoice-summary span {
-    color: var(--color-muted);
   }
 
   .columns,

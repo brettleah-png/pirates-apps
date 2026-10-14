@@ -1,13 +1,21 @@
 import { describe, expect, it } from "vitest";
 import {
   bookingsToShow,
+  countHidden,
   countsByWhen,
   groupByMonth,
   matchesSearch,
+  parseShowCalledOff,
   parseWhen,
 } from "./booking-list";
 import { parseBookings } from "./bookings";
-import { RESPONSE_HEADERS, RESPONSE_ROWS } from "./bookings.fixtures";
+import {
+  RESPONSE_HEADERS,
+  RESPONSE_ROWS,
+  TRACKING_HEADERS,
+  TRACKING_ROWS,
+} from "./bookings.fixtures";
+import { parseTrackingTab, withTracking } from "./tracking";
 
 const bookings = parseBookings([RESPONSE_HEADERS, ...RESPONSE_ROWS]);
 // Jane Someone's and Mary Anyone's functions are on 17 October
@@ -28,6 +36,7 @@ describe("bookingsToShow", () => {
     const shown = bookingsToShow(bookings, {
       when: "upcoming",
       search: "",
+      showCalledOff: false,
       today: TODAY,
     });
 
@@ -45,6 +54,7 @@ describe("bookingsToShow", () => {
     const shown = bookingsToShow(bookings, {
       when: "past",
       search: "",
+      showCalledOff: false,
       today: TODAY,
     });
 
@@ -55,6 +65,7 @@ describe("bookingsToShow", () => {
     const shown = bookingsToShow(bookings, {
       when: "all",
       search: "",
+      showCalledOff: false,
       today: TODAY,
     });
 
@@ -72,14 +83,33 @@ describe("bookingsToShow", () => {
 
     expect(
       names(
-        bookingsToShow(list, { when: "upcoming", search: "", today: TODAY })
+        bookingsToShow(list, {
+          when: "upcoming",
+          search: "",
+          showCalledOff: false,
+          today: TODAY,
+        })
       )
     ).not.toContain("No Date");
     expect(
-      names(bookingsToShow(list, { when: "past", search: "", today: TODAY }))
+      names(
+        bookingsToShow(list, {
+          when: "past",
+          search: "",
+          showCalledOff: false,
+          today: TODAY,
+        })
+      )
     ).not.toContain("No Date");
     expect(
-      names(bookingsToShow(list, { when: "all", search: "", today: TODAY }))
+      names(
+        bookingsToShow(list, {
+          when: "all",
+          search: "",
+          showCalledOff: false,
+          today: TODAY,
+        })
+      )
     ).toContain("No Date");
   });
 
@@ -87,6 +117,7 @@ describe("bookingsToShow", () => {
     const shown = bookingsToShow(bookings, {
       when: "upcoming",
       search: "birthday",
+      showCalledOff: false,
       today: TODAY,
     });
 
@@ -123,16 +154,64 @@ describe("matchesSearch", () => {
 
 describe("countsByWhen", () => {
   it("counts each tab for the current search", () => {
-    expect(countsByWhen(bookings, "", TODAY)).toEqual({
+    expect(
+      countsByWhen(bookings, { search: "", showCalledOff: false, today: TODAY })
+    ).toEqual({
       upcoming: 6,
       past: 3,
       all: 9,
     });
-    expect(countsByWhen(bookings, "braai", TODAY)).toEqual({
+    expect(
+      countsByWhen(bookings, {
+        search: "braai",
+        showCalledOff: false,
+        today: TODAY,
+      })
+    ).toEqual({
       upcoming: 0,
       past: 1,
       all: 1,
     });
+  });
+});
+
+describe("cancelled and declined bookings", () => {
+  // Berry Allen's booking is cancelled
+  const tracked = withTracking(
+    bookings,
+    parseTrackingTab([TRACKING_HEADERS, ...TRACKING_ROWS])
+  );
+  const filters = {
+    when: "upcoming" as const,
+    search: "",
+    showCalledOff: false,
+    today: TODAY,
+  };
+
+  it("are hidden unless the address asks for them", () => {
+    expect(parseShowCalledOff(null)).toBe(false);
+    expect(parseShowCalledOff("show")).toBe(true);
+
+    expect(names(bookingsToShow(tracked, filters))).not.toContain(
+      "Berry Allen"
+    );
+    expect(
+      names(bookingsToShow(tracked, { ...filters, showCalledOff: true }))
+    ).toContain("Berry Allen");
+  });
+
+  it("aren't counted in the tabs while hidden", () => {
+    expect(countsByWhen(tracked, filters).upcoming).toBe(5);
+    expect(
+      countsByWhen(tracked, { ...filters, showCalledOff: true }).upcoming
+    ).toBe(6);
+  });
+
+  it("are counted as hidden for the tab and search", () => {
+    expect(countHidden(tracked, filters)).toBe(1);
+    expect(countHidden(tracked, { ...filters, when: "past" })).toBe(0);
+    expect(countHidden(tracked, { ...filters, search: "halloween" })).toBe(1);
+    expect(countHidden(tracked, { ...filters, search: "birthday" })).toBe(0);
   });
 });
 
@@ -141,6 +220,7 @@ describe("groupByMonth", () => {
     const shown = bookingsToShow(bookings, {
       when: "upcoming",
       search: "",
+      showCalledOff: false,
       today: TODAY,
     });
 

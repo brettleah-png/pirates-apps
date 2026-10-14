@@ -1,6 +1,6 @@
 ---
 // The bookings list: search, the Upcoming / Past / All tabs, and the bookings
-// grouped by month
+// grouped by month. Cancelled and declined bookings are hidden until asked for.
 import { WHEN_LABELS, type MonthGroup, type When } from "../lib/booking-list";
 import type { TrackedBooking } from "../lib/tracking";
 import Alert from "./Alert.astro";
@@ -12,6 +12,10 @@ interface Props {
   counts: Record<When, number>;
   when: When;
   search: string;
+  /** Cancelled and declined bookings are shown too */
+  showCalledOff: boolean;
+  /** How many cancelled and declined bookings are hidden from this tab and search */
+  hiddenCount: number;
   today: string;
   /** True when the spreadsheet couldn't be read */
   failed?: boolean;
@@ -24,6 +28,8 @@ const {
   counts,
   when,
   search,
+  showCalledOff,
+  hiddenCount,
   today,
   failed = false,
   outOfLineRows = [],
@@ -33,12 +39,17 @@ const shownCount = groups.reduce(
   0
 );
 
-// Links keep the search when switching tab. Upcoming is the default, so it
-// needs no "when" in the address.
-function linkTo(nextWhen: When, nextSearch: string): string {
+// Links keep the search and whether cancelled bookings show when switching
+// tab. Upcoming is the default, so it needs no "when" in the address.
+function linkTo(
+  nextWhen: When,
+  nextSearch: string,
+  nextShowCalledOff = showCalledOff
+): string {
   const params = new URLSearchParams();
   if (nextWhen !== "upcoming") params.set("when", nextWhen);
   if (nextSearch) params.set("q", nextSearch);
+  if (nextShowCalledOff) params.set("cancelled", "show");
   const query = params.toString();
   return query ? `/?${query}` : "/";
 }
@@ -84,6 +95,7 @@ const summary = search
       enterkeyhint="search"
     />
     {when !== "upcoming" && <input type="hidden" name="when" value={when} />}
+    {showCalledOff && <input type="hidden" name="cancelled" value="show" />}
   </form>
 
   <nav class="tabs" aria-label="Which bookings to show">
@@ -121,7 +133,11 @@ const summary = search
           ? "No upcoming bookings"
           : "No bookings"}
     </h2>
-    {search ? (
+    {hiddenCount > 0 ? (
+      <a class="button" href={linkTo(when, search, true)}>
+        Show {plural(hiddenCount, "cancelled or declined booking")}
+      </a>
+    ) : search ? (
       <a class="button" href={linkTo(when, "")}>
         Clear the search
       </a>
@@ -139,6 +155,15 @@ const summary = search
     <p class="summary" aria-live="polite">
       {summary}
       {search && <a href={linkTo(when, "")}>Clear</a>}
+      {showCalledOff ? (
+        <a href={linkTo(when, search, false)}>Hide cancelled and declined</a>
+      ) : (
+        hiddenCount > 0 && (
+          <a href={linkTo(when, search, true)}>
+            Show {hiddenCount} cancelled or declined
+          </a>
+        )
+      )}
     </p>
     {groups.map((group) => (
       <section class="month" aria-label={group.label}>
@@ -245,7 +270,8 @@ const summary = search
 
   .summary {
     display: flex;
-    gap: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
     margin: 0 0 0.5rem;
     color: var(--color-muted);
     font-size: 0.875rem;

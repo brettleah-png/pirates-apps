@@ -3,8 +3,10 @@ import BookingList from "../components/BookingList.astro";
 import AppLayout from "../layouts/AppLayout.astro";
 import {
   bookingsToShow,
+  countHidden,
   countsByWhen,
   groupByMonth,
+  parseShowCalledOff,
   parseWhen,
 } from "../lib/booking-list";
 import { loadBookingData, type BookingData } from "../lib/data";
@@ -14,6 +16,9 @@ const { user } = Astro.locals;
 const today = todayInSouthAfrica();
 const when = parseWhen(Astro.url.searchParams.get("when"));
 const search = (Astro.url.searchParams.get("q") ?? "").trim();
+const showCalledOff = parseShowCalledOff(
+  Astro.url.searchParams.get("cancelled")
+);
 
 let data: BookingData | undefined;
 try {
@@ -23,8 +28,10 @@ try {
 }
 const bookings = data?.bookings ?? [];
 
-const groups = groupByMonth(bookingsToShow(bookings, { when, search, today }));
-const counts = countsByWhen(bookings, search, today);
+const filters = { when, search, showCalledOff, today };
+const groups = groupByMonth(bookingsToShow(bookings, filters));
+const counts = countsByWhen(bookings, filters);
+const hiddenCount = countHidden(bookings, filters);
 ---
 
 <AppLayout title="Bookings" user={user}>
@@ -33,6 +40,8 @@ const counts = countsByWhen(bookings, search, today);
     counts={counts}
     when={when}
     search={search}
+    showCalledOff={showCalledOff}
+    hiddenCount={hiddenCount}
     today={today}
     failed={!data}
     outOfLineRows={data?.tracking.outOfLineRows}
