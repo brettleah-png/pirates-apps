@@ -96,6 +96,13 @@ Each dependency is added in the phase that first uses it.
 - **Changing an invoice:** a draft changes in place. A sent invoice is replaced: it's marked Replaced, and the changes become a new invoice with a new number, so the client never has two versions of one number. Replaced invoices stay listed, with their PDFs.
 - **The tracking follows the invoice:** saving one writes its number to the booking's invoice number, and sets the damage deposit to Not required when there isn't one (or back to Outstanding when one is added). A damage deposit that's Paid or Refunded is left alone. Every invoice change goes in the booking's history.
 
+## Add to calendar
+
+- A calendar-plus button beside a booking's date, for anyone who can see bookings. It opens an `.ics` file, which the phone or computer adds to its default calendar app. iPhones and Macs open it in Calendar straight away; on Android it may download first, and needs a calendar app that opens `.ics` files.
+- The event is titled **Booked Function (first name)**, at the club, from the start to the end time (the next day when it runs past midnight). A booking without a start time becomes a whole-day event.
+- The event goes into someone's own calendar, which may sync anywhere, so it only holds the first name, the function type and a link back to the booking. No phone number or email.
+- It doesn't update itself. If the booking's date or time changes, add it again: the event has a fixed ID, so most calendar apps replace the old one.
+
 ## Declining a booking
 
 - **Who:** people with the Notes and status permission, from the **Decline** button on a booking's page.

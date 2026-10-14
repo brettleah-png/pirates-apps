@@ -132,7 +132,9 @@ const { title } = Astro.props;
       opensElsewhere ||
       !link ||
       link.target === "_blank" ||
-      link.hasAttribute("download")
+      link.hasAttribute("download") ||
+      // Files that open in another app, like a calendar event
+      link.hasAttribute("data-no-loading")
     ) {
       return;
     }

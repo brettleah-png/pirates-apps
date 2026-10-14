@@ -144,6 +144,17 @@ const lastSavedBy =
             </strong>
             {booking.date && <span>{relativeDay(booking.date, today)}</span>}
           </div>
+          {booking.date && (
+            <a
+              class="add-to-calendar"
+              href={`/bookings/${booking.id}/calendar.ics`}
+              aria-label="Add to calendar"
+              title="Add to calendar"
+              data-no-loading
+            >
+              <Icon name="calendar-plus" />
+            </a>
+          )}
         </div>
         <div class="when-row">
           <span class="when-icon">
@@ -479,6 +490,20 @@ const lastSavedBy =
   }
   .when-row div {
     display: grid;
+  }
+  .add-to-calendar {
+    display: grid;
+    flex: none;
+    place-items: center;
+    width: var(--tap-size);
+    height: var(--tap-size);
+    margin-left: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-small);
+    color: var(--color-primary);
+  }
+  .add-to-calendar:hover {
+    border-color: var(--color-muted);
   }
   .when-row strong {
     font-size: 1.0625rem;

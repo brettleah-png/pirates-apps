@@ -1,7 +1,7 @@
 // The emails the committee sends clients from their own email app: the
 // invoice, and the reply when the club can't take a booking. The app only
 // writes the text. Sending happens in the person's email app.
-import type { Booking } from "./bookings";
+import { firstName, type Booking } from "./bookings";
 import { bookingWhen } from "./invoices";
 
 export const EMAIL_SUBJECT = "Pirates Club Rental";
@@ -22,8 +22,8 @@ export type DeclineReason = keyof typeof DECLINE_REASONS | "other";
 
 /** "Good day John," using only the first name */
 function greeting(booking: Booking): string {
-  const firstName = booking.name.split(" ")[0];
-  return firstName ? `Good day ${firstName},` : "Good day,";
+  const name = firstName(booking);
+  return name ? `Good day ${name},` : "Good day,";
 }
 
 export function invoiceEmail(booking: Booking): Email {

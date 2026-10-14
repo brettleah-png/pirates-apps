@@ -209,6 +209,11 @@ export function parseBookings(rows: unknown[][]): Booking[] {
     });
 }
 
+/** "John" from "John Doe", or "" when there's no name */
+export function firstName(booking: Booking): string {
+  return booking.name.split(" ")[0];
+}
+
 /** "071 111 1111" for a South African mobile number, or the number as typed */
 export function formatPhone(phone: string): string {
   const digits = phone.replace(/\D/g, "");
