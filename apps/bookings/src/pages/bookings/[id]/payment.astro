@@ -1,10 +1,12 @@
 ---
 // Recording money that came in from the client, or that the club paid back.
 // A payment moves the payment status forward; paying back the damage
-// deposit settles it; any other refund sets the payment status to Refunded.
+// deposit settles it; paying back an overpayment changes no status; any
+// other refund sets the payment status to Refunded.
 import { actions, isInputError } from "astro:actions";
 import Alert from "../../../components/Alert.astro";
 import BackBar from "../../../components/BackBar.astro";
+import PaymentSummary from "../../../components/PaymentSummary.astro";
 import AppLayout from "../../../layouts/AppLayout.astro";
 import { loadBookingData } from "../../../lib/data";
 import { todayInSouthAfrica } from "../../../lib/dates";
@@ -15,6 +17,7 @@ import {
   invoiceTotal,
 } from "../../../lib/invoices";
 import {
+  amountOverpaid,
   amountReceived,
   PAYMENT_KIND_LABELS,
   paymentsFor,
@@ -44,17 +47,23 @@ if (!booking) {
   return Astro.redirect(`/bookings/${id}`);
 }
 const { outOfLineRows } = data.tracking;
-// The treasurer's list links here with ?kind=refund to pay back a damage deposit
-const chosenKind: PaymentKind =
-  Astro.url.searchParams.get("kind") === "refund"
-    ? "Damage deposit refund"
-    : "Payment";
 const invoice = currentInvoice(data.invoices.invoices, booking.timestampKey);
 const total = invoice ? invoiceTotal(invoice.lines) : 0;
 const deposit = invoice ? depositAmount(invoice.lines) : 0;
 const received = amountReceived(
   paymentsFor(data.payments.payments, booking.timestampKey)
 );
+const overpaid = amountOverpaid(received, total);
+
+// The treasurer's list links here with ?kind=refund to pay back a damage
+// deposit, and ?kind=overpaid to pay back an overpayment
+const kindParam = Astro.url.searchParams.get("kind");
+let chosenKind: PaymentKind = "Payment";
+if (kindParam === "refund") {
+  chosenKind = "Damage deposit refund";
+} else if (kindParam === "overpaid" && overpaid > 0) {
+  chosenKind = "Overpayment refund";
+}
 const damageRefundHint =
   deposit > 0
     ? `After the function. The damage deposit becomes Refunded, and anything less than ${formatRand(deposit)} is kept back.`
@@ -95,11 +104,7 @@ const amountHint =
 
     <div class="panel">
       {invoice ? (
-        <p class="so-far">
-          Invoice {invoice.number}: {formatRand(total)}. {formatRand(received)}{" "}
-          received so far
-          {received < total && `, ${formatRand(total - received)} to come`}.
-        </p>
+        <PaymentSummary invoice={invoice} received={received} />
       ) : (
         <p class="so-far">
           No invoice yet, so the payment status won't move on its own.
@@ -152,6 +157,23 @@ const amountHint =
           </small>
         </span>
       </label>
+      {overpaid > 0 && (
+        <label class="choice">
+          <input
+            type="radio"
+            name="kind"
+            value="Overpayment refund"
+            checked={chosenKind === "Overpayment refund"}
+          />
+          <span>
+            {PAYMENT_KIND_LABELS["Overpayment refund"]}
+            <small>
+              {formatRand(overpaid)} came in over the invoice. The payment
+              status stays as it is.
+            </small>
+          </span>
+        </label>
+      )}
     </fieldset>
 
     <div class="panel">

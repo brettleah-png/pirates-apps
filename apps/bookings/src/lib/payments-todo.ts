@@ -1,7 +1,12 @@
 // The treasurer's to-do list: what still needs doing with invoices, payments
 // and damage deposits. Cancelled and declined bookings are left out.
 import { currentInvoice, invoiceTotal, type Invoice } from "./invoices";
-import { amountReceived, paymentsFor, type Payment } from "./payments";
+import {
+  amountOverpaid,
+  amountReceived,
+  paymentsFor,
+  type Payment,
+} from "./payments";
 import { isCalledOff, type TrackedBooking } from "./tracking";
 
 export interface TodoItem {
@@ -12,7 +17,10 @@ export interface TodoItem {
   total: number;
   /** Rand received so far */
   received: number;
-  /** Rand still to come for this step: the deposit, or the rest */
+  /**
+   * Rand still owed for this step: the deposit or the rest to come in, or
+   * an overpayment for the club to pay back
+   */
   owing: number;
 }
 
@@ -27,6 +35,8 @@ export interface PaymentsTodo {
   balanceOwing: TodoItem[];
   /** The function is over and the damage deposit is still held */
   depositToRefund: TodoItem[];
+  /** More than the invoice came in, and the difference isn't paid back yet */
+  overpaid: TodoItem[];
 }
 
 // Soonest function first, so the most overdue and the most urgent are on
@@ -49,6 +59,7 @@ export function paymentsTodo(
     awaitingDeposit: [],
     balanceOwing: [],
     depositToRefund: [],
+    overpaid: [],
   };
 
   for (const booking of bookings) {
@@ -86,6 +97,11 @@ export function paymentsTodo(
     if (isOver && tracking.damageDeposit === "Paid") {
       todo.depositToRefund.push(item);
     }
+
+    const overpaid = amountOverpaid(received, total);
+    if (overpaid > 0) {
+      todo.overpaid.push({ ...item, owing: overpaid });
+    }
   }
 
   for (const items of Object.values(todo)) {
@@ -94,7 +110,7 @@ export function paymentsTodo(
   return todo;
 }
 
-/** Rand still to come across a section */
+/** Rand still owed across a section */
 export function totalOwing(items: TodoItem[]): number {
   return items.reduce((total, item) => total + item.owing, 0);
 }

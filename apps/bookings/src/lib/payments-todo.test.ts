@@ -64,6 +64,7 @@ const invoices: Invoice[] = [
   invoice("John Doe", "INV-1", "Sent"),
   invoice("Person Sur", "INV-2", "Draft"),
   invoice("Djou Ma", "INV-3", "Sent"),
+  invoice("Mary Anyone", "INV-5", "Sent"),
   // Berry Allen cancelled, so that invoice isn't on the list
   invoice("Berry Allen", "INV-4", "Draft"),
 ];
@@ -81,7 +82,12 @@ function payment(name: string, amount: number): Payment {
   };
 }
 
-const payments = [payment("John Doe", 2000), payment("Djou Ma", 500)];
+const payments = [
+  payment("John Doe", 2000),
+  payment("Djou Ma", 500),
+  // R500 over Mary Anyone's invoice
+  payment("Mary Anyone", 4500),
+];
 
 const todo = paymentsTodo(bookings, invoices, payments, TODAY);
 const names = (items: TodoItem[]) => items.map((item) => item.booking.name);
@@ -110,6 +116,11 @@ describe("paymentsTodo", () => {
     expect(names(todo.balanceOwing)).toEqual(["John Doe"]);
     expect(todo.balanceOwing[0]).toMatchObject({ received: 2000, owing: 2000 });
     expect(totalOwing(todo.balanceOwing)).toBe(2000);
+  });
+
+  it("lists overpaid invoices, with what's to pay back", () => {
+    expect(names(todo.overpaid)).toEqual(["Mary Anyone"]);
+    expect(todo.overpaid[0]).toMatchObject({ received: 4500, owing: 500 });
   });
 
   it("lists damage deposits still held after the function", () => {

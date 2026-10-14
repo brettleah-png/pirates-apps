@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  amountOverpaid,
   amountReceived,
   damageDepositAfterPayment,
   damageKeptBack,
   describePayment,
   parsePaymentsTab,
+  paymentProgress,
   paymentRow,
   paymentsFor,
   paymentStatusAfterPayment,
@@ -68,8 +70,21 @@ describe("paymentsFor and amountReceived", () => {
     expect(johns.map((p) => p.id)).toEqual(["p1", "p2", "p3"]);
   });
 
-  it("adds up what came in, not what was paid back", () => {
+  it("adds up what came in, not the damage deposit paid back", () => {
     expect(amountReceived(johns)).toBe(2500);
+  });
+
+  it("takes an overpayment paid back off what came in", () => {
+    const overpaidBack = { ...johns[0], kind: "Overpayment refund" as const };
+    expect(amountReceived([...johns, overpaidBack])).toBe(2000);
+  });
+});
+
+describe("amountOverpaid", () => {
+  it("is what came in over the invoice, and 0 without an invoice", () => {
+    expect(amountOverpaid(4500, 4000)).toBe(500);
+    expect(amountOverpaid(3000, 4000)).toBe(0);
+    expect(amountOverpaid(500, 0)).toBe(0);
   });
 });
 
@@ -100,6 +115,35 @@ describe("paymentStatusAfterPayment", () => {
     expect(paymentStatusAfterPayment("Invoice Sent", 2000, 0)).toBe(
       "Invoice Sent"
     );
+  });
+});
+
+describe("paymentProgress", () => {
+  it("is waiting for the deposit until half is in", () => {
+    expect(paymentProgress(4000, 1500)).toEqual({
+      stage: "Waiting for deposit",
+      toCome: 2500,
+      overpaid: 0,
+      percent: 37.5,
+    });
+  });
+
+  it("has the deposit from half, and is paid in full from all of it", () => {
+    expect(paymentProgress(4000, 2000).stage).toBe("Deposit paid");
+    expect(paymentProgress(4000, 4000)).toEqual({
+      stage: "Paid in full",
+      toCome: 0,
+      overpaid: 0,
+      percent: 100,
+    });
+  });
+
+  it("caps the bar at the invoice and says what was paid over it", () => {
+    expect(paymentProgress(4000, 4500)).toMatchObject({
+      toCome: 0,
+      overpaid: 500,
+      percent: 100,
+    });
   });
 });
 

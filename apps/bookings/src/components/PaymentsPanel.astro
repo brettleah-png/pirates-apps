@@ -3,13 +3,14 @@
 // people with the Payments permission
 import { actions } from "astro:actions";
 import { shortDate } from "../lib/dates";
-import { formatRand, invoiceTotal, type Invoice } from "../lib/invoices";
+import { formatRand, type Invoice } from "../lib/invoices";
 import {
   amountReceived,
   PAYMENT_KIND_LABELS,
   type Payment,
 } from "../lib/payments";
 import Icon from "./Icon.astro";
+import PaymentSummary from "./PaymentSummary.astro";
 
 interface Props {
   bookingId: string;
@@ -21,23 +22,12 @@ interface Props {
 
 const { bookingId, invoice, payments } = Astro.props;
 const received = amountReceived(payments);
-const total = invoice ? invoiceTotal(invoice.lines) : 0;
 ---
 
 <section class="panel" id="payments">
   <h2>Invoice and payments</h2>
   {invoice ? (
-    <p class="summary">
-      <strong>{invoice.number}</strong>
-      <span>
-        {formatRand(total)} ·{" "}
-        {invoice.status === "Draft" ? "Not sent yet" : "Sent"}
-      </span>
-      <span>
-        {formatRand(received)} received
-        {received < total && `, ${formatRand(total - received)} to come`}
-      </span>
-    </p>
+    <PaymentSummary invoice={invoice} received={received} />
   ) : (
     <p class="note">No invoice yet.</p>
   )}
@@ -103,15 +93,8 @@ const total = invoice ? invoiceTotal(invoice.lines) : 0;
 </section>
 
 <style>
-  .summary {
-    display: grid;
-    margin: 0;
-  }
-  .summary span,
   .note {
     color: var(--color-muted);
-  }
-  .note {
     margin: 0;
     font-size: 0.8125rem;
   }
@@ -180,9 +163,13 @@ const total = invoice ? invoiceTotal(invoice.lines) : 0;
     color: var(--color-surface);
   }
 
+  /* Side by side when both fit on one line each, stacked when not */
   .buttons {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
     gap: 0.5rem;
+  }
+  .buttons .button {
+    white-space: nowrap;
   }
 </style>

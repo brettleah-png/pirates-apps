@@ -49,8 +49,10 @@ interface Section {
   href: (item: TodoItem) => string;
   /** The line under the booking's name */
   detail: (item: TodoItem) => string;
-  /** True when the money still to come is worth adding up */
+  /** True when the money still owed is worth adding up */
   showsOwing?: boolean;
+  /** True when the club pays money back: it isn't flagged as urgent */
+  paysBack?: boolean;
 }
 
 const SECTIONS: Section[] = [
@@ -98,6 +100,17 @@ const SECTIONS: Section[] = [
         ? `${formatRand(deposit)} damage deposit`
         : "Damage deposit";
     },
+    paysBack: true,
+  },
+  {
+    key: "overpaid",
+    title: "Overpaid: pay back the difference",
+    action: "Record refund",
+    href: ({ booking }) => `/bookings/${booking.id}/payment?kind=overpaid`,
+    detail: ({ invoice, total, owing }) =>
+      `${formatRand(owing)} over the ${formatRand(total)} invoice · ${invoice?.number}`,
+    showsOwing: true,
+    paysBack: true,
   },
 ];
 
@@ -169,8 +182,7 @@ const shownSections = todo
                             "tag",
                             {
                               "tag-warning":
-                                section.key !== "depositToRefund" &&
-                                isUrgent(item),
+                                !section.paysBack && isUrgent(item),
                             },
                           ]}
                         >

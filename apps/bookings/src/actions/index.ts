@@ -35,6 +35,7 @@ import {
   type InvoiceColumn,
 } from "../lib/invoices";
 import {
+  amountOverpaid,
   amountReceived,
   damageDepositAfterPayment,
   damageKeptBack,
@@ -629,7 +630,8 @@ export const server = {
   /**
    * Records money received from the client, or paid back. A payment moves
    * the payment status forward; paying back the damage deposit settles it;
-   * any other refund sets the payment status to Refunded.
+   * paying back an overpayment changes no status; any other refund sets the
+   * payment status to Refunded.
    */
   recordPayment: defineAction({
     accept: "form",
@@ -665,6 +667,19 @@ export const server = {
       );
       const total = invoice ? invoiceTotal(invoice.lines) : 0;
       const deposit = invoice ? depositAmount(invoice.lines) : 0;
+      const receivedBefore = amountReceived(
+        paymentsFor(data.payments.payments, booking.timestampKey)
+      );
+      const overpaid = amountOverpaid(receivedBefore, total);
+      if (input.kind === "Overpayment refund" && amount > overpaid) {
+        throw new ActionError({
+          code: "BAD_REQUEST",
+          message:
+            overpaid > 0
+              ? `That's more than the ${formatRand(overpaid)} paid over the invoice.`
+              : "Nothing has been paid over the invoice.",
+        });
+      }
       if (
         input.kind === "Damage deposit refund" &&
         deposit > 0 &&
@@ -695,10 +710,7 @@ export const server = {
 
       let wanted: Partial<Record<EditableField, string>>;
       if (input.kind === "Payment") {
-        const received =
-          amountReceived(
-            paymentsFor(data.payments.payments, booking.timestampKey)
-          ) + amount;
+        const received = receivedBefore + amount;
         wanted = {
           paymentStatus: paymentStatusAfterPayment(
             booking.tracking.paymentStatus,
@@ -720,6 +732,9 @@ export const server = {
         if (damageNote) {
           wanted.damageNote = damageNote;
         }
+      } else if (input.kind === "Overpayment refund") {
+        // The booking is still paid in full: nothing to change
+        wanted = {};
       } else {
         wanted = { paymentStatus: "Refunded" };
       }

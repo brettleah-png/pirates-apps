@@ -1,0 +1,187 @@
+---
+// Where an invoice stands at a glance: its number and where it is, a bar
+// showing how much has come in (the mark at half is the deposit that
+// confirms the booking), and the total, received and still to come
+import { formatRand, invoiceTotal, type Invoice } from "../lib/invoices";
+import { paymentProgress } from "../lib/payments";
+import Icon from "./Icon.astro";
+
+interface Props {
+  invoice: Invoice;
+  /** Rand received so far */
+  received: number;
+}
+
+const { invoice, received } = Astro.props;
+const total = invoiceTotal(invoice.lines);
+const progress = paymentProgress(total, received);
+const tone = {
+  "Waiting for deposit": "waiting",
+  "Deposit paid": "deposit",
+  "Paid in full": "paid",
+}[progress.stage];
+---
+
+<div class:list={["summary", `is-${tone}`]}>
+  <div class="heading">
+    <span class="invoice">
+      <strong>{invoice.number}</strong>
+      <small>{invoice.status === "Draft" ? "Not sent yet" : "Sent"}</small>
+    </span>
+    <span class="tag stage">
+      {progress.stage === "Paid in full" && <Icon name="check" size={14} />}
+      {progress.stage}
+    </span>
+  </div>
+
+  <div
+    class="track"
+    role="img"
+    aria-label={`${formatRand(received)} of ${formatRand(total)} received`}
+  >
+    <span class="fill" style={`width: ${progress.percent}%`}></span>
+    <span class="deposit-mark"></span>
+  </div>
+  <p class="deposit-label" aria-hidden="true">
+    Deposit
+  </p>
+
+  <dl class="figures">
+    <div>
+      <dt>Invoice</dt>
+      <dd>{formatRand(total)}</dd>
+    </div>
+    <div>
+      <dt>Received</dt>
+      <dd>{formatRand(received)}</dd>
+    </div>
+    <div>
+      <dt>To come</dt>
+      <dd>{formatRand(progress.toCome)}</dd>
+    </div>
+  </dl>
+
+  {progress.overpaid > 0 && (
+    <p class="overpaid">
+      {formatRand(progress.overpaid)} paid over the invoice, still to pay back.
+    </p>
+  )}
+</div>
+
+<style>
+  .summary {
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .heading {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+  .invoice {
+    display: grid;
+    min-width: 0;
+  }
+  .invoice strong {
+    overflow-wrap: anywhere;
+  }
+  .invoice small {
+    color: var(--color-muted);
+    font-size: 0.875rem;
+  }
+  .stage {
+    flex: none;
+  }
+  .is-waiting .stage {
+    background: var(--color-warning-soft);
+    color: var(--color-warning);
+  }
+  .is-deposit .stage {
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+  }
+  .is-paid .stage {
+    background: var(--color-success-soft);
+    color: var(--color-success);
+  }
+
+  /* The bar: what's in, against the whole invoice */
+  .track {
+    position: relative;
+    height: 0.625rem;
+    margin-top: 0.25rem;
+    border-radius: 999px;
+    background: var(--color-surface-sunken);
+  }
+  .fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+    background: var(--color-primary);
+  }
+  .is-paid .fill {
+    background: var(--color-success);
+  }
+  /* Half the invoice confirms the booking. The gap in the surface colour
+     keeps the mark visible over the fill too. */
+  .deposit-mark {
+    position: absolute;
+    top: -0.1875rem;
+    bottom: -0.1875rem;
+    left: 50%;
+    width: 2px;
+    margin-left: -1px;
+    border-radius: 1px;
+    background: var(--color-text);
+    box-shadow:
+      -2px 0 0 var(--color-surface),
+      2px 0 0 var(--color-surface);
+  }
+  .deposit-label {
+    margin: -0.25rem 0 0;
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    text-align: center;
+  }
+
+  .figures {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.5rem;
+    margin: 0.25rem 0 0;
+  }
+  .figures div {
+    display: grid;
+    gap: 0.125rem;
+    padding: 0.5rem 0.625rem;
+    border-radius: var(--radius-small);
+    background: var(--color-surface-sunken);
+  }
+  .figures dt {
+    color: var(--color-muted);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .figures dd {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .overpaid {
+    margin: 0;
+    color: var(--color-warning);
+    font-size: 0.875rem;
+  }
+
+  /* The narrowest phones: amounts like "R 12,000.00" need a little less */
+  @media (max-width: 22rem) {
+    .figures dd {
+      font-size: 0.8125rem;
+    }
+  }
+</style>

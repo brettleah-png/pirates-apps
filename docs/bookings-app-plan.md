@@ -61,7 +61,7 @@ Each dependency is added in the phase that first uses it.
   - `Tracking Data`: `App_Timestamp`, `App_Status`, `App_PaymentStatus`, `App_InvoiceNumber`, `App_DamageDeposit`, `App_DamageKeptBack`, `App_DamageNote`, `App_DeclineReason`, `App_UpdatedBy`, `App_UpdatedAt`
   - `History`: `App_Id`, `App_Timestamp`, `App_At`, `App_By`, `App_Type` (`note` or `change`), `App_Text`, `App_EditedAt`
   - `Invoices`: `App_InvoiceNumber`, `App_Timestamp`, `App_IssuedOn` (format as **Date**), `App_Status` (`Draft`, `Sent` or `Replaced`), `App_Customer`, `App_Address`, `App_RegNumber`, `App_Phone`, `App_Email`, `App_Lines` (the invoice's lines as JSON), `App_Total` (only for reading in the sheet)
-  - `Payments`: `App_Id`, `App_Timestamp`, `App_PaidOn` (format as **Date**), `App_Kind` (`Payment`, `Damage deposit refund` or `Refund`), `App_Amount` (always positive; the kind says which way the money went), `App_Note`, `App_RecordedBy`, `App_RecordedAt` (format as **Date time**)
+  - `Payments`: `App_Id`, `App_Timestamp`, `App_PaidOn` (format as **Date**), `App_Kind` (`Payment`, `Damage deposit refund`, `Refund` or `Overpayment refund`), `App_Amount` (always positive; the kind says which way the money went), `App_Note`, `App_RecordedBy`, `App_RecordedAt` (format as **Date time**)
 - **`Tracking Data` copies the form tab row by row** with `=ARRAYFORMULA('Form responses 1'!A:Z)`, to the right of the `App_` columns. Row 5's `App_` values belong to the booking copied into row 5. The club chose this so the tab can be read on its own.
 - **The safeguard.** The rows only stay lined up while nobody sorts or deletes rows in `Form responses 1`. So when the app saves a row, it also writes the booking's timestamp into `App_Timestamp`. If that stops matching the copied Timestamp beside it, every page shows a warning and the app won't save until the rows are lined up again. Bookings still show correctly, because the app matches values by `App_Timestamp`. Values typed by hand without an `App_Timestamp` belong to the booking in the same row.
 - **A booking is identified by its submission timestamp.** The form doesn't allow response editing, so it never changes. Links use a short code made from the timestamp and email (`/bookings/3a3311903f33`), which doesn't reveal the email.
@@ -101,11 +101,12 @@ Each dependency is added in the phase that first uses it.
 ## Payments
 
 - **Who:** people with the Payments permission. A booking's Invoice and payments panel lists what has come in and gone out, with **Record payment**.
-- **Recording** (`/bookings/<code>/payment`): what happened (a payment received, the damage deposit paid back, or money paid back after a cancellation), the amount, the date (today by default) and an optional reference.
+- **Recording** (`/bookings/<code>/payment`): what happened (a payment received, the damage deposit paid back, money paid back after a cancellation, or an overpayment paid back; the last only shows when more than the invoice came in), the amount, the date (today by default) and an optional reference.
 - **The tracking follows the payments**, never moving back:
   - A payment makes the payment status Deposit Paid once the payments add up to half the invoice, and Full Payment Received once they cover all of it. The damage deposit is paid with the invoice, so it becomes Paid then too. Without an invoice, nothing moves.
   - Paying back the damage deposit makes it Refunded. Anything less than the deposit on the invoice is saved as the amount kept back, with an optional note of what was damaged.
   - Paying back money after a cancellation makes the payment status Refunded.
+  - Paying back an overpayment takes it off what was received and changes no status: the booking is still paid in full. It can't be more than was paid over the invoice.
 - **Deleting a payment** is only for one recorded by mistake. The tracking stays as it is; Edit is there to fix it. Every payment, and every deletion, goes in the booking's history.
 - **The treasurer's list** (`/payments`, linked in the top bar for people with Payments): what still needs doing, soonest function first, with each booking linking straight to the next step. Cancelled and declined bookings are left out. Payment details stay off the main list, so it stays uncluttered for everyone else.
   - **Needs an invoice:** today or later, no invoice, and not already paid in full or given an invoice number by hand. Past bookings are left out: they're from before the app made invoices.
@@ -113,7 +114,8 @@ Each dependency is added in the phase that first uses it.
   - **Waiting for the deposit:** payment status Invoice Sent, with how much of the half is still due.
   - **Balance owing:** payment status Deposit Paid, with what's still to come.
   - **Damage deposit to pay back:** the function is over and the damage deposit is still Paid.
-  - Functions within a week, or already past, are flagged in the first four. The top of the page counts each section and adds up the money still to come.
+  - **Overpaid:** more than the invoice came in, with the difference still to pay back.
+  - Functions within a week, or already past, are flagged in the first four. Money to pay back isn't flagged. The top of the page counts each section and adds up the money still to come.
 
 ## Add to calendar
 

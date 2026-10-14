@@ -4,7 +4,9 @@
 // Recording a payment moves the booking's payment status forward: Deposit
 // Paid once half the invoice is in, Full Payment Received once all of it is.
 // The damage deposit is paid with the invoice, so it counts as Paid once the
-// whole invoice is. Nothing here moves a status back: Edit is there for that.
+// whole invoice is. Paying back an overpayment takes it off what was
+// received and leaves the statuses alone. Nothing here moves a status back:
+// Edit is there for that.
 import { timestampKey } from "./bookings";
 import { dateFromSerial, serialFromDate, shortDate } from "./dates";
 import { formatRand } from "./invoices";
@@ -15,6 +17,7 @@ export const PAYMENT_KINDS = [
   "Payment",
   "Damage deposit refund",
   "Refund",
+  "Overpayment refund",
 ] as const;
 export type PaymentKind = (typeof PAYMENT_KINDS)[number];
 
@@ -23,6 +26,7 @@ export const PAYMENT_KIND_LABELS: Record<PaymentKind, string> = {
   Payment: "Payment received",
   "Damage deposit refund": "Damage deposit paid back",
   Refund: "Money paid back",
+  "Overpayment refund": "Overpayment paid back",
 };
 
 export interface Payment {
@@ -119,11 +123,24 @@ export function paymentsFor(
     .sort((a, b) => a.paidOn.localeCompare(b.paidOn));
 }
 
-/** Rand received from the client, not counting anything paid back */
-export function amountReceived(payments: Payment[]): number {
+function totalOf(payments: Payment[], kind: PaymentKind): number {
   return payments
-    .filter((payment) => payment.kind === "Payment")
+    .filter((payment) => payment.kind === kind)
     .reduce((total, payment) => total + payment.amount, 0);
+}
+
+/**
+ * Rand received towards the invoice: what came in, less any overpayment
+ * paid back. Paying back the damage deposit or a cancelled booking's money
+ * doesn't change it.
+ */
+export function amountReceived(payments: Payment[]): number {
+  return totalOf(payments, "Payment") - totalOf(payments, "Overpayment refund");
+}
+
+/** Rand received over the invoice total, still to be paid back */
+export function amountOverpaid(received: number, invoiceTotal: number): number {
+  return invoiceTotal > 0 ? Math.max(0, received - invoiceTotal) : 0;
 }
 
 // The payment statuses on the way to being paid, in order. Refunded isn't
@@ -156,6 +173,38 @@ export function paymentStatusAfterPayment(
     reached = "Deposit Paid";
   }
   return PAYMENT_PROGRESS.indexOf(reached) > currentStep ? reached : current;
+}
+
+export interface PaymentProgress {
+  /** How far along the invoice is: half confirms the booking */
+  stage: "Waiting for deposit" | "Deposit paid" | "Paid in full";
+  /** Rand still to come, never below 0 */
+  toCome: number;
+  /** Rand received over the invoice total, still to be paid back */
+  overpaid: number;
+  /** How much of the invoice is in, from 0 to 100 */
+  percent: number;
+}
+
+/** Where an invoice stands, for showing it at a glance */
+export function paymentProgress(
+  invoiceTotal: number,
+  received: number
+): PaymentProgress {
+  let stage: PaymentProgress["stage"] = "Waiting for deposit";
+  if (received >= invoiceTotal) {
+    stage = "Paid in full";
+  } else if (received >= invoiceTotal / 2) {
+    stage = "Deposit paid";
+  }
+  const percent =
+    invoiceTotal > 0 ? Math.min(100, (received / invoiceTotal) * 100) : 100;
+  return {
+    stage,
+    toCome: Math.max(0, invoiceTotal - received),
+    overpaid: amountOverpaid(received, invoiceTotal),
+    percent,
+  };
 }
 
 /** The damage deposit is part of the invoice, so it's Paid once the whole invoice is */
