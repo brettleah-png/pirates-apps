@@ -7,3 +7,7 @@
 [build]
   command = "pnpm build:bookings"
   publish = "apps/bookings/dist"
+  # Skip the build unless something the bookings app depends on changed.
+  # git diff --quiet exits 0 when nothing changed, which tells Netlify to skip.
+  # The lockfile changes with any app's dependencies, so those still build.
+  ignore = "git diff --quiet $CACHED_COMMIT_REF $COMMIT_REF -- apps/bookings package.json pnpm-lock.yaml pnpm-workspace.yaml .nvmrc"
