@@ -124,6 +124,11 @@ Each dependency is added in the phase that first uses it.
 - The event goes into someone's own calendar, which may sync anywhere, so it only holds the first name, the function type and a link back to the booking. No phone number or email.
 - It doesn't update itself. If the booking's date or time changes, add it again: the event has a fixed ID, so most calendar apps replace the old one.
 
+## Sharing a booking
+
+- A **Share** button at the top of a booking's page, for anyone who can see bookings. It opens the phone's share sheet with the person's name and a link to the booking, to send to WhatsApp, email or any other app. Browsers without a share sheet (some desktops) copy the link instead.
+- The link only works for people signed in with access, so sharing it doesn't show the booking to anyone else.
+
 ## Declining a booking
 
 - **Who:** people with the Notes and status permission, from the **Decline** button on a booking's page.

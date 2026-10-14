@@ -98,22 +98,30 @@ const lastSavedBy =
         {isPast && <span class="tag">Past</span>}
       </div>
     </div>
-    {(canDecline || canEdit) && (
-      <div class="heading-buttons">
-        {canDecline && (
-          <a class="button" href={`/bookings/${booking.id}/decline`}>
-            <Icon name="x" size={18} />
-            Decline
-          </a>
-        )}
-        {canEdit && (
-          <a class="button" href={`/bookings/${booking.id}/edit`}>
-            <Icon name="edit" size={18} />
-            Edit
-          </a>
-        )}
-      </div>
-    )}
+    <div class="heading-buttons">
+      <button
+        class="button"
+        type="button"
+        data-share-booking
+        data-path={`/bookings/${booking.id}`}
+        data-title={booking.name || "Booking"}
+      >
+        <Icon name="share" size={18} />
+        <span data-share-label>Share</span>
+      </button>
+      {canDecline && (
+        <a class="button" href={`/bookings/${booking.id}/decline`}>
+          <Icon name="x" size={18} />
+          Decline
+        </a>
+      )}
+      {canEdit && (
+        <a class="button" href={`/bookings/${booking.id}/edit`}>
+          <Icon name="edit" size={18} />
+          Edit
+        </a>
+      )}
+    </div>
   </header>
 
   {isDeclined && tracking.declineReason && (
@@ -409,6 +417,34 @@ const lastSavedBy =
   <p class="visually-hidden" aria-live="polite" data-copy-status></p>
 </article>
 
+<script>
+  // Opens the phone's share sheet, so the link can go to WhatsApp, email or
+  // any other app. Browsers without one (some desktops) copy the link instead.
+  const shareButton = document.querySelector<HTMLButtonElement>(
+    "[data-share-booking]"
+  );
+
+  shareButton?.addEventListener("click", async () => {
+    const { path, title } = shareButton.dataset;
+    const url = new URL(path!, location.origin).href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({ title, url });
+      } catch (error) {
+        // Closing the share sheet without picking an app isn't an error
+        if ((error as Error).name !== "AbortError") throw error;
+      }
+      return;
+    }
+
+    await navigator.clipboard.writeText(url);
+    const label = shareButton.querySelector("[data-share-label]")!;
+    label.textContent = "Link copied";
+    window.setTimeout(() => (label.textContent = "Share"), 1500);
+  });
+</script>
+
 <style>
   .booking {
     display: grid;
@@ -441,6 +477,10 @@ const lastSavedBy =
     grid-auto-columns: 1fr;
     grid-auto-flow: column;
     gap: 0.5rem;
+  }
+  /* Less padding, so Share, Decline and Edit fit in a row on small phones */
+  .heading-buttons .button {
+    padding: 0 0.75rem;
   }
   @media (min-width: 48rem) {
     .heading {
