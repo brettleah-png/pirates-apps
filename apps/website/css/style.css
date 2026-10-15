@@ -36,6 +36,16 @@ body {
   flex-grow: 1;
 }
 
+/* fixtures.php makes the frame as tall as the fixtures inside it, so the page scrolls
+   like the others. Until then (or without JavaScript) it fills the screen and scrolls
+   on its own */
+.fixtures-frame {
+  display: block;
+  width: 100%;
+  height: 100vh;
+  border: 0;
+}
+
 [class^="flaticon-"]:before,
 [class*=" flaticon-"]:before,
 [class^="flaticon-"]:after,
