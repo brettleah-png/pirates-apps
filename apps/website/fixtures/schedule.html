@@ -762,6 +762,23 @@
   a.venue-pill.is-link:hover{ background: var(--pink); border-color: var(--navy); }
   a.venue-pill.is-link:focus-visible{ outline:2.5px solid var(--navy); outline-offset:2px; }
   a.venue-pill.is-link .pin-icon{ flex:none; }
+
+  /* Neat alignment: fixed-width columns so every Home / Away / bye pill lines up row to row */
+  .row{ grid-template-columns: 78px 1fr 84px 130px; }
+  .venue-pill,
+  a.venue-pill.is-link{
+    box-sizing:border-box;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    text-align:center;
+  }
+  .venue-pill{ border:1.5px solid transparent; }   /* Home gets the same border box as Away so heights match */
+  .status-note{ text-align:left; }
+  @media (max-width: 620px){
+    .row{ grid-template-columns: 54px 1fr 78px; }
+  }
 </style>
 </head>
 <body>
@@ -812,7 +829,7 @@
       <span><span class="legend-swatch"></span>C-Field also needed that day</span>
     </div>
     <div class="rules-note">
-      <b>How fields are assigned:</b> U10 always play the U10 Diamond (8am) — no other team can use it, so it's never a prep concern. U15 always open the Main Diamond (8am). U18 follow at 10am on the Main Diamond when home. U12 take the Main Diamond at 10am when U18 are away — otherwise they move to the C-Field. 1st Team (Major League Reserve) always have the Main Diamond when they're home, kicking off at 12:30; if Masters are also home that day, Masters move to the C-Field at 13:15. If Masters are home alone, they take the Main Diamond at 13:15. All games run 2 hours.
+      <b>How fields are assigned:</b> U10 always play the U10 Diamond (8am) — no other team can use it, so it's never a prep concern. U15 always open the Main Diamond (8am). U18 follow at 10am on the Main Diamond when home. U12 take the Main Diamond at 10am when U18 are away — otherwise they move to the C-Field. 1st Team (Major League Reserve) always have the Main Diamond when they're home, kicking off at 12:45; if Masters are also home that day, Masters move to the C-Field at 13:15. If Masters are home alone, they take the Main Diamond at 13:15. All games run 2 hours.
     </div>
     <div class="umpire-bar">
       <button type="button" class="umpire-lock-btn" id="umpireLockBtn">🔒 Enter PIN to edit umpires</button>
@@ -1045,7 +1062,7 @@
   // After deploying the companion Apps Script (see UmpireSync_Code.gs), paste
   // its web app URL below. Until it's set, umpire picking stays switched off
   // and the page says so rather than failing silently.
-  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRed63MWiKa0LZaS_JyfDu5uZiqAyS35HE4kTdYvPJzS20meC4fu5LpYrSjOMFQxY/exec';
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxsK-sDIvwGkrg8_N6ziiSxdEiyd-ItAkAbtEhN-vPlTVBNcBYh2ItOMtCjY0nUuyAZ/exec';
 
   // Fallback list, used until/unless the "Umpires" tab of the Google Sheet loads.
   let UMPIRES = ["Alex Buys","Bruce Smith","Chirs Tapping","Cole Quattro","Daniel Frank","Devan Rolfe","Ethan Burgess","Garth Uys","Jason Bands","Justin Smith","Kieran Clacket","Kurt Mealing","Lian Malan","Michael Smith","Peter Jokumsen","Richard Footman","Richard Rowe","Rocco King"];
@@ -1248,7 +1265,7 @@
     // U15 -> Main Diamond, 8-10am, always.
     // U18 -> Main Diamond, 10am-12pm, when home.
     // U12 -> Main Diamond 10am-12pm if U18 are away that day, else C-Field 10am-12pm.
-    // Second League always has the Main Diamond when home, starting 12:30. If
+    // Second League always has the Main Diamond when home, starting 12:45. If
     // Masters are also home that day, Masters move to the C-Field, starting
     // 13:15. If Masters are home alone (Second League away), Masters take the
     // Main Diamond, starting 13:15.
@@ -1263,10 +1280,10 @@
       }
       const sl = has('Second League'), ma = has('Masters');
       if (sl && ma){
-        out.push({ team:'Second League', field:'Main Diamond', start:'12:30', end:'14:30' });
+        out.push({ team:'Second League', field:'Main Diamond', start:'12:45', end:'14:45' });
         out.push({ team:'Masters', field:'C-Field', start:'13:15', end:'15:15' });
       } else if (sl){
-        out.push({ team:'Second League', field:'Main Diamond', start:'12:30', end:'14:30' });
+        out.push({ team:'Second League', field:'Main Diamond', start:'12:45', end:'14:45' });
       } else if (ma){
         out.push({ team:'Masters', field:'Main Diamond', start:'13:15', end:'15:15' });
       }
